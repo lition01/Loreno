@@ -1426,38 +1426,40 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(47, 39, 22, .55);
-      backdrop-filter: blur(3px);
-      z-index: 900;
+      background: rgba(47, 39, 22, .6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
       opacity: 0;
-      pointer-events: none;
-      transition: opacity var(--trans);
+      visibility: hidden;
+      transition: all .3s cubic-bezier(.4, 0, .2, 1);
     }
 
     .modal-overlay.open {
       opacity: 1;
-      pointer-events: all;
+      visibility: visible;
     }
 
     .modal {
       background: var(--surface);
       border-radius: var(--radius);
-      box-shadow: 0 20px 60px rgba(47, 39, 22, .18);
+      box-shadow: 0 20px 60px rgba(47, 39, 22, .2);
       width: 100%;
       max-width: 520px;
       max-height: 90vh;
       overflow-y: auto;
-      transform: scale(.94) translateY(16px);
-      transition: transform var(--trans);
+      transform: scale(.9) translateY(20px);
+      opacity: 0;
+      transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
       position: relative;
     }
 
     .modal-overlay.open .modal {
       transform: scale(1) translateY(0);
+      opacity: 1;
     }
 
     .modal.modal-lg {
@@ -2008,55 +2010,6 @@
     </div>
   </div>
 
-  <!-- Edit Order Modal -->
-  <div class="modal-overlay" id="modal-editorder">
-    <div class="modal modal-lg">
-      <div class="modal-head">
-        <div>
-          <div class="modal-title">Edit Order</div>
-          <div class="modal-sub" id="editorder-sub">Updating order details</div>
-        </div>
-        <button class="modal-close" onclick="closeModal('modal-editorder')"><svg viewBox="0 0 24 24">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg></button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="eo-idx" />
-        <div class="form-grid">
-          <div class="form-group"><label class="form-label">Customer Name</label><input class="form-input" id="eo-cust"
-              type="text" /></div>
-          <div class="form-group"><label class="form-label">Product</label><input class="form-input" id="eo-prod"
-              type="text" /></div>
-          <div class="form-group"><label class="form-label">Size</label>
-            <select class="form-select" id="eo-size">
-              <option>XS</option>
-              <option>S</option>
-              <option>M</option>
-              <option>L</option>
-              <option>XL</option>
-            </select>
-          </div>
-          <div class="form-group"><label class="form-label">Status</label>
-            <select class="form-select" id="eo-status">
-              <option>Pending</option>
-              <option>Processing</option>
-              <option>Shipped</option>
-              <option>Completed</option>
-              <option>Refunded</option>
-            </select>
-          </div>
-          <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="eo-date"
-              type="text" /></div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-editorder')">Cancel</button>
-        <button class="btn btn-primary" onclick="saveEditOrder()">Save Changes</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Export Modal -->
   <div class="modal-overlay" id="modal-export">
     <div class="modal modal-sm">
@@ -2317,9 +2270,9 @@
         <div style="font-size:13px;color:var(--muted);margin-bottom:6px;" id="confirm-msg">This action cannot be undone.
         </div>
       </div>
-      <div class="modal-footer" style="justify-content:center;">
-        <button class="btn btn-ghost" onclick="closeModal('modal-confirm')">Cancel</button>
-        <button class="btn btn-danger" id="confirm-action-btn">Delete</button>
+      <div class="modal-footer" style="justify-content:center; padding-top:10px;">
+        <button class="btn btn-ghost" onclick="closeModal('modal-confirm')" style="min-width:110px;">Cancel</button>
+        <button class="btn btn-danger" id="confirm-action-btn" style="min-width:110px;">Confirm</button>
       </div>
     </div>
   </div>
@@ -2469,7 +2422,6 @@
       <div class="modal-body" id="od-body"></div>
       <div class="modal-footer">
         <button class="btn btn-ghost" onclick="closeModal('modal-orderdetail')">Close</button>
-        <button class="btn btn-primary" id="od-edit-btn">Edit Order</button>
       </div>
     </div>
   </div>
@@ -2814,17 +2766,8 @@
                 style="font-size:13px;font-weight:700;color:var(--c5);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;">
                 Basic Info</div>
               <div class="form-grid">
-                <div class="form-group"><label class="form-label">Product Name</label><input class="form-input"
+                <div class="form-group form-full"><label class="form-label">Product Name</label><input class="form-input"
                     name="name" type="text" placeholder="e.g. Classic Oxford Shirt" required /></div>
-                <div class="form-group"><label class="form-label">Category</label>
-                  <select class="form-select" name="category" required>
-                    <option value="">Select category…</option>
-                    <option>Men</option>
-                    <option>Women</option>
-                    <option>Kids</option>
-                    <option>Accessories</option>
-                  </select>
-                </div>
                 <div class="form-group"><label class="form-label">Price ($)</label><input class="form-input"
                     name="price" type="number" min="0" step="0.01" placeholder="0.00" required /></div>
                 <div class="form-group form-full"><label class="form-label">Description</label><textarea
@@ -2853,6 +2796,18 @@
                 </div>
               </label>
             </div>
+            <div class="card" style="margin-bottom:16px;">
+              <div
+                style="font-size:13px;font-weight:700;color:var(--c5);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;">
+                Storefront Placement</div>
+              <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Choose where this product should appear.
+                Select all that apply.</p>
+              <div id="add-placement-options"
+                style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:10px;">
+                <!-- Dynamically filled -->
+              </div>
+            </div>
+
             <div class="card" style="margin-bottom:16px;">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
                 <div
@@ -3114,8 +3069,58 @@
     ═══════════════════════════════════════════════════════════ */
     // Load data from localStorage or initialize with defaults
     let ORDERS = JSON.parse(localStorage.getItem('dashboard_orders') || '[]');
-    let PRODUCTS = JSON.parse(localStorage.getItem('dashboard_products') || '[]');
-    let CUSTOMERS = JSON.parse(localStorage.getItem('dashboard_customers') || '[]');
+let PRODUCTS = JSON.parse(localStorage.getItem('dashboard_products') || '[]');
+let CUSTOMERS = JSON.parse(localStorage.getItem('dashboard_customers') || '[]');
+
+// Seed default products if empty
+if (PRODUCTS.length === 0) {
+  const defaultProducts = [
+    {
+      id: 1, name: "Linen Blend Shirt", cat: "Women", price: "$89.00", priceValue: 89,
+      imageUrl: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=800&fit=crop",
+      placements: ["women", "new"], sizes: { "XS": 10, "S": 15, "M": 20, "L": 10, "XL": 5 },
+      colors: ["#c6baa5", "#2f2716", "#ffffff"], badge: "New"
+    },
+    {
+      id: 2, name: "Pleated Midi Skirt", cat: "Women", price: "$125.00", priceValue: 125,
+      imageUrl: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop",
+      placements: ["women", "new", "summer"], sizes: { "XS": 8, "S": 12, "M": 15, "L": 8 },
+      colors: ["#a8845e", "#7e5232", "#c6baa5"], badge: "New"
+    },
+    {
+      id: 3, name: "Oversized Wool Coat", cat: "Women", price: "$345.00", priceValue: 345,
+      imageUrl: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&h=800&fit=crop",
+      placements: ["women", "new", "winter"], sizes: { "S": 5, "M": 8, "L": 5, "XL": 3 },
+      colors: ["#b39c80", "#2f2716"], badge: "New"
+    },
+    {
+      id: 4, name: "Silk Camisole Top", cat: "Women", price: "$78.00", priceValue: 78,
+      imageUrl: "https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?w=600&h=800&fit=crop",
+      placements: ["women", "new", "summer"], sizes: { "XS": 10, "S": 15, "M": 15, "L": 10 },
+      colors: ["#c6baa5", "#a8845e", "#ffffff"], badge: "New"
+    },
+    {
+      id: 25, name: "Premium Cotton Tee", cat: "Men", price: "$45.00", priceValue: 45,
+      imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=800&fit=crop",
+      placements: ["men", "summer", "bestseller"], sizes: { "S": 20, "M": 25, "L": 20, "XL": 15 },
+      colors: ["#ffffff", "#2f2716", "#9a8a7a"], badge: "Best Seller"
+    },
+    {
+      id: 26, name: "Slim Fit Chinos", cat: "Men", price: "$95.00", priceValue: 95,
+      imageUrl: "https://images.unsplash.com/photo-1473963440576-94304b72df43?w=600&h=800&fit=crop",
+      placements: ["men", "bestseller"], sizes: { "30": 10, "32": 15, "34": 15, "36": 10 },
+      colors: ["#a8845e", "#2f2716", "#7e5232"], badge: "Classic"
+    },
+    {
+      id: 27, name: "Denim Jacket", cat: "Men", price: "$145.00", priceValue: 145,
+      imageUrl: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=600&h=800&fit=crop",
+      placements: ["men", "winter"], sizes: { "S": 8, "M": 12, "L": 10, "XL": 8 },
+      colors: ["#2563eb", "#2f2716"], badge: "Winter Ready"
+    }
+  ];
+  PRODUCTS = defaultProducts;
+  localStorage.setItem('dashboard_products', JSON.stringify(PRODUCTS));
+}
 
     /* helper: total stock for a product */
     function calcStock(p) {
@@ -3304,9 +3309,6 @@
             <button class="icon-btn" title="View" onclick="viewOrder(${ORDERS.indexOf(o)})">
               <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
-            <button class="icon-btn" title="Edit" onclick="editOrder(${ORDERS.indexOf(o)})">
-              <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
             <button class="icon-btn del" title="Delete" onclick="confirmDelete('order',${ORDERS.indexOf(o)})">
               <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
             </button>
@@ -3326,8 +3328,8 @@
       if (o.shipping) {
         shippingInfo = `
       <div class="card form-full" style="padding:14px; margin-top:12px;">
-        <div class="stat-lbl">Shipping Information</div>
-        <div style="font-size:12.5px; color:var(--text); margin-top:8px; line-height:1.6;">
+        <div class="stat-lbl" style="margin-bottom:8px;">Shipping Information</div>
+        <div style="font-size:12.5px; color:var(--text); line-height:1.6;">
           <strong>Email:</strong> ${o.shipping.email}<br>
           <strong>Phone:</strong> ${o.shipping.phone}<br>
           <strong>Address:</strong> ${o.shipping.address}<br>
@@ -3337,45 +3339,45 @@
     `;
       }
 
+      let itemsHtml = '';
+      if (o.items && Array.isArray(o.items)) {
+        itemsHtml = `
+          <div class="card form-full" style="padding:14px; margin-top:12px;">
+            <div class="stat-lbl" style="margin-bottom:12px;">Order Items (${o.items.length})</div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              ${o.items.map(item => `
+                <div style="display:flex; gap:12px; align-items:center; padding-bottom:12px; border-bottom:1px solid var(--border);">
+                  <div style="width:50px; height:50px; border-radius:6px; overflow:hidden; background:var(--bg); flex-shrink:0;">
+                    <img src="${item.image}" style="width:100%; height:100%; object-fit:cover;" alt="${item.name}">
+                  </div>
+                  <div style="flex:1; min-width:0;">
+                    <div style="font-size:13.5px; font-weight:700; color:var(--c5); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.name}</div>
+                    <div style="font-size:11.5px; color:var(--muted); margin-top:2px; display:flex; gap:8px; align-items:center;">
+                      <span>Size: <strong>${item.size || 'N/A'}</strong></span>
+                      <span>Qty: <strong>${item.quantity || 1}</strong></span>
+                      <span style="display:flex; align-items:center; gap:4px;">
+                        Color: <span style="width:10px; height:10px; border-radius:50%; background:${item.color}; border:1px solid var(--border);"></span>
+                      </span>
+                    </div>
+                  </div>
+                  <div style="font-size:13.5px; font-weight:700; color:var(--c4);">$${(parseFloat(item.price) * (item.quantity || 1)).toFixed(2)}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
       document.getElementById('od-body').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
       <div class="card" style="padding:14px;"><div class="stat-lbl">Customer</div><div style="font-size:13.5px;font-weight:700;color:var(--c5);margin-top:4px;">${o.cust}</div></div>
-      <div class="card" style="padding:14px;"><div class="stat-lbl">Product</div><div style="font-size:13.5px;font-weight:700;color:var(--c5);margin-top:4px;">${o.prod}</div></div>
-      <div class="card" style="padding:14px;"><div class="stat-lbl">Size</div><div style="margin-top:4px;">${badge('gray') ? '<span class="badge gray">' + o.size + '</span>' : o.size}</div></div>
+      <div class="card" style="padding:14px;"><div class="stat-lbl">Total Amount</div><div style="font-size:13.5px;font-weight:700;color:var(--c4);margin-top:4px;">${o.price}</div></div>
       <div class="card" style="padding:14px;"><div class="stat-lbl">Status</div><div style="margin-top:4px;">${badge(o.status)}</div></div>
+      <div class="card" style="padding:14px;"><div class="stat-lbl">Total Items</div><div style="font-size:13.5px;font-weight:700;color:var(--c5);margin-top:4px;">${o.qty}</div></div>
+      ${itemsHtml}
       ${shippingInfo}
     </div>`;
-      document.getElementById('od-edit-btn').onclick = () => { closeModal('modal-orderdetail'); editOrder(idx); };
       openModal('modal-orderdetail');
-    }
-
-    function editOrder(idx) {
-      const o = ORDERS[idx];
-      document.getElementById('eo-idx').value = idx;
-      document.getElementById('editorder-sub').textContent = `Editing ${o.id}`;
-      document.getElementById('eo-cust').value = o.cust;
-      document.getElementById('eo-prod').value = o.prod;
-      document.getElementById('eo-size').value = o.size;
-      document.getElementById('eo-status').value = o.status;
-      document.getElementById('eo-date').value = o.date;
-      openModal('modal-editorder');
-    }
-
-    function saveEditOrder() {
-      const idx = parseInt(document.getElementById('eo-idx').value);
-      ORDERS[idx] = {
-        ...ORDERS[idx],
-        cust: document.getElementById('eo-cust').value,
-        prod: document.getElementById('eo-prod').value,
-        size: document.getElementById('eo-size').value,
-        status: document.getElementById('eo-status').value,
-        date: document.getElementById('eo-date').value,
-      };
-      saveOrders();
-      closeModal('modal-editorder');
-      renderOrders();
-      renderOverview();
-      showToast('Order updated successfully', 'success');
     }
 
     function openStatusChange(idx) {
@@ -3638,15 +3640,27 @@
        PRODUCT DISPLAY PLACEMENT
     ════════════════════════════════════════════ */
     const PLACEMENT_OPTIONS = [
-      { id: 'men', icon: '👔', label: 'Men Section', desc: 'Show in the Men category page' },
-      { id: 'women', icon: '👗', label: 'Women Section', desc: 'Show in the Women category page' },
-      { id: 'kids', icon: '🧒', label: 'Kids Section', desc: 'Show in the Kids category page' },
-      { id: 'acc', icon: '🎩', label: 'Accessories', desc: 'Show in the Accessories category page' },
+      { id: 'men', icon: '👔', label: 'Men', desc: 'Show in the Men category' },
+      { id: 'women', icon: '👗', label: 'Women', desc: 'Show in the Women category' },
+      { id: 'kids', icon: '🧒', label: 'Kids', desc: 'Show in the Kids category' },
+      { id: 'acc', icon: '🎩', label: 'Accessories', desc: 'Show in the Accessories category' },
       { id: 'bestseller', icon: '⭐', label: 'Best Seller', desc: 'Feature in the Best Sellers section' },
-      { id: 'newcoll', icon: '✨', label: 'Winter Collection', desc: 'Feature in the New Arrivals section' },
-      { id: 'sale', icon: '🏷️', label: 'Summer Collection', desc: 'Show in the Sale & Offers section' },
-      { id: 'featured', icon: '🔥', label: 'On Sale', desc: 'Pin to the homepage featured banner' },
+      { id: 'winter', icon: '❄️', label: 'Winter Collection', desc: 'Feature in the Winter Collection' },
+      { id: 'summer', icon: '☀️', label: 'Summer Collection', desc: 'Show in the Summer Collection' },
+      { id: 'new', icon: '✨', label: 'New Arrivals', desc: 'Show in the homepage New Arrivals' },
     ];
+
+    function renderAddProductPlacements() {
+      const container = document.getElementById('add-placement-options');
+      if (!container) return;
+      container.innerHTML = PLACEMENT_OPTIONS.map(o => `
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all var(--trans);">
+          <input type="checkbox" name="placements" value="${o.id}" style="width:16px;height:16px;accent-color:var(--c3);">
+          <div style="font-size:18px;">${o.icon}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--c5);">${o.label}</div>
+        </label>
+      `).join('');
+    }
 
     function openPlacement(idx) {
       const p = PRODUCTS[idx];
@@ -3920,13 +3934,37 @@
 
     function initAddProduct() {
       const picker = document.getElementById('sizePicker');
-      if (!picker.children.length) {
+      if (picker && !picker.children.length) {
         picker.innerHTML = ALL_SIZES.map(s => `<div class="size-pill" data-size="${s}" onclick="toggleSize(this)">${s}</div>`).join('');
       }
-      if (document.getElementById('colorList').children.length === 0) addColor();
+      renderAddProductPlacements();
+      if (!colorCount) addColor();
+      
+      if (activeSizes.length === 0) {
+        ['S', 'M', 'L', 'XL'].forEach(s => toggleSize(s));
+      }
     }
 
     function toggleSize(el) {
+      if (typeof el === 'string') {
+        const picker = document.getElementById('sizePicker');
+        const pill = [...picker.querySelectorAll('.size-pill')].find(p => p.dataset.size === el);
+        if (pill) {
+          pill.classList.add('active');
+          if (!activeSizes.includes(el)) activeSizes.push(el);
+        } else {
+          // It's a custom size
+          if (!activeSizes.includes(el)) activeSizes.push(el);
+          const newPill = document.createElement('div');
+          newPill.className = 'size-pill active';
+          newPill.dataset.size = el;
+          newPill.textContent = el;
+          newPill.onclick = () => toggleSize(newPill);
+          picker.appendChild(newPill);
+        }
+        renderSizeTable();
+        return;
+      }
       const s = el.dataset.size;
       el.classList.toggle('active');
       if (el.classList.contains('active')) { if (!activeSizes.includes(s)) activeSizes.push(s); }
@@ -4017,7 +4055,6 @@
       e.preventDefault();
       const fd = new FormData(e.target);
       const data = Object.fromEntries(fd.entries());
-      if (!data.category) { showToast('Please select a category', 'error'); return; }
       const price = parseFloat(data.price || 0);
       /* collect sizes from the size table */
       const sizeRows = document.querySelectorAll('#sizeTableWrap .size-row');
@@ -4027,6 +4064,22 @@
         const qtyInput = row.querySelectorAll('input')[0];
         if (tag && qtyInput) sizes[tag.textContent.trim()] = parseInt(qtyInput.value) || 0;
       });
+
+      /* collect placements */
+      const placements = [...document.querySelectorAll('#add-placement-options input[name="placements"]:checked')].map(cb => cb.value);
+
+      if (placements.length === 0) {
+        showToast('Please select at least one storefront placement', 'error');
+        return;
+      }
+
+      /* determine primary category from placements for dashboard listing */
+      let primaryCat = 'Uncategorized';
+      if (placements.includes('men')) primaryCat = 'Men';
+      else if (placements.includes('women')) primaryCat = 'Women';
+      else if (placements.includes('kids')) primaryCat = 'Kids';
+      else if (placements.includes('acc')) primaryCat = 'Accessories';
+
       /* capture image BEFORE resetForm clears preview */
       const previewImg = document.querySelector('#filePreview img');
       const imageUrl = previewImg ? previewImg.src : '';
@@ -4034,10 +4087,13 @@
       PRODUCTS.push({
         id: 'P' + (Date.now()),
         name: data.name || 'New Product',
-        cat: data.category,
+        cat: primaryCat,
         price: '$' + price.toFixed(2),
+        priceValue: price,
         sizes,
         imageUrl,
+        placements,
+        badge: 'New' // default badge for dashboard products
       });
       saveProducts();
 
@@ -4059,8 +4115,13 @@
     <p style="font-size:11px;margin-top:4px;">PNG, JPG, WEBP up to 5MB</p>`;
       activeSizes = [];
       document.querySelectorAll('.size-pill').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('#add-placement-options input[type="checkbox"]').forEach(cb => cb.checked = false);
       const wrap = document.getElementById('sizeTableWrap');
       if (wrap) wrap.innerHTML = '';
+      
+      // Re-initialize standard sizes
+      ['S', 'M', 'L', 'XL'].forEach(s => toggleSize(s));
+      
       const totalEl = document.getElementById('totalStockDisplay');
       if (totalEl) totalEl.textContent = '0';
       const cl = document.getElementById('colorList');

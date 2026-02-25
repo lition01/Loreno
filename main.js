@@ -349,20 +349,17 @@
             var colorBtn = target.closest('.popup-color-btn');
             if (colorBtn) {
                 var pid = colorBtn.getAttribute('data-product-id');
-                colorBtn.closest('.popup-colors')
-                    .querySelectorAll('.popup-color-btn')
-                    .forEach(function (btn) { btn.classList.remove('selected'); });
-                colorBtn.classList.add('selected');
+                var idx = parseInt(colorBtn.getAttribute('data-color-index'), 10);
+                if (typeof selectColor === 'function') selectColor(pid, idx);
                 return;
             }
 
             // ── Size selection ──
             var sizeBtn = target.closest('.popup-size-btn');
             if (sizeBtn) {
-                sizeBtn.closest('.popup-sizes')
-                    .querySelectorAll('.popup-size-btn')
-                    .forEach(function (btn) { btn.classList.remove('selected'); });
-                sizeBtn.classList.add('selected');
+                var pid = sizeBtn.getAttribute('data-product-id');
+                var idx = parseInt(sizeBtn.getAttribute('data-size-index'), 10);
+                if (typeof selectSize === 'function') selectSize(pid, idx);
                 return;
             }
 
@@ -370,11 +367,7 @@
             var qtyMinus = target.closest('.qty-minus');
             if (qtyMinus) {
                 var pid = qtyMinus.getAttribute('data-product-id');
-                var qtyEl = document.getElementById('qty-' + pid);
-                if (qtyEl) {
-                    var val = parseInt(qtyEl.textContent, 10);
-                    if (val > 1) qtyEl.textContent = val - 1;
-                }
+                if (typeof updateQuantity === 'function') updateQuantity(pid, -1);
                 return;
             }
 
@@ -382,25 +375,17 @@
             var qtyPlus = target.closest('.qty-plus');
             if (qtyPlus) {
                 var pid = qtyPlus.getAttribute('data-product-id');
-                var qtyEl = document.getElementById('qty-' + pid);
-                if (qtyEl) qtyEl.textContent = parseInt(qtyEl.textContent, 10) + 1;
+                if (typeof updateQuantity === 'function') updateQuantity(pid, 1);
                 return;
             }
 
             // ── Add-to-cart confirmation ──
             var addBtn = target.closest('.popup-add-btn');
             if (addBtn) {
-                var pid  = addBtn.getAttribute('data-product-id');
-                var form = document.getElementById('popup-form-' + pid);
-                var success = document.getElementById('popup-success-' + pid);
-
-                if (form)    form.classList.add('hide');
-                if (success) success.classList.add('show');
-
-                showToast('Item added to cart');
-
-                // Auto-close popup after 1.8 s
-                setTimeout(function () { closePopup(pid); }, 1800);
+                var pid = addBtn.getAttribute('data-product-id');
+                if (typeof addToCartFromPopup === 'function') {
+                    addToCartFromPopup(pid);
+                }
                 return;
             }
 

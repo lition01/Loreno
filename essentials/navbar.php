@@ -1783,7 +1783,7 @@
     <div class="page-spacer"></div>
 
     <!-- Load Cart Manager -->
-  
+    <script src="cart-handler.js"></script>
 
    <script>
     // BURGER MENU
@@ -1819,15 +1819,30 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Submenu
-const mobileNavItems = document.querySelectorAll('.mobile-nav-item[data-has-submenu="true"]');
+    const mobileNavItems = document.querySelectorAll('.mobile-nav-item[data-has-submenu="true"]');
 
-mobileNavItems.forEach(item => {
-    const btn = item.querySelector('.mobile-nav-link');
-    btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        item.classList.toggle('open');
+    mobileNavItems.forEach(item => {
+        const btn = item.querySelector('.mobile-nav-link');
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            item.classList.toggle('open');
+        });
     });
-});
+
+    // CART & WISHLIST BUTTONS
+    const cartBtn = document.getElementById('cartBtn');
+    const wishlistBtn = document.getElementById('wishlistBtn');
+    const cartClose = document.getElementById('cartClose');
+    const wishlistClose = document.getElementById('wishlistClose');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const wishlistOverlay = document.getElementById('wishlistOverlay');
+
+    if (cartBtn) cartBtn.addEventListener('click', () => { if (typeof openCart === 'function') openCart(); });
+    if (wishlistBtn) wishlistBtn.addEventListener('click', () => { if (typeof openWishlistSidebar === 'function') openWishlistSidebar(); });
+    if (cartClose) cartClose.addEventListener('click', () => { if (typeof closeCart === 'function') closeCart(); });
+    if (wishlistClose) wishlistClose.addEventListener('click', () => { if (typeof closeWishlistSidebar === 'function') closeWishlistSidebar(); });
+    if (cartOverlay) cartOverlay.addEventListener('click', () => { if (typeof closeCart === 'function') closeCart(); });
+    if (wishlistOverlay) wishlistOverlay.addEventListener('click', () => { if (typeof closeWishlistSidebar === 'function') closeWishlistSidebar(); });
    </script>
     
 

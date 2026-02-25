@@ -530,98 +530,60 @@
       }
       var cartBtn = target.closest(".cart-btn");
       if (cartBtn) {
-        var pid = parseInt(cartBtn.getAttribute("data-product-id"), 10);
-        if (typeof togglePopup === "function" && !isNaN(pid)) {
-          togglePopup(pid);
-        } else {
-          var popup = document.getElementById("popup-" + pid);
-          if (popup) popup.classList.add("active");
+        var cartPid = cartBtn.getAttribute("data-product-id");
+        if (typeof openPopup === "function" && cartPid) {
+          openPopup(cartPid);
         }
         return;
       }
       var closeBtn = target.closest(".popup-close");
       if (closeBtn) {
-        var cpid = parseInt(closeBtn.getAttribute("data-product-id"), 10);
-        if (typeof closePopup === "function" && !isNaN(cpid)) {
+        var cpid = closeBtn.getAttribute("data-product-id");
+        if (typeof closePopup === "function" && cpid) {
           closePopup(cpid);
-        } else {
-          var cp = document.getElementById("popup-" + cpid);
-          if (cp) cp.classList.remove("active");
         }
         return;
       }
       var colorBtn = target.closest(".popup-color-btn");
       if (colorBtn) {
-        var colPid = parseInt(colorBtn.getAttribute("data-product-id"), 10);
+        var colPid = colorBtn.getAttribute("data-product-id");
         var colIdx = parseInt(colorBtn.getAttribute("data-color-index"), 10);
-        if (
-          typeof selectColor === "function" &&
-          !isNaN(colPid) &&
-          !isNaN(colIdx)
-        ) {
+        if (typeof selectColor === "function" && colPid && !isNaN(colIdx)) {
           selectColor(colPid, colIdx);
-        } else {
-          colorBtn.parentElement
-            .querySelectorAll(".popup-color-btn")
-            .forEach(function (b) {
-              b.classList.remove("selected");
-            });
-          colorBtn.classList.add("selected");
         }
         return;
       }
       var sizeBtn = target.closest(".popup-size-btn");
       if (sizeBtn) {
-        var sizePid = parseInt(sizeBtn.getAttribute("data-product-id"), 10);
+        var sizePid = sizeBtn.getAttribute("data-product-id");
         var sizeIdx = parseInt(sizeBtn.getAttribute("data-size-index"), 10);
-        if (
-          typeof selectSize === "function" &&
-          !isNaN(sizePid) &&
-          !isNaN(sizeIdx)
-        ) {
+        if (typeof selectSize === "function" && sizePid && !isNaN(sizeIdx)) {
           selectSize(sizePid, sizeIdx);
-        } else {
-          sizeBtn.parentElement
-            .querySelectorAll(".popup-size-btn")
-            .forEach(function (b) {
-              b.classList.remove("selected");
-            });
-          sizeBtn.classList.add("selected");
         }
         return;
       }
       var qtyMinus = target.closest(".qty-minus");
       if (qtyMinus) {
-        var qmpid = parseInt(qtyMinus.getAttribute("data-product-id"), 10);
-        if (typeof updateQuantity === "function" && !isNaN(qmpid)) {
+        var qmpid = qtyMinus.getAttribute("data-product-id");
+        if (typeof updateQuantity === "function" && qmpid) {
           updateQuantity(qmpid, -1);
-        } else {
-          var qme = document.getElementById("qty-" + qmpid);
-          if (qme) {
-            var v = parseInt(qme.textContent, 10);
-            if (v > 1) qme.textContent = v - 1;
-          }
         }
         return;
       }
       var qtyPlus = target.closest(".qty-plus");
       if (qtyPlus) {
-        var qppid = parseInt(qtyPlus.getAttribute("data-product-id"), 10);
-        if (typeof updateQuantity === "function" && !isNaN(qppid)) {
+        var qppid = qtyPlus.getAttribute("data-product-id");
+        if (typeof updateQuantity === "function" && qppid) {
           updateQuantity(qppid, 1);
-        } else {
-          var qpe = document.getElementById("qty-" + qppid);
-          if (qpe) qpe.textContent = parseInt(qpe.textContent, 10) + 1;
         }
         return;
       }
       var addBtn = target.closest(".popup-add-btn");
       if (addBtn) {
-        var apid = parseInt(addBtn.getAttribute("data-product-id"), 10);
-        if (typeof addToCartFromPopup === "function" && !isNaN(apid)) {
+        var apid = addBtn.getAttribute("data-product-id");
+        if (typeof addToCartFromPopup === "function" && apid) {
           addToCartFromPopup(apid);
         }
-        showToast("Item added to cart");
         return;
       }
     });

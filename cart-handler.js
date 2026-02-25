@@ -41,11 +41,15 @@ const totalProducts = 8;
 
 // --- Popup State ---
 const popupState = {};
-for (let i = 1; i <= totalProducts; i++) {
-    popupState[i] = { color: 0, size: 0, quantity: 1 };
-}
-
 let activePopupId = null;
+
+// ===============================
+// ======= DOM HELPERS ==========
+// ===============================
+
+// Helper to get DOM elements safely
+const getEl = (id) => document.getElementById(id);
+const getQuery = (selector) => document.querySelector(selector);
 
 
 // ===============================
@@ -91,14 +95,18 @@ if (wishlistBtn) {
 // ===============================
 
 function openCart() {
-    cartSidebar.classList.add('active');
-    cartOverlay.classList.add('active');
+    const sidebar = getEl('cartSidebar');
+    const overlay = getEl('cartOverlay');
+    if (sidebar) sidebar.classList.add('active');
+    if (overlay) overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
 function closeCart() {
-    cartSidebar.classList.remove('active');
-    cartOverlay.classList.remove('active');
+    const sidebar = getEl('cartSidebar');
+    const overlay = getEl('cartOverlay');
+    if (sidebar) sidebar.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
     document.body.style.overflow = '';
 }
 
@@ -611,51 +619,84 @@ function togglePopup(productId) {
     }
 }
 
-function openPopup(productId) {
-    const popup = document.getElementById(`popup-${productId}`);
-    const form = document.getElementById(`popup-form-${productId}`);
-    const success = document.getElementById(`popup-success-${productId}`);
-    
-    popupState[productId] = { color: 0, size: 0, quantity: 1 };
-    document.getElementById(`qty-${productId}`).textContent = '1';
-    
-    form.classList.remove('hide');
-    success.classList.remove('show');
+// ===============================
+// ======= POPUP LOGIC ==========
+// ===============================
 
+function openPopup(productId) {
+    const popup = getEl(`popup-${productId}`);
+    if (!popup) {
+        console.error(`Popup not found for product: ${productId}`);
+        return;
+    }
+
+    const form = getEl(`popup-form-${productId}`);
+    const success = getEl(`popup-success-${productId}`);
+    
+    // Initialize or reset state for this product
+    popupState[productId] = { color: 0, size: 0, quantity: 1 };
+    
+    const qtyEl = getEl(`qty-${productId}`);
+    if (qtyEl) qtyEl.textContent = '1';
+    
+    if (form) form.classList.remove('hide');
+    if (success) success.classList.remove('show');
+
+    // Reset selected states in UI
     popup.querySelectorAll('.popup-color-btn').forEach((opt, i) => opt.classList.toggle('selected', i === 0));
     popup.querySelectorAll('.popup-size-btn').forEach((opt, i) => opt.classList.toggle('selected', i === 0));
+
+    // Close any other active popups first
+    closeAllPopups();
 
     popup.classList.add('active');
     activePopupId = productId;
 }
 
 function closePopup(productId) {
-    const popup = document.getElementById(`popup-${productId}`);
-    popup.classList.remove('active');
+    const popup = getEl(`popup-${productId}`);
+    if (popup) popup.classList.remove('active');
+    if (activePopupId === productId) activePopupId = null;
+}
+
+function closeAllPopups() {
+    document.querySelectorAll('.quick-add-popup.active').forEach(p => p.classList.remove('active'));
     activePopupId = null;
 }
 
 function selectColor(productId, colorIndex) {
+    if (!popupState[productId]) popupState[productId] = { color: 0, size: 0, quantity: 1 };
     popupState[productId].color = colorIndex;
-    const popup = document.getElementById(`popup-${productId}`);
-    popup.querySelectorAll('.popup-color-btn').forEach((opt, i) => opt.classList.toggle('selected', i === colorIndex));
+    
+    const popup = getEl(`popup-${productId}`);
+    if (popup) {
+        popup.querySelectorAll('.popup-color-btn').forEach((opt, i) => opt.classList.toggle('selected', i === colorIndex));
+    }
 }
 
 function selectSize(productId, sizeIndex) {
+    if (!popupState[productId]) popupState[productId] = { color: 0, size: 0, quantity: 1 };
     popupState[productId].size = sizeIndex;
-    const popup = document.getElementById(`popup-${productId}`);
-    popup.querySelectorAll('.popup-size-btn').forEach((opt, i) => opt.classList.toggle('selected', i === sizeIndex));
+    
+    const popup = getEl(`popup-${productId}`);
+    if (popup) {
+        popup.querySelectorAll('.popup-size-btn').forEach((opt, i) => opt.classList.toggle('selected', i === sizeIndex));
+    }
 }
 
 function updateQuantity(productId, delta) {
+    if (!popupState[productId]) popupState[productId] = { color: 0, size: 0, quantity: 1 };
     const state = popupState[productId];
     state.quantity = Math.max(1, Math.min(10, state.quantity + delta));
-    document.getElementById(`qty-${productId}`).textContent = state.quantity;
+    
+    const qtyEl = getEl(`qty-${productId}`);
+    if (qtyEl) qtyEl.textContent = state.quantity;
 }
 
-// ======= ADD TO CART + RENDER SIDEBAR =======
 function addToCartFromPopup(productId) {
+    if (!popupState[productId]) return;
     const state = popupState[productId];
+    
     const productCard = document.querySelector(`.product-card[data-product-id="${productId}"]`);
     if (!productCard) return;
 
@@ -663,25 +704,38 @@ function addToCartFromPopup(productId) {
     const priceText = productCard.querySelector('.product-price')?.textContent.trim() || '$0';
     const price = parseFloat(priceText.replace('$', '')) || 0;
 
-    const colorBtn = productCard.querySelectorAll('.popup-color-btn')[state.color];
+    const colorBtns = productCard.querySelectorAll('.popup-color-btn');
+    const colorBtn = colorBtns[state.color];
     const color = colorBtn ? colorBtn.style.backgroundColor : '';
-    const sizeBtn = productCard.querySelectorAll('.popup-size-btn')[state.size];
+    
+    const sizeBtns = productCard.querySelectorAll('.popup-size-btn');
+    const sizeBtn = sizeBtns[state.size];
     const size = sizeBtn ? sizeBtn.textContent : '';
     const quantity = state.quantity;
 
     // Grab product image
-    const img = productCard.querySelector('.product-image')?.src || 'https://via.placeholder.com/50x50?text=No+Image';
+    const img = productCard.querySelector('.product-image')?.src || '';
 
     const existingIndex = cart.findIndex(item => item.id === productId && item.color === color && item.size === size);
-    if (existingIndex > -1) cart[existingIndex].quantity += quantity;
-    else cart.push({ id: productId, name, price, color, size, quantity, image: img });
+    if (existingIndex > -1) {
+        cart[existingIndex].quantity += quantity;
+    } else {
+        cart.push({ id: productId, name, price, color, size, quantity, image: img });
+    }
 
     renderCart();
-saveCart();
+    saveCart();
+    
+    // Show success message
+    const form = getEl(`popup-form-${productId}`);
+    const success = getEl(`popup-success-${productId}`);
+    if (form) form.classList.add('hide');
+    if (success) success.classList.add('show');
 
-
-    document.getElementById(`popup-form-${productId}`).classList.add('hide');
-    document.getElementById(`popup-success-${productId}`).classList.add('show');
+    // Show toast as well
+    if (typeof showToast === 'function') {
+        showToast('Item added to cart');
+    }
 
     setTimeout(() => closePopup(productId), 2000);
 }

@@ -564,114 +564,65 @@
 
         var cartBtn = target.closest('.cart-btn');
         if (cartBtn) {
-            var cartProductId = parseInt(cartBtn.getAttribute('data-product-id'), 10);
-            if (typeof togglePopup === 'function' && !isNaN(cartProductId)) {
-                togglePopup(cartProductId);
-            } else {
-                var fallbackPopup = document.getElementById('popup-' + cartProductId);
-                if (fallbackPopup) {
-                    fallbackPopup.classList.add('active');
-                }
+            var cartPid = cartBtn.getAttribute('data-product-id');
+            if (typeof openPopup === 'function' && cartPid) {
+                openPopup(cartPid);
             }
             return;
         }
 
         var closeBtn = target.closest('.popup-close');
         if (closeBtn) {
-            var closeProductId = parseInt(closeBtn.getAttribute('data-product-id'), 10);
-            if (typeof closePopup === 'function' && !isNaN(closeProductId)) {
+            var closeProductId = closeBtn.getAttribute('data-product-id');
+            if (typeof closePopup === 'function' && closeProductId) {
                 closePopup(closeProductId);
-            } else {
-                var closePopupEl = document.getElementById('popup-' + closeProductId);
-                if (closePopupEl) {
-                    closePopupEl.classList.remove('active');
-                }
             }
             return;
         }
 
         var colorBtn = target.closest('.popup-color-btn');
         if (colorBtn) {
-            var colorProductId = parseInt(colorBtn.getAttribute('data-product-id'), 10);
+            var colorProductId = colorBtn.getAttribute('data-product-id');
             var colorIndex = parseInt(colorBtn.getAttribute('data-color-index'), 10);
-            if (typeof selectColor === 'function' && !isNaN(colorProductId) && !isNaN(colorIndex)) {
+            if (typeof selectColor === 'function' && colorProductId && !isNaN(colorIndex)) {
                 selectColor(colorProductId, colorIndex);
-            } else {
-                var colorsContainer = colorBtn.parentElement;
-                var allColorBtns = colorsContainer.querySelectorAll('.popup-color-btn');
-                for (var i = 0; i < allColorBtns.length; i++) {
-                    allColorBtns[i].classList.remove('selected');
-                }
-                colorBtn.classList.add('selected');
             }
             return;
         }
 
         var sizeBtn = target.closest('.popup-size-btn');
         if (sizeBtn) {
-            var sizeProductId = parseInt(sizeBtn.getAttribute('data-product-id'), 10);
+            var sizeProductId = sizeBtn.getAttribute('data-product-id');
             var sizeIndex = parseInt(sizeBtn.getAttribute('data-size-index'), 10);
-            if (typeof selectSize === 'function' && !isNaN(sizeProductId) && !isNaN(sizeIndex)) {
+            if (typeof selectSize === 'function' && sizeProductId && !isNaN(sizeIndex)) {
                 selectSize(sizeProductId, sizeIndex);
-            } else {
-                var sizesContainer = sizeBtn.parentElement;
-                var allSizeBtns = sizesContainer.querySelectorAll('.popup-size-btn');
-                for (var j = 0; j < allSizeBtns.length; j++) {
-                    allSizeBtns[j].classList.remove('selected');
-                }
-                sizeBtn.classList.add('selected');
             }
             return;
         }
 
         var qtyMinus = target.closest('.qty-minus');
         if (qtyMinus) {
-            var minusProductId = parseInt(qtyMinus.getAttribute('data-product-id'), 10);
-            if (typeof updateQuantity === 'function' && !isNaN(minusProductId)) {
+            var minusProductId = qtyMinus.getAttribute('data-product-id');
+            if (typeof updateQuantity === 'function' && minusProductId) {
                 updateQuantity(minusProductId, -1);
-            } else {
-                var qtyElMinus = document.getElementById('qty-' + minusProductId);
-                if (qtyElMinus) {
-                    var valMinus = parseInt(qtyElMinus.textContent, 10);
-                    if (valMinus > 1) qtyElMinus.textContent = valMinus - 1;
-                }
             }
             return;
         }
 
         var qtyPlus = target.closest('.qty-plus');
         if (qtyPlus) {
-            var plusProductId = parseInt(qtyPlus.getAttribute('data-product-id'), 10);
-            if (typeof updateQuantity === 'function' && !isNaN(plusProductId)) {
+            var plusProductId = qtyPlus.getAttribute('data-product-id');
+            if (typeof updateQuantity === 'function' && plusProductId) {
                 updateQuantity(plusProductId, 1);
-            } else {
-                var qtyElPlus = document.getElementById('qty-' + plusProductId);
-                if (qtyElPlus) {
-                    var valPlus = parseInt(qtyElPlus.textContent, 10);
-                    qtyElPlus.textContent = valPlus + 1;
-                }
             }
             return;
         }
 
         var addBtn = target.closest('.popup-add-btn');
         if (addBtn) {
-            var addProductId = parseInt(addBtn.getAttribute('data-product-id'), 10);
-            if (typeof addToCartFromPopup === 'function' && !isNaN(addProductId)) {
+            var addProductId = addBtn.getAttribute('data-product-id');
+            if (typeof addToCartFromPopup === 'function' && addProductId) {
                 addToCartFromPopup(addProductId);
-            }
-            if (typeof showToast === 'function') {
-                showToast('Item added to cart');
-            } else {
-                var toast = document.getElementById('toast');
-                var toastMsg = document.getElementById('toastMessage');
-                if (toast && toastMsg) {
-                    toastMsg.textContent = 'Item added to cart';
-                    toast.classList.add('show');
-                    setTimeout(function() {
-                        toast.classList.remove('show');
-                    }, 3000);
-                }
             }
             return;
         }
