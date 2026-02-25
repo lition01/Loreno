@@ -6,7 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-
 <?php include "essentials/navbar.php" ?>
 <?php include "page-sections/index-sections/hero-section.php" ?>
 <?php include "page-sections/index-sections/categories-section.php" ?>

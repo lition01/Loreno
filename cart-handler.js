@@ -1,5 +1,10 @@
-// ======= Cart State =======
+// ===============================
+// ======= STATE (DATA) =========
+// ===============================
+
+// --- Cart ---
 const cart = [];
+
 function saveCart() {
     localStorage.setItem('cart', JSON.stringify(cart));
 }
@@ -7,53 +12,65 @@ function saveCart() {
 function loadCart() {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
-        const parsedCart = JSON.parse(savedCart);
-        cart.push(...parsedCart);
+        cart.push(...JSON.parse(savedCart));
     }
 }
 
-
-// ======= Carousel state =======
-let currentIndex = 0;
-let itemsPerView = 4;
-const totalProducts = 8;
-
-// ======= Popup state for each product =======
-const popupState = {};
-for (let i = 1; i <= totalProducts; i++) {
-    popupState[i] = { color: 0, size: 0, quantity: 1 };
-}
-
-let activePopupId = null;
-const wishlist = new Map(); // Store full product data: Map<productId, productData>
+// --- Wishlist ---
+const wishlist = new Map();
 
 function saveWishlist() {
-    // Ruaj si array në localStorage
     const arr = Array.from(wishlist.entries());
     localStorage.setItem('wishlist', JSON.stringify(arr));
 }
 
 function loadWishlist() {
     const saved = localStorage.getItem('wishlist');
-    if (saved) {
-        const arr = JSON.parse(saved);
-        wishlist.clear();
-        arr.forEach(([id, data]) => {
-            wishlist.set(parseInt(id), data);
-        });
-    }
+    if (!saved) return;
+
+    wishlist.clear();
+    JSON.parse(saved).forEach(([id, data]) => {
+        wishlist.set(parseInt(id), data);
+    });
 }
 
+// --- Carousel ---
+let currentIndex = 0;
+let itemsPerView = 4;
+const totalProducts = 8;
 
-// ======= DOM Elements =======
+// --- Popup State ---
+const popupState = {};
+for (let i = 1; i <= totalProducts; i++) {
+    popupState[i] = { color: 0, size: 0, quantity: 1 };
+}
+
+let activePopupId = null;
+
+
+// ===============================
+// ======= DOM ELEMENTS =========
+// ===============================
+
+// --- Carousel ---
 const carouselTrack = document.getElementById('carouselTrack');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const paginationDots = document.getElementById('paginationDots');
+
+// --- Toast ---
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toastMessage');
+
+// --- Cart ---
+const cartBtn = document.getElementById('cartBtn');
+const cartSidebar = document.getElementById('cartSidebar');
+const cartOverlay = document.getElementById('cartOverlay');
+const cartClose = document.getElementById('cartClose');
 const cartBody = document.querySelector('.cart-body');
 const cartCount = document.querySelector('.cart-count');
+
+// --- Wishlist ---
 const wishlistBtn = document.getElementById('wishlistBtn');
 const wishlistCount = document.getElementById('wishlistCount');
 const wishlistSidebar = document.getElementById('wishlistSidebar');
@@ -62,18 +79,59 @@ const wishlistBody = document.getElementById('wishlistBody');
 const wishlistClose = document.getElementById('wishlistClose');
 const wishlistItemsCount = document.getElementById('wishlistItemsCount');
 
+if (wishlistBtn) {
+    wishlistBtn.addEventListener('click', () => {
+        openWishlistSidebar();
+    });
+}
+
+
+// ===============================
+// ======= CART SIDEBAR =========
+// ===============================
+
+function openCart() {
+    cartSidebar.classList.add('active');
+    cartOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+    cartSidebar.classList.remove('active');
+    cartOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+cartBtn.addEventListener('click', openCart);
+cartClose.addEventListener('click', closeCart);
+cartOverlay.addEventListener('click', closeCart);
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeCart();
+});
+
+
+// ===============================
+// ======= INIT ==================
+// ===============================
+
 document.addEventListener('DOMContentLoaded', () => {
+
+    // Load data
     loadCart();
-    loadWishlist();       // ngarkon wishlist nga localStorage
+    loadWishlist();
+
+    // Render UI
     renderCart();
-    renderWishlist();     // shfaq wishlist në sidebar
+    renderWishlist();
+
+    // Initialize components
     initCarousel();
     initPopups();
-    initWishlist();       // vendos event listeners në butonat .wishlist-btn
+    initWishlist();
     initNavbarWishlist();
     initQuickView();
 });
-
 
 // ======= Quick View Button Handler =======
 function initQuickView() {
@@ -301,12 +359,34 @@ function attachWishlistEventListeners() {
     });
 
     // Add to cart
-    document.querySelectorAll('.wishlist-add-to-cart').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const productId = parseInt(this.dataset.productId);
-            addToCartFromWishlist(productId);
-        });
+    // Add to cart
+document.querySelectorAll('.wishlist-add-to-cart').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const productId = parseInt(this.dataset.productId);
+
+        addToCartFromWishlist(productId);
+
+        // 1️⃣ Fshije nga wishlist
+        wishlist.delete(productId);
+
+        // 2️⃣ Përditëso butonin në card (hiq active)
+        const wishlistBtn = document.querySelector(`.wishlist-btn[data-product-id="${productId}"]`);
+        if (wishlistBtn) wishlistBtn.classList.remove('active');
+
+        // 3️⃣ Ruaje ndryshimin
+        saveWishlist();
+
+        // 4️⃣ Përditëso count
+        updateWishlistCount();
+
+        // 5️⃣ Rifresko sidebar-in
+        renderWishlist();
+
+        // 6️⃣ Mbylle sidebar-in
+        closeWishlistSidebar();
     });
+});
+
 }
 
 function addToCartFromWishlist(productId) {
@@ -357,6 +437,10 @@ saveCart();
 // CAROUSEL FUNCTIONS
 // ========================================
 function initCarousel() {
+    if (!carouselTrack || !prevBtn || !nextBtn || !paginationDots) {
+        return;
+    }
+
     updateItemsPerView();
     createPaginationDots();
     updateCarousel();

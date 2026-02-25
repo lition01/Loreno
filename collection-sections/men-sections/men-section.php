@@ -934,6 +934,7 @@ body {
    ======================================== */
 .quick-add-popup {
     position: absolute;
+    top: auto;
     left: 0;
     right: 0;
     bottom: 0;
@@ -961,12 +962,12 @@ body {
 }
 
 /* Hide quick actions when popup is active */
-.product-card:has(.quick-add-popup.active) .quick-actions {
+.product-image-wrapper:has(.quick-add-popup.active) .quick-actions {
     opacity: 0 !important;
     pointer-events: none;
 }
 
-.product-card:has(.quick-add-popup.active) .wishlist-btn {
+.product-image-wrapper:has(.quick-add-popup.active) .wishlist-btn {
     opacity: 0 !important;
     pointer-events: none;
 }
@@ -1881,7 +1882,7 @@ body {
                 <!-- Section Header -->
                 <header class="section-header">
                     <span class="section-label">Premium Menswear</span>
-                    <h2 class="section-title">Summer Collection</h2>
+                    <h2 class="section-title">Men's Collection</h2>
                     <p class="section-subtitle">Discover timeless style and modern sophistication with our curated men's collection</p>
                 </header>
 
@@ -1911,9 +1912,9 @@ body {
     </div>
 </div>
 
-<!-- Load products data first, then main logic -->
 <script src="products.js"></script>
-<script src="summer-main.js"></script>
+<script src="men-main.js"></script>
+
 
 </body>
 </html>

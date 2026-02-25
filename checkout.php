@@ -1955,6 +1955,9 @@ function placeOrder() {
         // Display order summary
         displayOrderSummary();
 
+        // Save order to dashboard data (localStorage)
+        saveOrderToDashboard(orderData);
+
         // Clear cart from localStorage
         localStorage.removeItem('cart');
         cart = [];
@@ -2007,6 +2010,59 @@ function displayOrderSummary() {
     `;
 
     summaryContainer.innerHTML = html;
+}
+
+// ========================================
+// SAVE ORDER TO DASHBOARD
+// ========================================
+function saveOrderToDashboard(data) {
+    try {
+        // 1. Save the Order
+        let orders = JSON.parse(localStorage.getItem('dashboard_orders') || '[]');
+        const newOrder = {
+            id: data.orderNumber,
+            cust: data.shipping.fullName,
+            prod: data.cart.length > 1 ? data.cart[0].name + ' (+' + (data.cart.length - 1) + ')' : data.cart[0].name,
+            size: data.cart[0].size || 'N/A',
+            qty: data.cart.reduce((s, item) => s + (parseInt(item.quantity) || 1), 0),
+            status: data.paymentMethod === 'cod' ? 'Pending' : 'Processing',
+            price: '$' + data.total.toFixed(2),
+            isoDate: new Date().toISOString(),
+            date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+            items: data.cart // Full items list for details
+        };
+        orders.unshift(newOrder);
+        localStorage.setItem('dashboard_orders', JSON.stringify(orders));
+
+        // 2. Save/Update the Customer
+        let customers = JSON.parse(localStorage.getItem('dashboard_customers') || '[]');
+        let custIdx = customers.findIndex(c => c.email.toLowerCase() === data.shipping.email.toLowerCase());
+        
+        if (custIdx > -1) {
+            // Update existing customer
+            customers[custIdx].orders++;
+            let currentSpent = parseFloat(customers[custIdx].spent.replace(/[$,]/g, '') || 0);
+            customers[custIdx].spent = '$' + (currentSpent + data.total).toFixed(2);
+            customers[custIdx].status = 'Active';
+        } else {
+            // Create new customer
+            const colors = ['#a8845e', '#7e5232', '#b39c80', '#c6baa5'];
+            customers.push({
+                initials: data.shipping.fullName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase(),
+                name: data.shipping.fullName,
+                email: data.shipping.email,
+                loc: data.shipping.city + ', ' + data.shipping.country,
+                orders: 1,
+                spent: '$' + data.total.toFixed(2),
+                status: 'Active',
+                color: colors[Math.floor(Math.random() * colors.length)]
+            });
+        }
+        localStorage.setItem('dashboard_customers', JSON.stringify(customers));
+
+    } catch (error) {
+        console.error('Error saving order to dashboard:', error);
+    }
 }
 
 // ========================================

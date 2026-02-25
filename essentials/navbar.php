@@ -1783,73 +1783,53 @@
     <div class="page-spacer"></div>
 
     <!-- Load Cart Manager -->
-    <script src="cart-manager.js"></script>
+  
 
-    <script>
-        // Cart Sidebar Toggle
-        const cartBtn = document.getElementById('cartBtn');
-        const cartSidebar = document.getElementById('cartSidebar');
-        const cartOverlay = document.getElementById('cartOverlay');
-        const cartClose = document.getElementById('cartClose');
+   <script>
+    // BURGER MENU
 
-        function openCart() {
-            cartSidebar.classList.add('active');
-            cartOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+const menuToggle = document.getElementById('menuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
 
-        function closeCart() {
-            cartSidebar.classList.remove('active');
-            cartOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
+function openMobileMenu() {
+    menuToggle.classList.add('active');
+    mobileMenu.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
 
-        cartBtn.addEventListener('click', openCart);
-        cartClose.addEventListener('click', closeCart);
-        cartOverlay.addEventListener('click', closeCart);
+function closeMobileMenu() {
+    menuToggle.classList.remove('active');
+    mobileMenu.classList.remove('active');
+    document.body.style.overflow = '';
+}
 
-        // Close cart on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeCart();
-                closeMobileMenu();
-            }
-        });
+menuToggle.addEventListener('click', () => {
+    if (mobileMenu.classList.contains('active')) {
+        closeMobileMenu();
+    } else {
+        openMobileMenu();
+    }
+});
 
-        // Mobile Menu Toggle
-        const menuToggle = document.getElementById('menuToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
+// Close with ESC
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeMobileMenu();
+    }
+});
 
-        function openMobileMenu() {
-            menuToggle.classList.add('active');
-            mobileMenu.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+// Submenu
+const mobileNavItems = document.querySelectorAll('.mobile-nav-item[data-has-submenu="true"]');
 
-        function closeMobileMenu() {
-            menuToggle.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        menuToggle.addEventListener('click', () => {
-            if (mobileMenu.classList.contains('active')) {
-                closeMobileMenu();
-            } else {
-                openMobileMenu();
-            }
-        });
-
-        // Mobile Submenu Toggle
-        const mobileNavItems = document.querySelectorAll('.mobile-nav-item[data-has-submenu="true"]');
-        mobileNavItems.forEach(item => {
-            const btn = item.querySelector('.mobile-nav-link');
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                item.classList.toggle('open');
-            });
-        });
-    </script>
+mobileNavItems.forEach(item => {
+    const btn = item.querySelector('.mobile-nav-link');
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        item.classList.toggle('open');
+    });
+});
+   </script>
+    
 
 </body>
 </html>

@@ -492,10 +492,10 @@
             <!-- Grid: Men Large Left, Others Stacked Right -->
             <div class="categories-grid">
                 <!-- Men's Fashion - Large Left Card -->
-                <a href="/category/men" class="category-card--men" data-category="men">
+                <a href="men-products.php" class="category-card--men" data-category="men">
                     <div class="category-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                             alt="Men's Fashion Collection" 
+                             alt="collections-sections/men-sections/men-section.php" 
                              class="category-image"
                              loading="eager">
                         <div class="category-overlay"></div>
@@ -519,7 +519,7 @@
                 <!-- Right Column: Women, Kids, Accessories -->
                 <div class="categories-right">
                     <!-- Women's Fashion -->
-                    <a href="/category/women" class="category-card--small" data-category="women">
+                    <a href="women-products.php" class="category-card--small" data-category="women">
                         <div class="category-image-wrapper">
                             <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
                                  alt="Women's Fashion Collection" 
