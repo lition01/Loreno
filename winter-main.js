@@ -1,6 +1,6 @@
 /**
  * winter-main.js
- * Men's Winter Collection — DOM rendering & interaction logic.
+ * Winter Collection — DOM rendering & interaction logic.
  */
 (function () {
   var SVG_HEART =
@@ -146,7 +146,8 @@
   }
 
   function filterAndSortProducts() {
-    var filtered = winterCollection.filter(function (product) {
+    var collection = (typeof winterCollection !== 'undefined') ? winterCollection : [];
+    var filtered = collection.filter(function (product) {
       if (
         filterState.category.length > 0 &&
         filterState.category.indexOf(product.category) === -1
@@ -205,7 +206,8 @@
       regular: 0,
       relaxed: 0,
     };
-    winterCollection.forEach(function (p) {
+    var collection = (typeof winterCollection !== 'undefined') ? winterCollection : [];
+    collection.forEach(function (p) {
       if (counts[p.category] !== undefined) counts[p.category]++;
       if (counts[p.fit] !== undefined) counts[p.fit]++;
       for (var i = 0; i < p.sizes.length; i++) {
@@ -279,8 +281,9 @@
   function renderProducts() {
     var filtered = filterAndSortProducts();
     var carouselTrack = document.getElementById("carouselTrack");
+    var collection = (typeof winterCollection !== 'undefined') ? winterCollection : [];
     document.getElementById("visibleCount").textContent = filtered.length;
-    document.getElementById("totalCount").textContent = winterCollection.length;
+    document.getElementById("totalCount").textContent = collection.length;
     if (filtered.length === 0) {
       carouselTrack.innerHTML =
         '<div class="no-results"><div class="no-results-icon">' +
@@ -295,19 +298,6 @@
     }
     updateActiveFilters();
     syncWishlistActiveState();
-  }
-
-  var toastTimer = null;
-  function showToast(message) {
-    var toast = document.getElementById("toast");
-    var toastMsg = document.getElementById("toastMessage");
-    if (!toast || !toastMsg) return;
-    toastMsg.textContent = message;
-    toast.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () {
-      toast.classList.remove("show");
-    }, 3000);
   }
 
   function closeAllFilterPopups() {
@@ -513,101 +503,11 @@
       });
   }
 
-  function initProductEvents() {
-    var section = document.querySelector(".new-arrivals-section");
-    if (!section) return;
-    section.addEventListener("click", function (e) {
-      var target = e.target;
-      var wishlistBtn = target.closest(".wishlist-btn");
-      if (wishlistBtn) {
-        var wid = parseInt(wishlistBtn.getAttribute("data-product-id"), 10);
-        if (typeof toggleWishlist === "function" && !isNaN(wid)) {
-          toggleWishlist(wid);
-        } else {
-          wishlistBtn.classList.toggle("active");
-        }
-        return;
-      }
-      var cartBtn = target.closest(".cart-btn");
-      if (cartBtn) {
-        var cartPid = cartBtn.getAttribute("data-product-id");
-        if (typeof openPopup === "function" && cartPid) {
-          openPopup(cartPid);
-        }
-        return;
-      }
-      var colorBtn = target.closest(".popup-color-btn");
-      if (colorBtn) {
-        var colPid = colorBtn.getAttribute("data-product-id");
-        var colIdx = parseInt(colorBtn.getAttribute("data-color-index"), 10);
-        if (typeof selectColor === "function" && colPid && !isNaN(colIdx)) {
-          selectColor(colPid, colIdx);
-        }
-        return;
-      }
-      var sizeBtn = target.closest(".popup-size-btn");
-      if (sizeBtn) {
-        var sizePid = sizeBtn.getAttribute("data-product-id");
-        var sizeIdx = parseInt(sizeBtn.getAttribute("data-size-index"), 10);
-        if (typeof selectSize === "function" && sizePid && !isNaN(sizeIdx)) {
-          selectSize(sizePid, sizeIdx);
-        }
-        return;
-      }
-      var qtyMinus = target.closest(".qty-minus");
-      if (qtyMinus) {
-        var qmpid = qtyMinus.getAttribute("data-product-id");
-        if (typeof updateQuantity === "function" && qmpid) {
-          updateQuantity(qmpid, -1);
-        }
-        return;
-      }
-      var qtyPlus = target.closest(".qty-plus");
-      if (qtyPlus) {
-        var qppid = qtyPlus.getAttribute("data-product-id");
-        if (typeof updateQuantity === "function" && qppid) {
-          updateQuantity(qppid, 1);
-        }
-        return;
-      }
-      var addBtn = target.closest(".popup-add-btn");
-      if (addBtn) {
-        var apid = addBtn.getAttribute("data-product-id");
-        if (typeof addToCartFromPopup === "function" && apid) {
-          addToCartFromPopup(apid);
-        }
-        return;
-      }
-    });
-    document.addEventListener("click", function (e) {
-      if (
-        !e.target.closest(".quick-add-popup") &&
-        !e.target.closest(".cart-btn")
-      ) {
-        document
-          .querySelectorAll(".quick-add-popup.active")
-          .forEach(function (p) {
-            p.classList.remove("active");
-          });
-      }
-    });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") {
-        document
-          .querySelectorAll(".quick-add-popup.active")
-          .forEach(function (p) {
-            p.classList.remove("active");
-          });
-        closeAllFilterPopups();
-      }
-    });
-  }
-
   function init() {
     updateCounts();
     renderProducts();
     initFilters();
-    initProductEvents();
+    // The cart popup and interactions are now handled by cart-handler.js delegation
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
@@ -621,8 +521,8 @@
       document
         .querySelectorAll(".wishlist-btn[data-product-id]")
         .forEach(function (btn) {
-          var pid = parseInt(btn.getAttribute("data-product-id"), 10);
-          if (!isNaN(pid) && wishlist.has(pid)) {
+          var pid = btn.getAttribute("data-product-id");
+          if (pid && wishlist.has(pid)) {
             btn.classList.add("active");
           } else {
             btn.classList.remove("active");

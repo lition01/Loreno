@@ -52,7 +52,9 @@
             const transformed = transformProduct(p);
             const placements = p.placements || [];
 
-            if (placements.includes('new')) window.products.push(transformed);
+            // Add to Homepage Carousel if marked as 'new' OR 'bestseller'
+            if (placements.includes('new') || placements.includes('bestseller')) window.products.push(transformed);
+
             if (placements.includes('men')) window.menCollection.push(transformed);
             if (placements.includes('women')) window.womenCollection.push(transformed);
             if (placements.includes('kids')) window.kidsCollection.push(transformed);

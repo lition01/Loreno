@@ -678,9 +678,9 @@
     <div class="new-arrivals-container">
 
         <header class="section-header">
-            <span class="section-label">Fresh Styles</span>
-            <h2 class="section-title">Just In</h2>
-            <p class="section-subtitle">Discover our latest arrivals, crafted with premium materials for the modern wardrobe</p>
+            <span class="section-label">Most Loved</span>
+            <h2 class="section-title">Best Sellers</h2>
+            <p class="section-subtitle">Our most popular pieces, chosen by our community</p>
         </header>
 
         <div class="carousel-wrapper">
@@ -704,7 +704,7 @@
 
         <div class="view-all-wrapper">
             <a href="#" class="view-all-btn">
-                View All Arrivals
+                View All Best Sellers
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                 </svg>
