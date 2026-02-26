@@ -16,8 +16,12 @@
     function transformProduct(p) {
         // Ensure sizes is an array for the collections
         const sizesArray = p.sizes ? Object.keys(p.sizes) : ["XS", "S", "M", "L", "XL"];
-        // Ensure colors is an array
-        const colorsArray = p.colors || ["#b39c80", "#2f2716"];
+        
+        // Use colors from dashboard if available, otherwise use defaults
+        let colorsArray = ["#b39c80", "#2f2716"]; // Default fallback
+        if (p.colors && Array.isArray(p.colors) && p.colors.length > 0) {
+            colorsArray = p.colors;
+        }
 
         return {
             id: p.id,

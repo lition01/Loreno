@@ -3067,60 +3067,21 @@
     /* ═══════════════════════════════════════════════════════════
        DATA STORE — mutable arrays for full dynamic behaviour
     ═══════════════════════════════════════════════════════════ */
-    // Load data from localStorage or initialize with defaults
+    // Load data from localStorage (no default seed products)
     let ORDERS = JSON.parse(localStorage.getItem('dashboard_orders') || '[]');
-let PRODUCTS = JSON.parse(localStorage.getItem('dashboard_products') || '[]');
-let CUSTOMERS = JSON.parse(localStorage.getItem('dashboard_customers') || '[]');
+    let PRODUCTS = JSON.parse(localStorage.getItem('dashboard_products') || '[]');
+    let CUSTOMERS = JSON.parse(localStorage.getItem('dashboard_customers') || '[]');
 
-// Seed default products if empty
-if (PRODUCTS.length === 0) {
-  const defaultProducts = [
-    {
-      id: 1, name: "Linen Blend Shirt", cat: "Women", price: "$89.00", priceValue: 89,
-      imageUrl: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=800&fit=crop",
-      placements: ["women", "new"], sizes: { "XS": 10, "S": 15, "M": 20, "L": 10, "XL": 5 },
-      colors: ["#c6baa5", "#2f2716", "#ffffff"], badge: "New"
-    },
-    {
-      id: 2, name: "Pleated Midi Skirt", cat: "Women", price: "$125.00", priceValue: 125,
-      imageUrl: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop",
-      placements: ["women", "new", "summer"], sizes: { "XS": 8, "S": 12, "M": 15, "L": 8 },
-      colors: ["#a8845e", "#7e5232", "#c6baa5"], badge: "New"
-    },
-    {
-      id: 3, name: "Oversized Wool Coat", cat: "Women", price: "$345.00", priceValue: 345,
-      imageUrl: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&h=800&fit=crop",
-      placements: ["women", "new", "winter"], sizes: { "S": 5, "M": 8, "L": 5, "XL": 3 },
-      colors: ["#b39c80", "#2f2716"], badge: "New"
-    },
-    {
-      id: 4, name: "Silk Camisole Top", cat: "Women", price: "$78.00", priceValue: 78,
-      imageUrl: "https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?w=600&h=800&fit=crop",
-      placements: ["women", "new", "summer"], sizes: { "XS": 10, "S": 15, "M": 15, "L": 10 },
-      colors: ["#c6baa5", "#a8845e", "#ffffff"], badge: "New"
-    },
-    {
-      id: 25, name: "Premium Cotton Tee", cat: "Men", price: "$45.00", priceValue: 45,
-      imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=800&fit=crop",
-      placements: ["men", "summer", "bestseller"], sizes: { "S": 20, "M": 25, "L": 20, "XL": 15 },
-      colors: ["#ffffff", "#2f2716", "#9a8a7a"], badge: "Best Seller"
-    },
-    {
-      id: 26, name: "Slim Fit Chinos", cat: "Men", price: "$95.00", priceValue: 95,
-      imageUrl: "https://images.unsplash.com/photo-1473963440576-94304b72df43?w=600&h=800&fit=crop",
-      placements: ["men", "bestseller"], sizes: { "30": 10, "32": 15, "34": 15, "36": 10 },
-      colors: ["#a8845e", "#2f2716", "#7e5232"], badge: "Classic"
-    },
-    {
-      id: 27, name: "Denim Jacket", cat: "Men", price: "$145.00", priceValue: 145,
-      imageUrl: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=600&h=800&fit=crop",
-      placements: ["men", "winter"], sizes: { "S": 8, "M": 12, "L": 10, "XL": 8 },
-      colors: ["#2563eb", "#2f2716"], badge: "Winter Ready"
-    }
-  ];
-  PRODUCTS = defaultProducts;
-  localStorage.setItem('dashboard_products', JSON.stringify(PRODUCTS));
-}
+    // One-time cleanup: remove legacy default seeded products by numeric IDs
+    // This preserves any admin-added products (which use string IDs like "P123...")
+    (function removeLegacySeededProducts() {
+      const legacyIds = new Set([1, 2, 3, 4, 25, 26, 27]);
+      const hadLegacy = PRODUCTS.some(p => typeof p.id === 'number' && legacyIds.has(p.id));
+      if (hadLegacy) {
+        PRODUCTS = PRODUCTS.filter(p => !(typeof p.id === 'number' && legacyIds.has(p.id)));
+        localStorage.setItem('dashboard_products', JSON.stringify(PRODUCTS));
+      }
+    })();
 
     /* helper: total stock for a product */
     function calcStock(p) {
@@ -4084,6 +4045,16 @@ if (PRODUCTS.length === 0) {
       const previewImg = document.querySelector('#filePreview img');
       const imageUrl = previewImg ? previewImg.src : '';
 
+      /* collect colors from the color list */
+      const colorEntries = document.querySelectorAll('#colorList .color-entry');
+      const colors = [];
+      colorEntries.forEach(entry => {
+        const colorInput = entry.querySelector('input[type="color"]');
+        if (colorInput) {
+          colors.push(colorInput.value);
+        }
+      });
+
       PRODUCTS.push({
         id: 'P' + (Date.now()),
         name: data.name || 'New Product',
@@ -4091,6 +4062,7 @@ if (PRODUCTS.length === 0) {
         price: '$' + price.toFixed(2),
         priceValue: price,
         sizes,
+        colors,
         imageUrl,
         placements,
         badge: 'New' // default badge for dashboard products
