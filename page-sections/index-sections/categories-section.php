@@ -9,6 +9,13 @@
     <title>Shop by Category</title>
     
     <style>
+        @font-face {
+            font-family: 'Allenoire';
+            src: url('https://fonts.cdnfonts.com/s/91211/Allenoire.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         /* Reset & Base Styles */
         * {
             margin: 0;
@@ -63,7 +70,7 @@
         }
 
         .categories-heading {
-            font-family: 'Georgia', 'Times New Roman', serif;
+            font-family: 'Allenoire', 'Georgia', serif;
             font-size: clamp(2.5rem, 5vw, 3.5rem);
             font-weight: 400;
             color: #2f2716;
@@ -81,40 +88,22 @@
             margin: 0 auto;
         }
 
-        /* Grid Layout - Men Large Left, Others Stacked Right */
+        /* Grid Layout - Uniform 4 Cards */
         .categories-grid {
-            display: flex;
-            gap: 1rem;
-            height: 500px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            height: 450px;
         }
 
-        /* Men's Card - Takes 55% width */
-        .category-card--men {
-            flex: 0 0 55%;
+        .category-card {
             position: relative;
             overflow: hidden;
             border-radius: 1.25rem;
             cursor: pointer;
             text-decoration: none;
             display: block;
-        }
-
-        /* Right Column - 3 stacked cards */
-        .categories-right {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .category-card--small {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            border-radius: 1.25rem;
-            cursor: pointer;
-            text-decoration: none;
-            display: block;
+            height: 100%;
         }
 
         /* Image Wrapper */
@@ -131,8 +120,7 @@
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .category-card--men:hover .category-image,
-        .category-card--small:hover .category-image {
+        .category-card:hover .category-image {
             transform: scale(1.05);
         }
 
@@ -148,8 +136,7 @@
             transition: background 0.4s ease;
         }
 
-        .category-card--men:hover .category-overlay,
-        .category-card--small:hover .category-overlay {
+        .category-card:hover .category-overlay {
             background: linear-gradient(
                 180deg,
                 transparent 30%,
@@ -170,11 +157,6 @@
             z-index: 2;
         }
 
-        .category-card--men .category-content {
-            padding: 2.5rem;
-            gap: 0.6rem;
-        }
-
         .category-badge {
             display: inline-flex;
             align-self: flex-start;
@@ -189,32 +171,20 @@
             color: rgba(255, 255, 255, 0.95);
         }
 
-        .category-card--men .category-badge {
-            font-size: 0.7rem;
-        }
-
         .category-name {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            font-size: 1.25rem;
+            font-family: 'Allenoire', 'Georgia', serif;
+            font-size: 1.5rem;
             font-weight: 400;
             color: #ffffff;
             letter-spacing: -0.01em;
         }
 
-        .category-card--men .category-name {
-            font-size: 2.75rem;
-        }
-
         .category-description {
-            font-size: 1rem;
+            font-size: 0.85rem;
             font-weight: 300;
             color: rgba(255, 255, 255, 0.8);
-            line-height: 1.5;
-            max-width: 85%;
-            display: none;
-        }
-
-        .category-card--men .category-description {
+            line-height: 1.4;
+            max-width: 90%;
             display: block;
         }
 
@@ -302,130 +272,45 @@
 
         /* Tablet */
         @media (max-width: 1024px) {
-            .categories-section {
-                padding: 4rem 1.25rem;
-            }
-
             .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
                 height: auto;
-                flex-direction: column;
+                gap: 1.25rem;
             }
 
-            .category-card--men {
-                flex: none;
-                height: 450px;
-            }
-
-            .categories-right {
-                flex-direction: row;
-                height: 220px;
-            }
-
-            .category-card--men .category-name {
-                font-size: 2.25rem;
-            }
-
-            .category-name {
-                font-size: 1.125rem;
-            }
-
-            .category-card--men .category-content {
-                padding: 2rem;
-            }
-
-            .category-content {
-                padding: 1.25rem;
+            .category-card {
+                height: 350px;
             }
         }
 
         /* Mobile */
         @media (max-width: 640px) {
-            .categories-section {
-                padding: 3rem 1rem;
-            }
-
-            .categories-header {
-                margin-bottom: 2.5rem;
-            }
-
-            .categories-tagline::before,
-            .categories-tagline::after {
-                width: 2rem;
-            }
-
-            .categories-subheading {
-                font-size: 0.9375rem;
-            }
-
             .categories-grid {
-                gap: 0.75rem;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
             }
 
-            .category-card--men {
-                height: 380px;
-            }
-
-            .categories-right {
-                flex-direction: column;
-                height: auto;
-            }
-
-            .category-card--small {
-                height: 200px;
-            }
-
-            .category-card--men .category-name {
-                font-size: 2rem;
+            .category-card {
+                height: 280px;
             }
 
             .category-name {
                 font-size: 1.25rem;
             }
 
-            .category-card--men .category-content {
-                padding: 1.5rem;
-            }
-
-            .category-content {
-                padding: 1.25rem;
-            }
-
-            .category-badge {
-                font-size: 0.55rem;
-                padding: 0.3rem 0.65rem;
-            }
-
-            .category-count {
-                font-size: 0.6rem;
-                padding: 0.3rem 0.6rem;
-            }
-
-            .category-cta {
-                opacity: 1;
-                transform: translateY(0);
+            .category-description {
+                font-size: 0.75rem;
             }
         }
 
         /* Small Mobile */
-        @media (max-width: 380px) {
-            .categories-section {
-                padding: 2.5rem 0.875rem;
+        @media (max-width: 480px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
             }
 
-            .category-card--men {
-                height: 320px;
-            }
-
-            .category-card--small {
-                height: 180px;
-            }
-
-            .category-card--men .category-name {
-                font-size: 1.75rem;
-            }
-
-            .category-name {
-                font-size: 1.125rem;
+            .category-card {
+                height: 300px;
             }
         }
 
@@ -489,13 +374,13 @@
                 </p>
             </header>
 
-            <!-- Grid: Men Large Left, Others Stacked Right -->
+            <!-- Grid: Uniform 4 Cards -->
             <div class="categories-grid">
-                <!-- Men's Fashion - Large Left Card -->
-                <a href="men-products.php" class="category-card--men" data-category="men">
+                <!-- Men's Fashion -->
+                <a href="men-products.php" class="category-card" data-category="men">
                     <div class="category-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                             alt="collections-sections/men-sections/men-section.php" 
+                             alt="Men's Collection" 
                              class="category-image"
                              loading="eager">
                         <div class="category-overlay"></div>
@@ -504,7 +389,7 @@
                     <div class="category-content">
                         <span class="category-badge">New Arrivals</span>
                         <h3 class="category-name">Men</h3>
-                        <p class="category-description">Sophisticated suits, shirts, and essentials for the distinguished gentleman</p>
+                        <p class="category-description">Sophisticated suits and shirts for gentlemen</p>
                         <div class="category-cta">
                             <span>Shop Collection</span>
                             <div class="category-cta-icon">
@@ -516,80 +401,80 @@
                     </div>
                 </a>
 
-                <!-- Right Column: Women, Kids, Accessories -->
-                <div class="categories-right">
-                    <!-- Women's Fashion -->
-                    <a href="women-products.php" class="category-card--small" data-category="women">
-                        <div class="category-image-wrapper">
-                            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                                 alt="Women's Fashion Collection" 
-                                 class="category-image"
-                                 loading="lazy">
-                            <div class="category-overlay"></div>
-                        </div>
-                        <span class="category-count">312 Items</span>
-                        <div class="category-content">
-                            <span class="category-badge">Trending</span>
-                            <h3 class="category-name">Women</h3>
-                            <div class="category-cta">
-                                <span>Shop Collection</span>
-                                <div class="category-cta-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                                    </svg>
-                                </div>
+                <!-- Women's Fashion -->
+                <a href="women-products.php" class="category-card" data-category="women">
+                    <div class="category-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                             alt="Women's Fashion Collection" 
+                             class="category-image"
+                             loading="lazy">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <span class="category-count">312 Items</span>
+                    <div class="category-content">
+                        <span class="category-badge">Trending</span>
+                        <h3 class="category-name">Women</h3>
+                        <p class="category-description">Elegant dresses and trending styles</p>
+                        <div class="category-cta">
+                            <span>Shop Collection</span>
+                            <div class="category-cta-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
                             </div>
                         </div>
-                    </a>
+                    </div>
+                </a>
 
-                    <!-- Kids Fashion -->
-                    <a href="/category/kids" class="category-card--small" data-category="kids">
-                        <div class="category-image-wrapper">
-                            <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                                 alt="Kids Fashion Collection" 
-                                 class="category-image"
-                                 loading="lazy">
-                            <div class="category-overlay"></div>
-                        </div>
-                        <span class="category-count">156 Items</span>
-                        <div class="category-content">
-                            <span class="category-badge">Best Sellers</span>
-                            <h3 class="category-name">Kids</h3>
-                            <div class="category-cta">
-                                <span>Shop Collection</span>
-                                <div class="category-cta-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                                    </svg>
-                                </div>
+                <!-- Kids Fashion -->
+                <a href="/category/kids" class="category-card" data-category="kids">
+                    <div class="category-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                             alt="Kids Fashion Collection" 
+                             class="category-image"
+                             loading="lazy">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <span class="category-count">156 Items</span>
+                    <div class="category-content">
+                        <span class="category-badge">Best Sellers</span>
+                        <h3 class="category-name">Kids</h3>
+                        <p class="category-description">Playful and comfortable kids' wear</p>
+                        <div class="category-cta">
+                            <span>Shop Collection</span>
+                            <div class="category-cta-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
                             </div>
                         </div>
-                    </a>
+                    </div>
+                </a>
 
-                    <!-- Accessories -->
-                    <a href="/category/accessories" class="category-card--small" data-category="accessories">
-                        <div class="category-image-wrapper">
-                            <img src="https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                                 alt="Accessories Collection" 
-                                 class="category-image"
-                                 loading="lazy">
-                            <div class="category-overlay"></div>
-                        </div>
-                        <span class="category-count">89 Items</span>
-                        <div class="category-content">
-                            <span class="category-badge">Limited Edition</span>
-                            <h3 class="category-name">Accessories</h3>
-                            <div class="category-cta">
-                                <span>Shop Collection</span>
-                                <div class="category-cta-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                                    </svg>
-                                </div>
+                <!-- Accessories -->
+                <a href="/category/accessories" class="category-card" data-category="accessories">
+                    <div class="category-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                             alt="Accessories Collection" 
+                             class="category-image"
+                             loading="lazy">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <span class="category-count">89 Items</span>
+                    <div class="category-content">
+                        <span class="category-badge">Limited Edition</span>
+                        <h3 class="category-name">Accessories</h3>
+                        <p class="category-description">The perfect finishing touches</p>
+                        <div class="category-cta">
+                            <span>Shop Collection</span>
+                            <div class="category-cta-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
                             </div>
                         </div>
-                    </a>
-                </div>
+                    </div>
+                </a>
             </div>
         </div>
     </section>

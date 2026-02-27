@@ -729,7 +729,6 @@
      2. main.js      →  reads `products` and drives the UI
 ═══════════════════════════════════════════ -->
 <script src="products.js"></script>
-<script src="cart-handler.js"></script>
 <script src="main.js"></script>
 
 </body>

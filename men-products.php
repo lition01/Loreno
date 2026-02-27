@@ -10,8 +10,5 @@
 <?php include "collection-sections/men-sections/men-section.php" ?>
 <?php include "essentials/footer.php" ?>
 
-<script src="cart-handler.js"></script>
-
-    
 </body>
 </html>

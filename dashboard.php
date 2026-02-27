@@ -3089,38 +3089,100 @@
     }
 
     // Save functions to persist changes
-    function saveOrders() { localStorage.setItem('dashboard_orders', JSON.stringify(ORDERS)); }
-    function saveProducts() { localStorage.setItem('dashboard_products', JSON.stringify(PRODUCTS)); }
-    function saveCustomers() { localStorage.setItem('dashboard_customers', JSON.stringify(CUSTOMERS)); }
+    function saveOrders() {
+      localStorage.setItem('dashboard_orders', JSON.stringify(ORDERS));
+    }
 
-    const ACTIVITY = [
-      { dot: '#a8845e', title: 'Order #ORD-1081 placed by Sophie W.', time: '2 minutes ago' },
-      { dot: '#2d8a5a', title: 'Payment confirmed for #ORD-1080', time: '14 minutes ago' },
-      { dot: '#c0392b', title: 'Order #ORD-1076 was refunded', time: '1 hour ago' },
-      { dot: '#2563eb', title: 'New customer registered', time: '3 hours ago' },
-      { dot: '#b39c80', title: 'Wool Blend Overcoat — low stock', time: '5 hours ago' },
+    function saveProducts() {
+      localStorage.setItem('dashboard_products', JSON.stringify(PRODUCTS));
+    }
+
+    function saveCustomers() {
+      localStorage.setItem('dashboard_customers', JSON.stringify(CUSTOMERS));
+    }
+
+    const ACTIVITY = [{
+        dot: '#a8845e',
+        title: 'Order #ORD-1081 placed by Sophie W.',
+        time: '2 minutes ago'
+      },
+      {
+        dot: '#2d8a5a',
+        title: 'Payment confirmed for #ORD-1080',
+        time: '14 minutes ago'
+      },
+      {
+        dot: '#c0392b',
+        title: 'Order #ORD-1076 was refunded',
+        time: '1 hour ago'
+      },
+      {
+        dot: '#2563eb',
+        title: 'New customer registered',
+        time: '3 hours ago'
+      },
+      {
+        dot: '#b39c80',
+        title: 'Wool Blend Overcoat — low stock',
+        time: '5 hours ago'
+      },
     ];
 
     const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const CAT_LABELS = ['Men', 'Women', 'Kids', 'Acc.'];
     const CAT_PCT = [65, 80, 45, 35];
-    const TOP_PROD = [
-      { name: 'Oxford Button Shirt', units: 214, rev: '$14,552' },
-      { name: 'Wool Blend Overcoat', units: 89, rev: '$21,805' },
-      { name: 'Merino Wool Hoodie', units: 176, rev: '$19,712' },
-      { name: 'Relaxed Linen Trousers', units: 130, rev: '$9,360' },
+    const TOP_PROD = [{
+        name: 'Oxford Button Shirt',
+        units: 214,
+        rev: '$14,552'
+      },
+      {
+        name: 'Wool Blend Overcoat',
+        units: 89,
+        rev: '$21,805'
+      },
+      {
+        name: 'Merino Wool Hoodie',
+        units: 176,
+        rev: '$19,712'
+      },
+      {
+        name: 'Relaxed Linen Trousers',
+        units: 130,
+        rev: '$9,360'
+      },
     ];
 
-    let orderSort = { col: '', dir: 1 };
-    let customerSort = { col: '', dir: 1 };
-    let ordersPage = 1, customersPage = 1;
+    let orderSort = {
+      col: '',
+      dir: 1
+    };
+    let customerSort = {
+      col: '',
+      dir: 1
+    };
+    let ordersPage = 1,
+      customersPage = 1;
     const PAGE_SIZE = 5;
     const CATS = ['Men', 'Women', 'Kids', 'Accessories'];
-    const CAT_EMOJIS = { Men: '👔', Women: '👗', Kids: '🧒', Accessories: '🎩' };
+    const CAT_EMOJIS = {
+      Men: '👔',
+      Women: '👗',
+      Kids: '🧒',
+      Accessories: '🎩'
+    };
 
     /* ─── badge helper ─── */
     function badge(s) {
-      const m = { Completed: 'green', Processing: 'blue', Shipped: 'orange', Pending: 'gray', Refunded: 'red', Active: 'green', Inactive: 'gray' };
+      const m = {
+        Completed: 'green',
+        Processing: 'blue',
+        Shipped: 'orange',
+        Pending: 'gray',
+        Refunded: 'red',
+        Active: 'green',
+        Inactive: 'gray'
+      };
       return `<span class="badge ${m[s] || 'gray'}">${s}</span>`;
     }
 
@@ -3139,15 +3201,20 @@
     function openModal(id) {
       document.getElementById(id).classList.add('open');
     }
+
     function closeModal(id) {
       document.getElementById(id).classList.remove('open');
     }
     /* close on overlay click */
     document.querySelectorAll('.modal-overlay').forEach(o => {
-      o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+      o.addEventListener('click', e => {
+        if (e.target === o) o.classList.remove('open');
+      });
     });
     /* close on Escape */
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(o => o.classList.remove('open')); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(o => o.classList.remove('open'));
+    });
 
     /* ════════════════════════════════════════════
        RENDER OVERVIEW
@@ -3159,11 +3226,38 @@
       const activeOrders = ORDERS.filter(o => o.status !== 'Completed' && o.status !== 'Refunded').length;
       const completedOrders = ORDERS.filter(o => o.status === 'Completed').length;
 
-      document.getElementById('overviewStats').innerHTML = [
-        { ico: 'a', svg: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>', lbl: 'Total Revenue', val: revFormatted, chg: 'up', chgTxt: ORDERS.length === 0 ? '0% — no orders yet' : `From ${completedOrders} completed order${completedOrders !== 1 ? 's' : ''}` },
-        { ico: 'b', svg: '<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>', lbl: 'Total Orders', val: ORDERS.length || '0', chg: ORDERS.length > 0 ? 'up' : 'dn', chgTxt: ORDERS.length === 0 ? '0% — no orders yet' : `${activeOrders} active right now` },
-        { ico: 'c', svg: '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>', lbl: 'Total Customers', val: CUSTOMERS.length || '0', chg: CUSTOMERS.length > 0 ? 'up' : 'dn', chgTxt: CUSTOMERS.length === 0 ? '0% — no customers yet' : `${CUSTOMERS.filter(c => c.status === 'Active').length} active` },
-        { ico: 'd', svg: '<path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>', lbl: 'Total Stock', val: totalStock || '0', chg: totalStock > 0 ? 'up' : 'dn', chgTxt: totalStock === 0 ? '0% — no products yet' : `Across ${PRODUCTS.length} product${PRODUCTS.length !== 1 ? 's' : ''}` },
+      document.getElementById('overviewStats').innerHTML = [{
+          ico: 'a',
+          svg: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',
+          lbl: 'Total Revenue',
+          val: revFormatted,
+          chg: 'up',
+          chgTxt: ORDERS.length === 0 ? '0% — no orders yet' : `From ${completedOrders} completed order${completedOrders !== 1 ? 's' : ''}`
+        },
+        {
+          ico: 'b',
+          svg: '<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>',
+          lbl: 'Total Orders',
+          val: ORDERS.length || '0',
+          chg: ORDERS.length > 0 ? 'up' : 'dn',
+          chgTxt: ORDERS.length === 0 ? '0% — no orders yet' : `${activeOrders} active right now`
+        },
+        {
+          ico: 'c',
+          svg: '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>',
+          lbl: 'Total Customers',
+          val: CUSTOMERS.length || '0',
+          chg: CUSTOMERS.length > 0 ? 'up' : 'dn',
+          chgTxt: CUSTOMERS.length === 0 ? '0% — no customers yet' : `${CUSTOMERS.filter(c => c.status === 'Active').length} active`
+        },
+        {
+          ico: 'd',
+          svg: '<path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>',
+          lbl: 'Total Stock',
+          val: totalStock || '0',
+          chg: totalStock > 0 ? 'up' : 'dn',
+          chgTxt: totalStock === 0 ? '0% — no products yet' : `Across ${PRODUCTS.length} product${PRODUCTS.length !== 1 ? 's' : ''}`
+        },
       ].map(c => `
     <div class="stat-card">
       <div class="stat-ico ${c.ico}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${c.svg}</svg></div>
@@ -3179,7 +3273,11 @@
       const months = [];
       for (let i = 5; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        months.push({ year: d.getFullYear(), month: d.getMonth(), label: MONTH_NAMES[d.getMonth()] });
+        months.push({
+          year: d.getFullYear(),
+          month: d.getMonth(),
+          label: MONTH_NAMES[d.getMonth()]
+        });
       }
       const monthRevs = months.map(m => {
         const total = ORDERS
@@ -3192,7 +3290,10 @@
             const p = parseFloat((o.price || '0').replace('$', '').replace(',', '')) || 0;
             return sum + (p * (o.qty || 1));
           }, 0);
-        return { label: m.label, total };
+        return {
+          label: m.label,
+          total
+        };
       });
       const maxRev = Math.max(...monthRevs.map(m => m.total), 1);
       const fmt = v => v >= 1000 ? '$' + (v / 1000).toFixed(1) + 'K' : '$' + v.toFixed(0);
@@ -3207,13 +3308,17 @@
       }).join('');
 
       /* Activity feed — show real recent orders or placeholder */
-      const recentActivity = ORDERS.length > 0
-        ? [...ORDERS].reverse().slice(0, 5).map(o => ({
+      const recentActivity = ORDERS.length > 0 ?
+        [...ORDERS].reverse().slice(0, 5).map(o => ({
           dot: o.status === 'Completed' ? '#2d8a5a' : o.status === 'Refunded' ? '#c0392b' : o.status === 'Shipped' ? '#c9620e' : '#a8845e',
           title: `Order ${o.id} — ${o.cust} (${o.status})`,
           time: o.date
-        }))
-        : [{ dot: '#c6baa5', title: 'No activity yet — create your first order!', time: 'Just now' }];
+        })) :
+        [{
+          dot: '#c6baa5',
+          title: 'No activity yet — create your first order!',
+          time: 'Just now'
+        }];
 
       document.getElementById('activityFeed').innerHTML = recentActivity.map(a => `
     <div class="activity-item">
@@ -3235,14 +3340,18 @@
       });
       if (orderSort.col) {
         data = [...data].sort((a, b) => {
-          let va = a[orderSort.col], vb = b[orderSort.col];
+          let va = a[orderSort.col],
+            vb = b[orderSort.col];
           return (va < vb ? -1 : va > vb ? 1 : 0) * orderSort.dir;
         });
       }
       return data;
     }
 
-    function filterOrders() { ordersPage = 1; renderOrders(); }
+    function filterOrders() {
+      ordersPage = 1;
+      renderOrders();
+    }
 
     function renderOrders() {
       const data = getFilteredOrders();
@@ -3277,7 +3386,10 @@
         </td>
       </tr>`).join('');
       }
-      renderPagination('orders-pagination', pages, ordersPage, p => { ordersPage = p; renderOrders(); });
+      renderPagination('orders-pagination', pages, ordersPage, p => {
+        ordersPage = p;
+        renderOrders();
+      });
     }
 
     function viewOrder(idx) {
@@ -3372,7 +3484,7 @@
       sizeSel.innerHTML = '<option value="">— select a product first —</option>';
       sizeSel.disabled = true;
       /* wire up: when product changes → populate sizes */
-      sel.onchange = function () {
+      sel.onchange = function() {
         const prodName = this.value;
         sizeSel.innerHTML = '';
         sizeSel.disabled = true;
@@ -3413,21 +3525,31 @@
         showToast('Please fill all required fields', 'error');
         return;
       }
-      if (!size) { showToast('Please select a size', 'error'); return; }
+      if (!size) {
+        showToast('Please select a size', 'error');
+        return;
+      }
 
       const newId = '#ORD-' + (1000 + ORDERS.length + 1);
-      const orderDate = document.getElementById('ao-date').value
-        ? new Date(document.getElementById('ao-date').value + 'T12:00:00')
-        : new Date();
+      const orderDate = document.getElementById('ao-date').value ?
+        new Date(document.getElementById('ao-date').value + 'T12:00:00') :
+        new Date();
       const price = PRODUCTS.find(p => p.name === prod)?.price || '$0.00';
 
       const orderObj = {
-        id: newId, cust, prod, size,
+        id: newId,
+        cust,
+        prod,
+        size,
         qty: parseInt(document.getElementById('ao-qty').value) || 1,
         status: 'Processing', // Default status for new manual orders
         price,
         isoDate: orderDate.toISOString(),
-        date: orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+        date: orderDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        }),
         shipping: {
           fullName: cust,
           email: email,
@@ -3488,10 +3610,18 @@
 
     function sortTable(table, col) {
       if (table === 'orders') {
-        if (orderSort.col === col) orderSort.dir *= -1; else { orderSort.col = col; orderSort.dir = 1; }
+        if (orderSort.col === col) orderSort.dir *= -1;
+        else {
+          orderSort.col = col;
+          orderSort.dir = 1;
+        }
         renderOrders();
       } else {
-        if (customerSort.col === col) customerSort.dir *= -1; else { customerSort.col = col; customerSort.dir = 1; }
+        if (customerSort.col === col) customerSort.dir *= -1;
+        else {
+          customerSort.col = col;
+          customerSort.dir = 1;
+        }
         renderCustomers();
       }
     }
@@ -3539,9 +3669,9 @@
         const stock = calcStock(p);
         const stockColor = stock < 20 ? '#c0392b' : stock < 50 ? '#c9620e' : '#2d8a5a';
         const placements = (p.placementLabels || p.placements || []);
-        const placementBadge = placements.length > 0
-          ? `<div style="font-size:10px;color:var(--c3);font-weight:700;margin-top:4px;">📍 ${placements.join(' · ')}</div>`
-          : `<div style="font-size:10px;color:var(--muted);margin-top:4px;">Click to set display sections</div>`;
+        const placementBadge = placements.length > 0 ?
+          `<div style="font-size:10px;color:var(--c3);font-weight:700;margin-top:4px;">📍 ${placements.join(' · ')}</div>` :
+          `<div style="font-size:10px;color:var(--muted);margin-top:4px;">Click to set display sections</div>`;
         return `<div class="prod-card" onclick="openPlacement(${realIdx})" title="Click to set display placement">
       <div class="prod-thumb" style="background:var(--bg);overflow:hidden;">
         ${p.imageUrl
@@ -3600,15 +3730,54 @@
     /* ════════════════════════════════════════════
        PRODUCT DISPLAY PLACEMENT
     ════════════════════════════════════════════ */
-    const PLACEMENT_OPTIONS = [
-      { id: 'men', icon: '👔', label: 'Men', desc: 'Show in the Men category' },
-      { id: 'women', icon: '👗', label: 'Women', desc: 'Show in the Women category' },
-      { id: 'kids', icon: '🧒', label: 'Kids', desc: 'Show in the Kids category' },
-      { id: 'acc', icon: '🎩', label: 'Accessories', desc: 'Show in the Accessories category' },
-      { id: 'bestseller', icon: '⭐', label: 'Best Seller', desc: 'Feature in the Best Sellers section' },
-      { id: 'winter', icon: '❄️', label: 'Winter Collection', desc: 'Feature in the Winter Collection' },
-      { id: 'summer', icon: '☀️', label: 'Summer Collection', desc: 'Show in the Summer Collection' },
-      { id: 'new', icon: '✨', label: 'New Arrivals', desc: 'Show in the homepage New Arrivals' },
+    const PLACEMENT_OPTIONS = [{
+        id: 'men',
+        icon: '👔',
+        label: 'Men',
+        desc: 'Show in the Men category'
+      },
+      {
+        id: 'women',
+        icon: '👗',
+        label: 'Women',
+        desc: 'Show in the Women category'
+      },
+      {
+        id: 'kids',
+        icon: '🧒',
+        label: 'Kids',
+        desc: 'Show in the Kids category'
+      },
+      {
+        id: 'acc',
+        icon: '🎩',
+        label: 'Accessories',
+        desc: 'Show in the Accessories category'
+      },
+      {
+        id: 'bestseller',
+        icon: '⭐',
+        label: 'Best Seller',
+        desc: 'Feature in the Best Sellers section'
+      },
+      {
+        id: 'winter',
+        icon: '❄️',
+        label: 'Winter Collection',
+        desc: 'Feature in the Winter Collection'
+      },
+      {
+        id: 'summer',
+        icon: '☀️',
+        label: 'Summer Collection',
+        desc: 'Show in the Summer Collection'
+      },
+      {
+        id: 'new',
+        icon: '✨',
+        label: 'New Arrivals',
+        desc: 'Show in the homepage New Arrivals'
+      },
     ];
 
     function renderAddProductPlacements() {
@@ -3680,15 +3849,22 @@
       });
       if (customerSort.col) {
         data = [...data].sort((a, b) => {
-          let va = a[customerSort.col], vb = b[customerSort.col];
-          if (customerSort.col === 'spent') { va = parseFloat(va.replace(/[$,]/g, '') || 0); vb = parseFloat(vb.replace(/[$,]/g, '') || 0); }
+          let va = a[customerSort.col],
+            vb = b[customerSort.col];
+          if (customerSort.col === 'spent') {
+            va = parseFloat(va.replace(/[$,]/g, '') || 0);
+            vb = parseFloat(vb.replace(/[$,]/g, '') || 0);
+          }
           return (va < vb ? -1 : va > vb ? 1 : 0) * customerSort.dir;
         });
       }
       return data;
     }
 
-    function filterCustomers() { customersPage = 1; renderCustomers(); }
+    function filterCustomers() {
+      customersPage = 1;
+      renderCustomers();
+    }
 
     function renderCustomers() {
       const data = getFilteredCustomers();
@@ -3730,7 +3906,10 @@
         </td>
       </tr>`).join('');
       }
-      renderPagination('customers-pagination', pages, customersPage, p => { customersPage = p; renderCustomers(); });
+      renderPagination('customers-pagination', pages, customersPage, p => {
+        customersPage = p;
+        renderCustomers();
+      });
     }
 
     function viewCustomer(idx) {
@@ -3782,13 +3961,18 @@
     function submitCustomer() {
       const name = document.getElementById('ac-name').value.trim();
       const email = document.getElementById('ac-email').value.trim();
-      if (!name || !email) { showToast('Name and email are required', 'error'); return; }
+      if (!name || !email) {
+        showToast('Name and email are required', 'error');
+        return;
+      }
       const colors = ['#a8845e', '#7e5232', '#b39c80', '#c6baa5'];
       CUSTOMERS.push({
         initials: name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase(),
-        name, email,
+        name,
+        email,
         loc: document.getElementById('ac-loc').value || '—',
-        orders: 0, spent: '$0',
+        orders: 0,
+        spent: '$0',
         status: document.getElementById('ac-status').value,
         color: colors[Math.floor(Math.random() * colors.length)],
       });
@@ -3806,13 +3990,36 @@
        ANALYTICS
     ════════════════════════════════════════════ */
     function renderAnalytics() {
-      document.getElementById('analyticsCards').innerHTML = [
-        { val: '$84.2K', lbl: 'Total Sales (YTD)', chg: '▲ +12.4% vs last year' },
-        { val: '1,348', lbl: 'Total Orders', chg: '▲ +8.1% vs last year' },
-        { val: '$62.50', lbl: 'Avg. Order Value', chg: '▲ +3.9% vs last year' },
-        { val: '78%', lbl: 'Customer Retention', chg: '▼ -1.2% vs last year' },
-        { val: '329', lbl: 'New Customers', chg: '▼ -2.3% vs last year' },
-        { val: '4.8★', lbl: 'Avg. Product Rating', chg: '▲ +0.2 vs last year' },
+      document.getElementById('analyticsCards').innerHTML = [{
+          val: '$84.2K',
+          lbl: 'Total Sales (YTD)',
+          chg: '▲ +12.4% vs last year'
+        },
+        {
+          val: '1,348',
+          lbl: 'Total Orders',
+          chg: '▲ +8.1% vs last year'
+        },
+        {
+          val: '$62.50',
+          lbl: 'Avg. Order Value',
+          chg: '▲ +3.9% vs last year'
+        },
+        {
+          val: '78%',
+          lbl: 'Customer Retention',
+          chg: '▼ -1.2% vs last year'
+        },
+        {
+          val: '329',
+          lbl: 'New Customers',
+          chg: '▼ -2.3% vs last year'
+        },
+        {
+          val: '4.8★',
+          lbl: 'Avg. Product Rating',
+          chg: '▲ +0.2 vs last year'
+        },
       ].map(a => `<div class="an-card"><div class="an-val">${a.val}</div><div class="an-lbl">${a.lbl}</div><div class="an-chg">${a.chg}</div></div>`).join('');
 
       document.getElementById('catChart').innerHTML = CAT_LABELS.map((l, i) => `
@@ -3827,7 +4034,10 @@
     ════════════════════════════════════════════ */
     function renderPagination(containerId, pages, current, onPage) {
       const el = document.getElementById(containerId);
-      if (pages <= 1) { el.innerHTML = ''; return; }
+      if (pages <= 1) {
+        el.innerHTML = '';
+        return;
+      }
       let html = `<span class="page-info">Page ${current} of ${pages}</span>`;
       html += `<button class="page-btn" ${current === 1 ? 'disabled' : ''} onclick="(${onPage.toString()})(${current - 1})"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>`;
       for (let i = 1; i <= pages; i++) {
@@ -3845,17 +4055,35 @@
        DELETE CONFIRM
     ════════════════════════════════════════════ */
     function confirmDelete(type, idx) {
-      const labels = { order: 'Delete Order', product: 'Delete Product', customer: 'Delete Customer' };
-      const msgs = { order: `Delete ${ORDERS[idx]?.id}? This cannot be undone.`, product: `Delete "${PRODUCTS[idx]?.name}"? This cannot be undone.`, customer: `Delete "${CUSTOMERS[idx]?.name}"? This cannot be undone.` };
+      const labels = {
+        order: 'Delete Order',
+        product: 'Delete Product',
+        customer: 'Delete Customer'
+      };
+      const msgs = {
+        order: `Delete ${ORDERS[idx]?.id}? This cannot be undone.`,
+        product: `Delete "${PRODUCTS[idx]?.name}"? This cannot be undone.`,
+        customer: `Delete "${CUSTOMERS[idx]?.name}"? This cannot be undone.`
+      };
       document.getElementById('confirm-title').textContent = labels[type];
       document.getElementById('confirm-msg').textContent = msgs[type];
       document.getElementById('confirm-icon').className = 'confirm-icon';
       document.getElementById('confirm-action-btn').onclick = () => {
-        if (type === 'order') { ORDERS.splice(idx, 1); saveOrders(); }
-        else if (type === 'product') { PRODUCTS.splice(idx, 1); saveProducts(); }
-        else if (type === 'customer') { CUSTOMERS.splice(idx, 1); saveCustomers(); }
+        if (type === 'order') {
+          ORDERS.splice(idx, 1);
+          saveOrders();
+        } else if (type === 'product') {
+          PRODUCTS.splice(idx, 1);
+          saveProducts();
+        } else if (type === 'customer') {
+          CUSTOMERS.splice(idx, 1);
+          saveCustomers();
+        }
         closeModal('modal-confirm');
-        renderOrders(); renderProducts(); renderCustomers(); renderOverview();
+        renderOrders();
+        renderProducts();
+        renderCustomers();
+        renderOverview();
         showToast('Deleted successfully', 'success');
       };
       openModal('modal-confirm');
@@ -3872,7 +4100,14 @@
       openModal('modal-confirm');
     }
 
-    function clearOrders() { ORDERS = []; saveOrders(); renderOrders(); renderOverview(); showToast('All orders cleared', 'success'); }
+    function clearOrders() {
+      ORDERS = [];
+      saveOrders();
+      renderOrders();
+      renderOverview();
+      showToast('All orders cleared', 'success');
+    }
+
     function resetData() {
       if (confirm('This will clear all orders, products and customers from your dashboard. Are you sure?')) {
         localStorage.removeItem('dashboard_orders');
@@ -3900,7 +4135,7 @@
       }
       renderAddProductPlacements();
       if (!colorCount) addColor();
-      
+
       if (activeSizes.length === 0) {
         ['S', 'M', 'L', 'XL'].forEach(s => toggleSize(s));
       }
@@ -3928,14 +4163,21 @@
       }
       const s = el.dataset.size;
       el.classList.toggle('active');
-      if (el.classList.contains('active')) { if (!activeSizes.includes(s)) activeSizes.push(s); }
-      else { activeSizes = activeSizes.filter(x => x !== s); }
+      if (el.classList.contains('active')) {
+        if (!activeSizes.includes(s)) activeSizes.push(s);
+      } else {
+        activeSizes = activeSizes.filter(x => x !== s);
+      }
       renderSizeTable();
     }
 
     function renderSizeTable() {
       const wrap = document.getElementById('sizeTableWrap');
-      if (!activeSizes.length) { wrap.innerHTML = ''; updateTotalStock(); return; }
+      if (!activeSizes.length) {
+        wrap.innerHTML = '';
+        updateTotalStock();
+        return;
+      }
       wrap.innerHTML = `
     <div class="size-table-head"><span>Size</span><span>Qty</span><span>Chest (cm)</span><span class="meas-input">Length (cm)</span><span></span></div>
     ${activeSizes.map(s => `
@@ -3961,7 +4203,9 @@
 
     function removeSize(s) {
       activeSizes = activeSizes.filter(x => x !== s);
-      document.querySelectorAll('.size-pill').forEach(p => { if (p.dataset.size === s) p.classList.remove('active'); });
+      document.querySelectorAll('.size-pill').forEach(p => {
+        if (p.dataset.size === s) p.classList.remove('active');
+      });
       renderSizeTable();
     }
 
@@ -3969,7 +4213,10 @@
       const val = prompt('Enter custom size label (e.g. XXL, 2XL):');
       if (!val || !val.trim()) return;
       const label = val.trim().toUpperCase();
-      if (activeSizes.includes(label)) { showToast('Size already added'); return; }
+      if (activeSizes.includes(label)) {
+        showToast('Size already added');
+        return;
+      }
       activeSizes.push(label);
       const picker = document.getElementById('sizePicker');
       if (![...picker.querySelectorAll('.size-pill')].find(p => p.dataset.size === label)) {
@@ -3989,7 +4236,8 @@
       const defaults = ['#2f2716', '#a8845e', '#c6baa5', '#ffffff', '#1a1a2e', '#e8d5b7'];
       const c = defaults[(colorCount - 1) % defaults.length];
       const div = document.createElement('div');
-      div.className = 'color-entry'; div.id = id;
+      div.className = 'color-entry';
+      div.id = id;
       div.innerHTML = `
     <div class="color-swatch" style="background:${c}">
       <input type="color" value="${c}" oninput="this.parentElement.style.background=this.value"/>
@@ -4090,14 +4338,18 @@
       document.querySelectorAll('#add-placement-options input[type="checkbox"]').forEach(cb => cb.checked = false);
       const wrap = document.getElementById('sizeTableWrap');
       if (wrap) wrap.innerHTML = '';
-      
+
       // Re-initialize standard sizes
       ['S', 'M', 'L', 'XL'].forEach(s => toggleSize(s));
-      
+
       const totalEl = document.getElementById('totalStockDisplay');
       if (totalEl) totalEl.textContent = '0';
       const cl = document.getElementById('colorList');
-      if (cl) { cl.innerHTML = ''; colorCount = 0; addColor(); }
+      if (cl) {
+        cl.innerHTML = '';
+        colorCount = 0;
+        addColor();
+      }
     }
 
     /* ════════════════════════════════════════════
@@ -4153,13 +4405,34 @@
        NAVIGATION
     ════════════════════════════════════════════ */
     const PAGE_META = {
-      overview: { title: 'Dashboard Overview', sub: "Welcome back — here's your store at a glance" },
-      orders: { title: 'Orders', sub: 'Track and manage all customer orders' },
-      products: { title: 'Products', sub: 'Your clothing catalogue' },
-      addproduct: { title: 'Add New Product', sub: 'List a new clothing item' },
-      customers: { title: 'Customers', sub: 'Manage your customer base' },
-      analytics: { title: 'Analytics', sub: 'Performance overview' },
-      settings: { title: 'Settings', sub: 'Store preferences and configuration' },
+      overview: {
+        title: 'Dashboard Overview',
+        sub: "Welcome back — here's your store at a glance"
+      },
+      orders: {
+        title: 'Orders',
+        sub: 'Track and manage all customer orders'
+      },
+      products: {
+        title: 'Products',
+        sub: 'Your clothing catalogue'
+      },
+      addproduct: {
+        title: 'Add New Product',
+        sub: 'List a new clothing item'
+      },
+      customers: {
+        title: 'Customers',
+        sub: 'Manage your customer base'
+      },
+      analytics: {
+        title: 'Analytics',
+        sub: 'Performance overview'
+      },
+      settings: {
+        title: 'Settings',
+        sub: 'Store preferences and configuration'
+      },
     };
 
     function nav(el) {
@@ -4179,14 +4452,25 @@
     /* ════════════════════════════════════════════
        SIDEBAR
     ════════════════════════════════════════════ */
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
-    function openMob() { document.getElementById('sidebar').classList.add('mob-open'); document.getElementById('mobOverlay').classList.add('active'); }
-    function closeMob() { document.getElementById('sidebar').classList.remove('mob-open'); document.getElementById('mobOverlay').classList.remove('active'); }
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    function openMob() {
+      document.getElementById('sidebar').classList.add('mob-open');
+      document.getElementById('mobOverlay').classList.add('active');
+    }
+
+    function closeMob() {
+      document.getElementById('sidebar').classList.remove('mob-open');
+      document.getElementById('mobOverlay').classList.remove('active');
+    }
 
     /* ════════════════════════════════════════════
        TOAST
     ════════════════════════════════════════════ */
     let toastTimer;
+
     function showToast(msg, type = '') {
       const t = document.getElementById('toast');
       document.getElementById('toastMsg').textContent = msg;

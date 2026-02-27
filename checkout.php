@@ -12,21 +12,20 @@
    Old Money / Luxury / Minimal Aesthetic
    ======================================== */
 
-/* ========================================
-   COLOR PALETTE (PRESERVED)
-   ======================================== */
 :root {
-    --primary: #2f2716;
+    --primary: #1E1A14;
     --secondary: #7e5232;
     --accent: #a8845e;
-    --bg-light: #c6baa5;
-    --bg-soft: #b39c80;
-    --text-dark: #2f2716;
+    --bg-light: #faf9f7;
+    --bg-soft: #f0ede8;
+    --text-dark: #1E1A14;
     --text-light: #c6baa5;
     --white: #ffffff;
-    --shadow-soft: rgba(47, 39, 22, 0.08);
-    --shadow-medium: rgba(47, 39, 22, 0.15);
-    --shadow-dark: rgba(47, 39, 22, 0.25);
+    --border: #e8e4de;
+    --shadow-soft: rgba(0, 0, 0, 0.04);
+    --shadow-medium: rgba(0, 0, 0, 0.08);
+    --font-heading: 'Allenoire', 'Playfair Display', serif;
+    --font-primary: 'Montserrat', sans-serif;
 }
 
 /* ========================================
@@ -39,11 +38,18 @@
 }
 
 body {
-    font-family: 'Cormorant', serif;
+    font-family: var(--font-primary);
     background: var(--bg-light);
     min-height: 100vh;
     color: var(--text-dark);
     line-height: 1.6;
+}
+
+@font-face {
+    font-family: 'Allenoire';
+    src: url('https://fonts.cdnfonts.com/s/91211/Allenoire.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 /* ========================================
@@ -91,10 +97,11 @@ body {
    ======================================== */
 .checkout-header {
     background: var(--primary);
-    padding: 20px 0;
+    padding: 30px 0;
+    border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
 }
 
 .header-inner {
@@ -109,17 +116,20 @@ body {
 .back-link {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: var(--bg-light);
+    gap: 10px;
+    color: var(--text-light);
     text-decoration: none;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-    padding: 8px 0;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.4s var(--transition-smooth);
+    padding: 10px 0;
 }
 
 .back-link:hover {
-    color: var(--accent);
+    color: var(--white);
+    transform: translateX(-5px);
 }
 
 .back-link svg {
@@ -131,11 +141,12 @@ body {
 }
 
 .logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    font-weight: 600;
+    font-family: var(--font-heading);
+    font-size: 28px;
+    font-weight: 400;
     color: var(--text-light);
-    letter-spacing: 2px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
 }
 
 .secure-badge {
@@ -277,8 +288,9 @@ body {
    ======================================== */
 .checkout-forms {
     background: var(--white);
-    border-radius: 8px;
-    box-shadow: 0 4px 24px var(--shadow-soft);
+    border-radius: 12px;
+    box-shadow: 0 15px 50px var(--shadow-soft);
+    border: 1px solid var(--border);
     overflow: hidden;
 }
 
@@ -308,16 +320,20 @@ body {
 }
 
 .step-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 600;
+    font-family: var(--font-heading);
+    font-size: 32px;
+    font-weight: 400;
     color: var(--text-dark);
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
 }
 
 .step-subtitle {
-    font-size: 15px;
+    font-family: var(--font-primary);
+    font-size: 14px;
     color: var(--secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* ========================================
@@ -331,23 +347,24 @@ body {
 
 .cart-item-checkout {
     display: flex;
-    gap: 16px;
-    padding: 16px;
-    background: var(--bg-light);
-    border-radius: 6px;
-    transition: all 0.3s ease;
+    gap: 20px;
+    padding: 20px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.4s var(--transition-smooth);
 }
 
 .cart-item-checkout:hover {
-    background: var(--bg-soft);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px var(--shadow-soft);
 }
 
 .item-image {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 120px;
     object-fit: cover;
-    border-radius: 4px;
-    background: var(--white);
+    border-radius: 8px;
 }
 
 .item-details {
@@ -621,46 +638,48 @@ body {
     padding: 14px 28px;
     border: none;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Cormorant', serif;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: var(--font-primary);
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    letter-spacing: 1px;
+    gap: 10px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
 .btn-primary {
     background: var(--primary);
-    color: var(--text-light);
+    color: var(--white);
     flex: 1;
 }
 
 .btn-primary:hover {
-    background: #3a3020;
+    background: var(--secondary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--shadow-medium);
+    box-shadow: 0 8px 20px var(--shadow-medium);
 }
 
 .btn-primary:disabled {
     background: var(--bg-soft);
+    color: var(--text-light);
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
 .btn-secondary {
-    background: transparent;
+    background: var(--bg-soft);
     color: var(--text-dark);
-    border: 1px solid var(--bg-soft);
+    border: 1px solid var(--border);
 }
 
 .btn-secondary:hover {
+    background: var(--white);
     border-color: var(--accent);
     color: var(--accent);
 }
@@ -705,21 +724,23 @@ body {
 
 .summary-card {
     background: var(--white);
-    border-radius: 8px;
-    box-shadow: 0 4px 24px var(--shadow-soft);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px var(--shadow-soft);
+    border: 1px solid var(--border);
     overflow: hidden;
 }
 
 .summary-header {
     background: var(--primary);
-    padding: 20px 24px;
-    color: var(--text-light);
+    padding: 24px;
+    color: var(--white);
 }
 
 .summary-header h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    font-weight: 500;
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 1px;
 }
 
 .summary-body {
@@ -826,9 +847,10 @@ body {
 }
 
 .summary-row.total span:last-child {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 600;
     color: var(--primary);
+    font-family: var(--font-heading);
 }
 
 .promo-code {
@@ -952,18 +974,20 @@ body {
 }
 
 .confirmation-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 32px;
-    font-weight: 600;
+    font-family: var(--font-heading);
+    font-size: 42px;
+    font-weight: 400;
     color: var(--text-dark);
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+    letter-spacing: 2px;
 }
 
 .confirmation-message {
+    font-family: var(--font-primary);
     font-size: 16px;
     color: var(--secondary);
-    margin-bottom: 32px;
-    line-height: 1.6;
+    margin-bottom: 40px;
+    line-height: 1.8;
 }
 
 .order-details {
@@ -1147,6 +1171,15 @@ body {
     </style>
 </head>
 <body>
+    <script>
+        // Immediate auth check
+        (function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') {
+                window.location.href = 'login.php?redirect=' + encodeURIComponent(window.location.href);
+            }
+        })();
+    </script>
     
     <!-- Toast Notification -->
     <div id="toast" class="toast">
@@ -1160,7 +1193,7 @@ body {
     <!-- Header -->
     <header class="checkout-header">
         <div class="header-inner">
-            <a href="index.php" class="back-link">
+            <a href="index.php" class="back-link" id="checkoutBackLink">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
                     <polyline points="12 19 5 12 12 5"></polyline>
@@ -1414,8 +1447,7 @@ body {
                     </div>
 
                     <div class="confirmation-actions">
-                        <a href="index.php" class="btn btn-primary">Continue Shopping</a>
-                        
+                        <a href="index.php" class="btn btn-primary">Explore Collections</a>
                     </div>
                 </div>
             </div>
@@ -1643,21 +1675,21 @@ function renderCartItems() {
     
     if (!cart || cart.length === 0) {
         container.innerHTML = `
-            <div class="cart-empty">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <div class="cart-empty" style="padding: 100px 24px;">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 24px; opacity: 0.2;">
                     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <path d="M16 10a4 4 0 0 1-8 0"></path>
                 </svg>
-                <p>Your cart is empty</p>
-                <a href="index.php" class="btn btn-primary">Continue Shopping</a>
+                <p style="font-family: var(--font-heading); font-size: 24px; color: var(--text-dark); margin-bottom: 32px;">Your cart is currently empty</p>
+                <a href="index.php" class="btn btn-primary" style="max-width: 280px; margin: 0 auto;">Explore Collections</a>
             </div>
         `;
         
-        // Disable continue button if cart is empty
-        const continueBtn = document.querySelector('#step1 .btn-primary');
-        if (continueBtn && continueBtn.textContent.includes('Continue')) {
-            continueBtn.disabled = true;
+        // Hide step actions if cart is empty
+        const stepActions = document.querySelector('#step1 .step-actions');
+        if (stepActions) {
+            stepActions.style.display = 'none';
         }
         
         return;
@@ -1765,6 +1797,27 @@ function goToStep(stepNumber) {
         currentStep = stepNumber;
         updateProgressBar();
         
+        // Hide sidebar on confirmation step
+        const sidebar = document.querySelector('.order-summary-sidebar');
+        const main = document.querySelector('.checkout-main');
+        if (sidebar && main) {
+            if (stepNumber === 4) {
+                sidebar.style.display = 'none';
+                main.style.gridTemplateColumns = '1fr';
+                main.style.maxWidth = '800px';
+            } else {
+                sidebar.style.display = 'block';
+                main.style.gridTemplateColumns = '1fr 400px';
+                main.style.maxWidth = '1200px';
+            }
+        }
+
+        // Hide back link on confirmation step
+        const backLink = document.getElementById('checkoutBackLink');
+        if (backLink) {
+            backLink.style.display = stepNumber === 4 ? 'none' : 'flex';
+        }
+
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }

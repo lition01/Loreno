@@ -3,35 +3,33 @@
 // ===============================
 
 // --- Cart ---
-const cart = [];
+window.cart = window.cart || [];
 
 function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(window.cart));
 }
 
 function loadCart() {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
-        cart.push(...JSON.parse(savedCart));
+        window.cart.length = 0;
+        window.cart.push(...JSON.parse(savedCart));
     }
 }
 
 // --- Wishlist ---
-const wishlist = new Map();
+window.wishlist = window.wishlist || [];
 
 function saveWishlist() {
-    const arr = Array.from(wishlist.entries());
-    localStorage.setItem('wishlist', JSON.stringify(arr));
+    localStorage.setItem('wishlist', JSON.stringify(window.wishlist));
 }
 
 function loadWishlist() {
-    const saved = localStorage.getItem('wishlist');
-    if (!saved) return;
-
-    wishlist.clear();
-    JSON.parse(saved).forEach(([id, data]) => {
-        wishlist.set(id, data);
-    });
+    const savedWishlist = localStorage.getItem('wishlist');
+    if (savedWishlist) {
+        window.wishlist.length = 0;
+        window.wishlist.push(...JSON.parse(savedWishlist));
+    }
 }
 
 // --- Carousel ---
@@ -114,6 +112,38 @@ cartBtn.addEventListener('click', openCart);
 cartClose.addEventListener('click', closeCart);
 cartOverlay.addEventListener('click', closeCart);
 
+// Delegation for checkout button
+document.addEventListener('click', (e) => {
+    const checkoutBtn = e.target.closest('.checkout-btn');
+    if (checkoutBtn) {
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        if (isLoggedIn !== 'true') {
+            e.preventDefault();
+            
+            // Show the auth modal instead of just a toast
+            const authModal = document.getElementById('authModal');
+            if (authModal) {
+                authModal.classList.add('active');
+                closeCart(); // Close the cart sidebar to show the modal clearly
+            } else {
+                // Fallback to toast if modal not found
+                showToast('Ju lutem hyni në llogari për të bërë porosinë');
+                setTimeout(() => {
+                    window.location.href = 'login.php?redirect=' + encodeURIComponent('checkout.php');
+                }, 1500);
+            }
+        }
+    }
+
+    // Close auth modal
+    const closeAuthBtn = e.target.closest('#closeAuthModal');
+    const authModalOverlay = e.target.closest('.auth-modal-overlay');
+    if (closeAuthBtn || (authModalOverlay && e.target === authModalOverlay)) {
+        const authModal = document.getElementById('authModal');
+        if (authModal) authModal.classList.remove('active');
+    }
+});
+
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeCart();
 });
@@ -128,6 +158,75 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load data
     loadCart();
     loadWishlist();
+
+    // Handle user auth display in navbar
+    const userAuthSection = document.getElementById('userAuthSection');
+    if (userAuthSection) {
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        if (isLoggedIn === 'true') {
+            const userEmail = localStorage.getItem('userEmail') || 'User';
+            const shortName = userEmail.split('@')[0];
+            const firstLetter = shortName.charAt(0);
+            
+            userAuthSection.innerHTML = `
+                <div class="user-profile-wrapper" id="userProfileWrapper">
+                    <button class="user-profile-btn" id="userProfileBtn">
+                        <div class="user-avatar-circle">${firstLetter}</div>
+                        <span class="user-name">${shortName}</span>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="user-dropdown-menu">
+                        <div class="user-dropdown-header">
+                            <span>Account</span>
+                            <strong>${userEmail}</strong>
+                        </div>
+                        <a href="dashboard.php" class="user-dropdown-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            My Profile
+                        </a>
+                        <a href="orders.php" class="user-dropdown-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                            My Orders
+                        </a>
+                        <button class="user-dropdown-item logout" id="logoutBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Dropdown toggle logic
+            const profileBtn = document.getElementById('userProfileBtn');
+            const profileWrapper = document.getElementById('userProfileWrapper');
+            
+            if (profileBtn && profileWrapper) {
+                profileBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    profileWrapper.classList.toggle('active');
+                });
+
+                // Close dropdown on click outside
+                document.addEventListener('click', (e) => {
+                    if (!profileWrapper.contains(e.target)) {
+                        profileWrapper.classList.remove('active');
+                    }
+                });
+            }
+
+            // Add logout functionality
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('userEmail');
+                    window.location.reload();
+                });
+            }
+        }
+    }
 
     // Render UI
     renderCart();
@@ -211,7 +310,7 @@ function closeWishlistSidebar() {
 function renderWishlist() {
     if (!wishlistBody || !wishlistItemsCount) return;
 
-    const count = wishlist.size;
+    const count = wishlist.length;
     if (wishlistItemsCount) {
         const itemText = count === 1 ? 'item' : 'items';
         wishlistItemsCount.textContent = `(${count} ${itemText})`;
@@ -229,13 +328,13 @@ function renderWishlist() {
         return;
     }
 
-    wishlistBody.innerHTML = Array.from(wishlist.values()).map(product => {
+    wishlistBody.innerHTML = wishlist.map((product, index) => {
         const colors = product.colors || [];
         const sizes = product.sizes || ['XS', 'S', 'M', 'L', 'XL'];
         const uniqueId = `wishlist-${product.id}`;
         
         return `
-            <div class="wishlist-item" data-product-id="${product.id}">
+            <div class="wishlist-item" data-product-id="${product.id}" data-index="${index}">
                 <div class="wishlist-item-content">
                     <div class="wishlist-item-img">
                         <img src="${product.image}" alt="${product.name}" loading="lazy">
@@ -244,6 +343,7 @@ function renderWishlist() {
                         <div class="wishlist-item-header">
                             <h3 class="wishlist-item-name">${product.name}</h3>
                             <button class="wishlist-item-remove" 
+                                    data-index="${index}"
                                     data-product-id="${product.id}"
                                     aria-label="Remove from wishlist">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -315,88 +415,12 @@ function renderWishlist() {
         `;
     }).join('');
 
-    // Attach event listeners
-    attachWishlistEventListeners();
-}
-
-function attachWishlistEventListeners() {
-    // Remove from wishlist
-    document.querySelectorAll('.wishlist-item-remove').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const productId = this.dataset.productId;
-            toggleWishlist(productId);
-        });
-    });
-
-    // Color selection
-    document.querySelectorAll('.wishlist-color-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const productId = this.dataset.productId;
-            const colorIndex = parseInt(this.dataset.colorIndex);
-            const item = this.closest('.wishlist-item');
-            item.querySelectorAll('.wishlist-color-btn').forEach((b, i) => {
-                b.classList.toggle('selected', i === colorIndex);
-            });
-        });
-    });
-
-    // Size selection
-    document.querySelectorAll('.wishlist-size-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const productId = this.dataset.productId;
-            const sizeIndex = parseInt(this.dataset.sizeIndex);
-            const item = this.closest('.wishlist-item');
-            item.querySelectorAll('.wishlist-size-btn').forEach((b, i) => {
-                b.classList.toggle('selected', i === sizeIndex);
-            });
-        });
-    });
-
-    // Quantity controls
-    document.querySelectorAll('.wishlist-qty-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const productId = this.dataset.productId;
-            const delta = parseInt(this.dataset.delta);
-            const qtyEl = document.getElementById(`wishlist-qty-${productId}`);
-            if (qtyEl) {
-                let currentQty = parseInt(qtyEl.textContent) || 1;
-                currentQty = Math.max(1, Math.min(10, currentQty + delta));
-                qtyEl.textContent = currentQty;
-            }
-        });
-    });
-
-    // Add to cart
-    document.querySelectorAll('.wishlist-add-to-cart').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const productId = this.dataset.productId;
-
-            addToCartFromWishlist(productId);
-
-            // 1️⃣ Fshije nga wishlist
-            wishlist.delete(productId);
-
-            // 2️⃣ Përditëso butonin në card (hiq active)
-            const wishlistBtn = document.querySelector(`.wishlist-btn[data-product-id="${productId}"]`);
-            if (wishlistBtn) wishlistBtn.classList.remove('active');
-
-            // 3️⃣ Ruaje ndryshimin
-            saveWishlist();
-
-            // 4️⃣ Përditëso count
-            updateWishlistCount();
-
-            // 5️⃣ Rifresko sidebar-in
-            renderWishlist();
-
-            // 6️⃣ Mbylle sidebar-in
-            closeWishlistSidebar();
-        });
-    });
+    // Attach event listeners (REMOVED: Now handled by delegation in initWishlist)
 }
 
 function addToCartFromWishlist(productId) {
-    const product = wishlist.get(productId);
+    const idx = wishlist.findIndex(p => String(p.id) === String(productId));
+    const product = idx > -1 ? wishlist[idx] : null;
     if (!product) return;
 
     const item = document.querySelector(`.wishlist-item[data-product-id="${productId}"]`);
@@ -430,14 +454,41 @@ function addToCartFromWishlist(productId) {
         });
     }
 
-  renderCart();
-saveCart();
+    renderCart();
+    saveCart();
 
     showToast('Added to cart!');
-    
-    // Optionally close wishlist sidebar
-    // closeWishlistSidebar();
 }
+
+function addToCart(product, quantity, color, size) {
+    if (!product) return;
+    
+    const existingIndex = window.cart.findIndex(item => 
+        String(item.id) === String(product.id) && 
+        item.color === color && 
+        item.size === size
+    );
+
+    if (existingIndex > -1) {
+        window.cart[existingIndex].quantity += quantity;
+    } else {
+        window.cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            color: color,
+            size: size,
+            quantity: quantity,
+            image: product.image
+        });
+    }
+
+    renderCart();
+    saveCart();
+    showToast('Added to cart!');
+}
+
+window.addToCart = addToCart;
 
 // ========================================
 // CAROUSEL FUNCTIONS
@@ -744,6 +795,15 @@ function addToCartFromPopup(productId) {
 }
 
 
+window.toggleWishlist = toggleWishlist;
+window.saveWishlist = saveWishlist;
+window.updateWishlistCount = updateWishlistCount;
+window.renderWishlist = renderWishlist;
+window.saveCart = saveCart;
+window.renderCart = renderCart;
+window.showToast = showToast;
+window.syncWishlistButtons = syncWishlistButtons;
+
 // ======= RGB to Color Name Converter =======
 function rgbToColorName(color) {
     if (!color) return 'N/A';
@@ -917,17 +977,110 @@ function removeFromCart(index) {
 
 
 
+// ======= Remove Wishlist Item Function =======
+function removeFromWishlist(index) {
+    if (index >= 0 && index < wishlist.length) {
+        wishlist.splice(index, 1);
+        saveWishlist();
+        updateWishlistCount();
+        renderWishlist();
+    }
+}
+
 // ========================================
 // WISHLIST FUNCTIONS
 // ========================================
 function initWishlist() {
-    // Delegation for wishlist buttons
+    // Delegation for wishlist buttons (heart icons on cards)
     document.addEventListener('click', (e) => {
         const wishlistBtn = e.target.closest('.wishlist-btn');
-        if (wishlistBtn) {
+        // If it's a wishlist button but NOT the one in the sidebar or navbar
+        if (wishlistBtn && !wishlistBtn.closest('.wishlist-sidebar') && wishlistBtn.id !== 'wishlistBtn') {
             e.stopPropagation();
             const productId = wishlistBtn.dataset.productId;
             if (productId) toggleWishlist(productId);
+        }
+    });
+    
+    // Delegation for wishlist sidebar interactions
+    document.addEventListener('click', (e) => {
+        const target = e.target;
+
+        // Remove from wishlist
+        const removeBtn = target.closest('.wishlist-item-remove');
+        if (removeBtn) {
+            const index = parseInt(removeBtn.dataset.index);
+            if (!isNaN(index)) {
+                removeFromWishlist(index);
+                showToast('Removed from wishlist');
+            }
+            return;
+        }
+
+        // Color selection
+        const colorBtn = target.closest('.wishlist-color-btn');
+        if (colorBtn) {
+            const productId = colorBtn.dataset.productId;
+            const colorIndex = parseInt(colorBtn.dataset.colorIndex);
+            const item = colorBtn.closest('.wishlist-item');
+            if (item && !isNaN(colorIndex)) {
+                item.querySelectorAll('.wishlist-color-btn').forEach((b, i) => {
+                    b.classList.toggle('selected', i === colorIndex);
+                });
+            }
+            return;
+        }
+
+        // Size selection
+        const sizeBtn = target.closest('.wishlist-size-btn');
+        if (sizeBtn) {
+            const productId = sizeBtn.dataset.productId;
+            const sizeIndex = parseInt(sizeBtn.dataset.sizeIndex);
+            const item = sizeBtn.closest('.wishlist-item');
+            if (item && !isNaN(sizeIndex)) {
+                item.querySelectorAll('.wishlist-size-btn').forEach((b, i) => {
+                    b.classList.toggle('selected', i === sizeIndex);
+                });
+            }
+            return;
+        }
+
+        // Quantity controls
+        const qtyBtn = target.closest('.wishlist-qty-btn');
+        if (qtyBtn) {
+            const productId = qtyBtn.dataset.productId;
+            const delta = parseInt(qtyBtn.dataset.delta);
+            const qtyEl = document.getElementById(`wishlist-qty-${productId}`);
+            if (qtyEl && !isNaN(delta)) {
+                let currentQty = parseInt(qtyEl.textContent) || 1;
+                currentQty = Math.max(1, Math.min(10, currentQty + delta));
+                qtyEl.textContent = currentQty;
+            }
+            return;
+        }
+
+        // Add to cart from wishlist
+        const addToCartBtn = target.closest('.wishlist-add-to-cart');
+        if (addToCartBtn) {
+            const productId = addToCartBtn.dataset.productId;
+            if (productId) {
+                addToCartFromWishlist(productId);
+                
+                // Remove from wishlist after adding to cart
+                const removeIndex = wishlist.findIndex(p => String(p.id) === String(productId));
+                if (removeIndex > -1) {
+                    wishlist.splice(removeIndex, 1);
+                }
+                
+                const wishlistBtnEl = document.querySelector(`.wishlist-btn[data-product-id="${productId}"]`);
+                if (wishlistBtnEl) wishlistBtnEl.classList.remove('active');
+
+                saveWishlist();
+                updateWishlistCount();
+                renderWishlist();
+                closeWishlistSidebar();
+            }
+            return;
         }
     });
     
@@ -941,11 +1094,8 @@ function initWishlist() {
 function syncWishlistButtons() {
     document.querySelectorAll('.wishlist-btn').forEach(btn => {
         const productId = btn.dataset.productId;
-        if (productId && wishlist.has(productId)) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
+        const exists = wishlist.some(p => String(p.id) === String(productId));
+        btn.classList.toggle('active', !!exists);
     });
 }
 
@@ -981,7 +1131,7 @@ function getProductData(productId) {
 function updateWishlistCount() {
     if (!wishlistCount || !wishlistBtn) return;
     
-    const count = wishlist.size;
+    const count = wishlist.length;
     wishlistCount.textContent = count > 0 ? count : '';
     
     // Update active state of navbar wishlist button
@@ -998,16 +1148,17 @@ function updateWishlistCount() {
     }
 }
 
-function toggleWishlist(productId) {
+function toggleWishlist(productId, data = null) {
     const btn = document.querySelector(`.wishlist-btn[data-product-id="${productId}"]`);
-    if (wishlist.has(productId)) {
-        wishlist.delete(productId);
+    const index = wishlist.findIndex(p => String(p.id) === String(productId));
+    if (index > -1) {
+        wishlist.splice(index, 1);
         if (btn) btn.classList.remove('active');
         showToast('Removed from wishlist');
     } else {
-        const productData = getProductData(productId);
+        const productData = data || getProductData(productId);
         if (productData) {
-            wishlist.set(productId, productData);
+            wishlist.push(productData);
             if (btn) btn.classList.add('active');
             showToast('Added to wishlist');
         }
@@ -1019,9 +1170,25 @@ function toggleWishlist(productId) {
         renderWishlist();
     }
 
-    saveWishlist(); // ky duhet të jetë gjithmonë jashtë if-it të sidebar
+    saveWishlist();
 }
 
+
+// Listen for global wishlist updates (sync across tabs)
+window.addEventListener('storage', (e) => {
+    if (e.key === 'wishlist') {
+        loadWishlist();
+        updateWishlistCount();
+        syncWishlistButtons();
+        if (wishlistSidebar && wishlistSidebar.classList.contains('active')) {
+            renderWishlist();
+        }
+    }
+    if (e.key === 'cart') {
+        loadCart();
+        renderCart();
+    }
+});
 
 // ========================================
 // TOAST NOTIFICATION

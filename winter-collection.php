@@ -9,7 +9,5 @@
     <?php include "essentials/navbar.php" ?>
     <?php include "page-sections/collections/winter-collection/winter.php" ?>
     <?php include "essentials/footer.php" ?>
-    
-    <script src="cart-handler.js"></script>
 </body>
 </html>

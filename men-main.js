@@ -516,23 +516,8 @@
   }
 
   function syncWishlistActiveState() {
-    try {
-      if (typeof wishlist === "undefined") return;
-      document
-        .querySelectorAll(".wishlist-btn[data-product-id]")
-        .forEach(function (btn) {
-          var pid = btn.getAttribute("data-product-id");
-          if (pid && wishlist.has(pid)) {
-            btn.classList.add("active");
-          } else {
-            btn.classList.remove("active");
-          }
-        });
-      if (typeof updateWishlistCount === "function") {
-        updateWishlistCount();
-      }
-    } catch (e) {
-      /* no-op */
+    if (typeof window.syncWishlistButtons === "function") {
+      window.syncWishlistButtons();
     }
   }
 })();

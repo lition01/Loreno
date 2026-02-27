@@ -515,9 +515,6 @@ if (!$product) {
         // Product data from PHP
         const productData = <?php echo json_encode($product); ?>;
         
-        // Cart state (synchronized with navbar cart)
-        const cart = window.cart || [];
-        
         // Product page state
         let selectedColor = 0;
         let selectedSize = 0;
@@ -531,29 +528,6 @@ if (!$product) {
         const qtyValue = document.getElementById('productQty');
         const addToCartBtn = document.getElementById('addToCartBtn');
         const wishlistBtn = document.getElementById('wishlistBtn');
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        
-        // Navbar cart elements
-        const cartBody = document.querySelector('.cart-body');
-        const cartCount = document.querySelector('.cart-count');
-        
-        // Initialize cart from localStorage
-        function initializeCart() {
-            try {
-                const cartData = localStorage.getItem('cart');
-                if (cartData) {
-                    const parsedCart = JSON.parse(cartData);
-                    cart.length = 0;
-                    cart.push(...parsedCart);
-                    // Make cart available globally
-                    window.cart = cart;
-                }
-            } catch (e) {
-                console.error('Error loading cart:', e);
-            }
-            renderCart();
-        }
 
         // Color selection
         colorButtons.forEach((btn, index) => {
@@ -593,312 +567,44 @@ if (!$product) {
             const color = colorButtons[selectedColor]?.dataset.color || '';
             const size = sizeButtons[selectedSize]?.dataset.size || productData.sizes[0] || '';
             
-            const cartItem = {
-                id: productData.id,
-                name: productData.name,
-                price: productData.price,
-                image: productData.image,
-                color: color,
-                size: size,
-                quantity: quantity
-            };
-
-            // Get or initialize cart from localStorage or global
-            let currentCart = [];
-            try {
-                const cartData = localStorage.getItem('cart');
-                if (cartData) {
-                    currentCart = JSON.parse(cartData);
-                }
-            } catch (e) {
-                console.error('Error loading cart:', e);
+            // Call global function from cart-handler.js
+            if (typeof window.addToCart === 'function') {
+                window.addToCart(productData, quantity, color, size);
             }
-
-            // Check if item already exists with same color and size
-            const existingIndex = currentCart.findIndex(item => 
-                item.id === cartItem.id && 
-                item.color === cartItem.color && 
-                item.size === cartItem.size
-            );
-
-            if (existingIndex > -1) {
-                currentCart[existingIndex].quantity += quantity;
-            } else {
-                currentCart.push(cartItem);
-            }
-
-            // Save to localStorage
-            localStorage.setItem('cart', JSON.stringify(currentCart));
-
-            // Update global cart
-            cart.length = 0;
-            cart.push(...currentCart);
-            window.cart = cart;
-
-            // Render cart
-            renderCart();
-
-            // Trigger custom event for cart update
-            window.dispatchEvent(new CustomEvent('cartUpdated', { detail: currentCart }));
-
-            showToast('Added to cart!');
         });
 
         // Wishlist functionality
-        wishlistBtn.addEventListener('click', () => {
-            wishlistBtn.classList.toggle('active');
-            const isActive = wishlistBtn.classList.contains('active');
-            
-            let wishlist = [];
-            try {
-                const wishlistData = localStorage.getItem('wishlist');
-                if (wishlistData) {
-                    wishlist = JSON.parse(wishlistData);
-                }
-            } catch (e) {
-                console.error('Error loading wishlist:', e);
-            }
-
-            if (isActive) {
-                const wishlistItem = {
-                    id: productData.id,
-                    name: productData.name,
-                    price: productData.price,
-                    image: productData.image,
-                    colors: productData.colors,
-                    sizes: productData.sizes
-                };
-                
-                if (!wishlist.find(item => item.id === productData.id)) {
-                    wishlist.push(wishlistItem);
-                    showToast('Added to wishlist!');
-                }
-            } else {
-                wishlist = wishlist.filter(item => item.id !== productData.id);
-                showToast('Removed from wishlist!');
-            }
-
-            localStorage.setItem('wishlist', JSON.stringify(wishlist));
-
-            // Update navbar wishlist if function exists
-            if (typeof window.updateWishlistCount === 'function') {
-                window.updateWishlistCount();
+        wishlistBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const productId = wishlistBtn.dataset.productId;
+            if (typeof window.toggleWishlist === 'function') {
+                window.toggleWishlist(productId, productData);
+                updateWishlistButtonState();
             }
         });
+
+        function updateWishlistButtonState() {
+            if (typeof window.wishlist !== 'undefined') {
+                const isInWishlist = window.wishlist.some(p => String(p.id) === String(productData.id));
+                wishlistBtn.classList.toggle('active', isInWishlist);
+                const btnText = wishlistBtn.querySelector('span') || wishlistBtn;
+                if (btnText.tagName === 'SPAN') {
+                    btnText.textContent = isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist';
+                }
+            }
+        }
 
         // Check if product is in wishlist on load
-        window.addEventListener('DOMContentLoaded', () => {
-            try {
-                const wishlistData = localStorage.getItem('wishlist');
-                if (wishlistData) {
-                    const wishlist = JSON.parse(wishlistData);
-                    if (wishlist.find(item => item.id === productData.id)) {
-                        wishlistBtn.classList.add('active');
-                    }
-                }
-            } catch (e) {
-                console.error('Error checking wishlist:', e);
-            }
-        });
-
-        // Toast notification
-        function showToast(message) {
-            toastMessage.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Render cart function (compatible with navbar)
-        function renderCart() {
-            if (!cartBody || !cartCount) return;
-
-            // Update total items in cart icon
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            if (cartCount) cartCount.textContent = totalItems;
-
-            // Update cart items count in header
-            const cartItemsCountEl = document.getElementById('cartItemsCount');
-            if (cartItemsCountEl) {
-                const itemText = totalItems === 1 ? 'item' : 'items';
-                cartItemsCountEl.textContent = `(${totalItems} ${itemText})`;
-            }
-
-            // Generate cart item HTML
-            if (cart.length === 0) {
-                cartBody.innerHTML = `
-                    <div class="cart-empty">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <path d="M16 10a4 4 0 0 1-8 0"></path>
-                        </svg>
-                        <p>Your cart is empty</p>
-                    </div>
-                `;
-            } else {
-                cartBody.innerHTML = cart.map((item, index) => {
-                    const itemTotal = item.price * item.quantity;
-                    const colorDisplay = item.color || 'N/A';
-                    const sizeDisplay = item.size || 'N/A';
-                    
-                    // Escape HTML and JSON for data attributes
-                    const safeColor = (item.color || '').replace(/"/g, '&quot;');
-                    const safeSize = (item.size || '').replace(/"/g, '&quot;');
-                    
-                    return `
-                    <div class="cart-item" data-item-index="${index}">
-                        <div class="cart-item-img">
-                            <img src="${item.image}" alt="${item.name}" loading="lazy">
-                        </div>
-                        <div class="cart-item-details">
-                            <div class="cart-item-header">
-                                <h3 class="cart-item-name">${item.name}</h3>
-                                <button class="cart-item-remove" 
-                                        data-product-id="${item.id}"
-                                        data-color="${safeColor}"
-                                        data-size="${safeSize}"
-                                        aria-label="Remove item">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="cart-item-variant">
-                                <span class="variant-label">Color:</span>
-                                <span class="variant-value">${colorDisplay}</span>
-                                <span class="variant-separator">•</span>
-                                <span class="variant-label">Size:</span>
-                                <span class="variant-value">${sizeDisplay}</span>
-                            </div>
-                            <div class="cart-item-controls">
-                                <div class="cart-item-qty">
-                                    <button class="qty-btn qty-minus" 
-                                            data-product-id="${item.id}"
-                                            data-color="${safeColor}"
-                                            data-size="${safeSize}"
-                                            data-delta="-1"
-                                            aria-label="Decrease quantity">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        </svg>
-                                    </button>
-                                    <span class="qty-value">${item.quantity}</span>
-                                    <button class="qty-btn qty-plus" 
-                                            data-product-id="${item.id}"
-                                            data-color="${safeColor}"
-                                            data-size="${safeSize}"
-                                            data-delta="1"
-                                            aria-label="Increase quantity">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div class="cart-item-price">
-                                    <span class="price-label">Price:</span>
-                                    <span class="price-value">$${itemTotal.toFixed(2)}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    `;
-                }).join('');
-                
-                // Attach event listeners for cart item buttons
-                document.querySelectorAll('.cart-item-remove').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const productId = parseInt(this.dataset.productId);
-                        const color = this.dataset.color;
-                        const size = this.dataset.size;
-                        removeFromCart(productId, color, size);
-                    });
-                });
-                
-                document.querySelectorAll('.cart-item .qty-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const productId = parseInt(this.dataset.productId);
-                        const color = this.dataset.color;
-                        const size = this.dataset.size;
-                        const delta = parseInt(this.dataset.delta);
-                        updateCartQuantity(productId, color, size, delta);
-                    });
-                });
-            }
-
-            // Calculate and update total
-            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            const cartTotalEl = document.getElementById('cartTotal');
-            if (cartTotalEl) cartTotalEl.textContent = `$${total.toFixed(2)}`;
-        }
-
-        // Update cart quantity function
-        function updateCartQuantity(productId, color, size, delta) {
-            const index = cart.findIndex(item => 
-                item.id === productId && 
-                item.color === color && 
-                item.size === size
-            );
-
-            if (index === -1) return;
-
-            cart[index].quantity = Math.max(1, Math.min(10, cart[index].quantity + delta));
-
-            if (cart[index].quantity <= 0) {
-                cart.splice(index, 1);
-            }
-
-            // Save to localStorage
-            localStorage.setItem('cart', JSON.stringify(cart));
-            window.cart = cart;
-
-            // Render cart
-            renderCart();
-
-            // Trigger custom event
-            window.dispatchEvent(new CustomEvent('cartUpdated', { detail: cart }));
-        }
-
-        // Remove from cart function
-        function removeFromCart(productId, color, size) {
-            const index = cart.findIndex(item => 
-                item.id === productId && 
-                item.color === color && 
-                item.size === size
-            );
-
-            if (index === -1) return;
-
-            cart.splice(index, 1);
-
-            // Save to localStorage
-            localStorage.setItem('cart', JSON.stringify(cart));
-            window.cart = cart;
-
-            // Render cart
-            renderCart();
-
-            // Trigger custom event
-            window.dispatchEvent(new CustomEvent('cartUpdated', { detail: cart }));
-        }
-
-        // Make functions available globally
-        window.renderCart = renderCart;
-        window.updateCartQuantity = updateCartQuantity;
-        window.removeFromCart = removeFromCart;
-
-        // Initialize cart on page load
         document.addEventListener('DOMContentLoaded', () => {
-            initializeCart();
+            // Wait a tiny bit for cart-handler.js to finish loading data
+            setTimeout(updateWishlistButtonState, 100);
         });
 
-        // Listen for cart updates from navbar
-        window.addEventListener('cartUpdated', (e) => {
-            // Reload cart from localStorage if updated from elsewhere
-            initializeCart();
+        // Listen for global wishlist updates (if needed)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'wishlist') {
+                updateWishlistButtonState();
+            }
         });
     </script>
 </body>

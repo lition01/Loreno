@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fashion Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'Allenoire';
+            src: url('https://fonts.cdnfonts.com/s/91211/Allenoire.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         *, *::before, *::after {
             margin: 0;
             padding: 0;
@@ -16,14 +24,15 @@
             --color-secondary: #c6baa5;
             --color-hover: #a8845e;
             --color-accent: #7e5232;
-            --color-dark: #2f2716;
+            --color-dark: #1E1A14; /* Më e errët, luxury */
             --color-white: #ffffff;
             --color-light-bg: #faf9f7;
             --color-border: #e8e4de;
-            --font-primary: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            --font-heading: 'Georgia', 'Times New Roman', serif;
-            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --navbar-height: 70px;
+            --font-primary: 'Montserrat', system-ui, -apple-system, sans-serif;
+            --font-heading: 'Allenoire', 'Playfair Display', serif;
+            --font-serif: 'Cormorant Garamond', serif;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --navbar-height: 80px;
             --topbar-height: 36px;
         }
 
@@ -95,6 +104,10 @@
             z-index: 1000;
         }
 
+        .navbar-top-row {
+            display: contents;
+        }
+
         .navbar-inner {
             max-width: 1400px;
             height: 100%;
@@ -105,12 +118,12 @@
             justify-content: space-between;
         }
 
-        /* Logo */
         .logo {
             display: flex;
             align-items: center;
             gap: 0.6rem;
             text-decoration: none;
+            order: 1;
         }
 
         .logo-icon {
@@ -121,6 +134,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover .logo-icon {
+            transform: scale(1.05);
         }
 
         .logo-icon svg {
@@ -129,12 +147,19 @@
             fill: var(--color-white);
         }
 
-        /* Nav Links */
         .nav-links {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             list-style: none;
+            order: 2;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.15rem;
+            order: 3;
         }
 
         .nav-links > li {
@@ -145,13 +170,14 @@
             display: flex;
             align-items: center;
             gap: 0.3rem;
-            padding: 0.6rem 1rem;
+            padding: 0.6rem 0.8rem;
             color: var(--color-dark);
             text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            font-weight: 400;
             text-transform: uppercase;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.05em;
             transition: all var(--transition);
             border-radius: 6px;
             position: relative;
@@ -319,54 +345,147 @@
             transition: all var(--transition);
         }
 
-        .dropdown a:hover {
-            background: var(--color-light-bg);
-            color: var(--color-accent);
-            padding-left: 1.5rem;
-        }
-
-        /* Search */
-        .search-box {
+        /* User Nav Section Improvements */
+        .user-profile-wrapper {
             position: relative;
-            max-width: 240px;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 0.6rem 1rem 0.6rem 2.5rem;
-            border: 1px solid var(--color-border);
-            border-radius: 6px;
-            font-size: 0.85rem;
+        .user-profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 50px;
             background: var(--color-light-bg);
+            border: 1px solid var(--color-border);
+            cursor: pointer;
             transition: all var(--transition);
         }
 
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--color-main);
+        .user-profile-btn:hover {
             background: var(--color-white);
+            border-color: var(--color-main);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        .search-box svg {
+        .user-avatar-circle {
+            width: 24px;
+            height: 24px;
+            background: var(--color-dark);
+            color: var(--color-white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .user-profile-btn .user-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-dark);
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-dropdown-menu {
             position: absolute;
-            left: 0.8rem;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 120%;
+            right: 0;
+            width: 200px;
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 0.5rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all var(--transition);
+            z-index: 1002;
+        }
+
+        .user-profile-wrapper.active .user-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-dropdown-header {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 0.5rem;
+        }
+
+        .user-dropdown-header span {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--color-main);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .user-dropdown-header strong {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--color-dark);
+            margin-top: 0.2rem;
+            word-break: break-all;
+        }
+
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.7rem 1rem;
+            color: var(--color-dark);
+            text-decoration: none;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            transition: all var(--transition);
+            width: 100%;
+            border: none;
+            background: none;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .user-dropdown-item:hover {
+            background: var(--color-light-bg);
+            color: var(--color-accent);
+        }
+
+        .user-dropdown-item svg {
             width: 16px;
             height: 16px;
-            color: var(--color-main);
+            opacity: 0.7;
         }
 
-        /* Actions */
+        .user-dropdown-item.logout {
+            color: #d93025;
+            margin-top: 0.3rem;
+            border-top: 1px solid var(--color-border);
+            border-radius: 0 0 8px 8px;
+        }
+
+        .user-dropdown-item.logout:hover {
+            background: #fff5f5;
+        }
+
+        /* Actions Group */
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.15rem; /* Reduced gap to bring icons closer together */
         }
 
         .action-btn {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -374,12 +493,14 @@
             border: none;
             color: var(--color-dark);
             cursor: pointer;
-            transition: color var(--transition);
+            transition: all var(--transition);
             position: relative;
+            border-radius: 50%;
         }
 
         .action-btn:hover {
-            color: var(--color-main);
+            background-color: var(--color-light-bg);
+            color: var(--color-accent);
         }
 
         .action-btn svg {
@@ -429,39 +550,70 @@
             color: var(--color-main);
         }
 
-        /* Simple Mobile Toggle - No Hover Effects */
+        /* Modern Minimal Burger Toggle */
         .menu-toggle {
             display: none;
-            flex-direction: column;
-            gap: 5px;
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             align-items: center;
             justify-content: center;
             background: transparent;
             border: none;
             cursor: pointer;
-            padding: 8px;
+            position: relative;
+            border-radius: 50%;
+            transition: all var(--transition);
+        }
+
+        .menu-toggle:hover {
+            background-color: var(--color-light-bg);
+        }
+
+        .burger-container {
+            width: 20px;
+            height: 12px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .menu-toggle span {
-            width: 20px;
-            height: 2px;
+            width: 100%;
+            height: 1.5px;
             background: var(--color-dark);
             display: block;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2px;
+        }
+
+        /* Modern 2-line style (shorter second line) */
+        .menu-toggle span:nth-child(2) {
+            width: 70%;
+            margin-left: auto;
+        }
+        
+        /* Hide third span if it exists or use it for the X */
+        .menu-toggle span:nth-child(3) {
+            display: none;
+        }
+
+        .menu-toggle.active .burger-container {
+            height: 20px;
+            justify-content: center;
         }
 
         .menu-toggle.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
+            transform: rotate(45deg) translateY(0);
+            position: absolute;
+            width: 100%;
         }
 
         .menu-toggle.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .menu-toggle.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(5px, -5px);
+            transform: rotate(-45deg) translateY(0);
+            position: absolute;
+            width: 100%;
+            margin-left: 0;
         }
 
         /* Cart Sidebar */
@@ -498,6 +650,110 @@
 
         .cart-sidebar.active {
             transform: translateX(0);
+        }
+
+        /* Auth Required Modal */
+        .auth-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(47, 39, 22, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .auth-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .auth-modal {
+            background: var(--color-white);
+            width: 90%;
+            max-width: 400px;
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transform: scale(0.9);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .auth-modal-overlay.active .auth-modal {
+            transform: scale(1);
+        }
+
+        .auth-modal-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--color-light-bg);
+            color: var(--color-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .auth-modal-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .auth-modal-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-dark);
+            margin-bottom: 0.75rem;
+        }
+
+        .auth-modal-text {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+
+        .auth-modal-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .auth-modal-btn {
+            padding: 0.875rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .auth-modal-btn.primary {
+            background: var(--color-dark);
+            color: var(--color-white);
+        }
+
+        .auth-modal-btn.primary:hover {
+            background: var(--color-accent);
+            transform: translateY(-2px);
+        }
+
+        .auth-modal-btn.secondary {
+            background: transparent;
+            color: var(--color-dark);
+            border: 1px solid var(--color-border);
+        }
+
+        .auth-modal-btn.secondary:hover {
+            background: var(--color-light-bg);
         }
 
         /* Wishlist Sidebar */
@@ -1232,42 +1488,69 @@
 
         /* Mobile Menu Overlay */
         .mobile-menu-overlay {
-            display: none;
             position: fixed;
             top: calc(var(--topbar-height) + var(--navbar-height));
             left: 0;
             right: 0;
             bottom: 0;
-            background: var(--color-white);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
             z-index: 998;
             overflow-y: auto;
-            padding: 0;
+            padding: 1rem 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: block; /* Change from display:none to block for transitions */
         }
 
         .mobile-menu-overlay.active {
-            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
 
         .mobile-nav-item {
             border-bottom: 1px solid var(--color-border);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        .mobile-menu-overlay.active .mobile-nav-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered animation for menu items */
+        .mobile-menu-overlay.active .mobile-nav-item:nth-child(1) { transition-delay: 0.1s; }
+        .mobile-menu-overlay.active .mobile-nav-item:nth-child(2) { transition-delay: 0.15s; }
+        .mobile-menu-overlay.active .mobile-nav-item:nth-child(3) { transition-delay: 0.2s; }
+        .mobile-menu-overlay.active .mobile-nav-item:nth-child(4) { transition-delay: 0.25s; }
+        .mobile-menu-overlay.active .mobile-nav-item:nth-child(5) { transition-delay: 0.3s; }
 
         .mobile-nav-link {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem 1.5rem;
+            padding: 1.2rem 1.5rem;
             color: var(--color-dark);
             text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
+            font-size: 0.9rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.05em;
             background: var(--color-white);
             border: none;
             width: 100%;
             cursor: pointer;
             text-align: left;
+            transition: background 0.3s ease;
+        }
+
+        .mobile-nav-link:active {
+            background: var(--color-light-bg);
         }
 
         .mobile-nav-link svg {
@@ -1281,16 +1564,18 @@
         }
 
         .mobile-submenu {
-            display: none;
+            max-height: 0;
+            overflow: hidden;
             background: var(--color-light-bg);
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .mobile-nav-item.open .mobile-submenu {
-            display: block;
+            max-height: 1000px; /* High enough value for dynamic content */
         }
 
         .mobile-submenu-section {
-            padding: 1rem 1.5rem;
+            padding: 1.25rem 1.5rem;
             border-bottom: 1px solid var(--color-border);
         }
 
@@ -1309,58 +1594,90 @@
 
         .mobile-submenu a {
             display: block;
-            padding: 0.6rem 0;
+            padding: 0.8rem 0;
             color: var(--color-dark);
             text-decoration: none;
-            font-size: 0.9rem;
-            border-bottom: 1px solid var(--color-border);
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(232, 228, 222, 0.5);
+            transition: all 0.3s ease;
         }
 
-        .mobile-submenu a:last-child {
-            border-bottom: none;
-        }
-
+        .mobile-submenu a:hover,
         .mobile-submenu a:active {
             color: var(--color-accent);
+            padding-left: 5px;
         }
 
         /* Responsive */
         @media (max-width: 900px) {
-            .nav-links, .search-box {
+            .navbar {
+                height: var(--navbar-height);
+            }
+
+            .navbar-inner {
+                flex-direction: row;
+                height: 100%;
+                justify-content: space-between;
+                padding: 0 1.25rem;
+            }
+
+            .navbar-top-row {
+                display: contents;
+            }
+
+            .logo {
+                order: 1;
+                margin-bottom: 0;
+            }
+
+            .nav-actions {
+                order: 2;
+                position: static;
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+            }
+
+            .nav-links {
                 display: none;
             }
 
-            .menu-toggle {
-                display: flex;
+            .page-spacer {
+                height: calc(var(--topbar-height) + var(--navbar-height));
             }
         }
 
         @media (max-width: 480px) {
+            .navbar-inner {
+                padding: 0 1rem;
+            }
+
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+            }
+
             .cart-sidebar {
                 max-width: 100%;
             }
 
             .action-btn {
-                width: 32px;
-                height: 32px;
+                width: 44px;
+                height: 44px;
             }
 
             .action-btn svg {
-                width: 18px;
-                height: 18px;
+                width: 20px;
+                height: 20px;
             }
 
             .menu-toggle {
-                width: 32px;
-                height: 32px;
-            }
-
-            .menu-toggle span {
-                width: 18px;
+                width: 44px;
+                height: 44px;
             }
 
             .nav-actions {
-                gap: 0;
+                gap: 0.25rem;
             }
         }
 
@@ -1400,230 +1717,61 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-inner">
-            <!-- Logo -->
-            <a href="/" class="logo">
-                <div class="logo-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                    </svg>
-                </div>
-            </a>
-
-            <!-- Nav Links with Mega Menu -->
-            <ul class="nav-links" id="navLinks">
-                <li>
-                    <a href="/men">
-                        Men
-                        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"></polyline>
+            <div class="navbar-top-row">
+                <!-- Logo -->
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                         </svg>
-                    </a>
-                    <div class="mega-menu">
-                        <div class="mega-menu-inner">
-                            <div class="mega-menu-column">
-                                <h3>Clothing</h3>
-                                <ul>
-                                    <li><a href="/men/t-shirts">T-Shirts</a></li>
-                                    <li><a href="/men/shirts">Shirts</a></li>
-                                    <li><a href="/men/jackets">Jackets</a></li>
-                                    <li><a href="/men/pants">Pants</a></li>
-                                    <li><a href="/men/jeans">Jeans</a></li>
-                                    <li><a href="/men/suits">Suits</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-column">
-                                <h3>Shoes</h3>
-                                <ul>
-                                    <li><a href="/men/sneakers">Sneakers</a></li>
-                                    <li><a href="/men/boots">Boots</a></li>
-                                    <li><a href="/men/loafers">Loafers</a></li>
-                                    <li><a href="/men/sandals">Sandals</a></li>
-                                    <li><a href="/men/formal">Formal Shoes</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-column">
-                                <h3>Accessories</h3>
-                                <ul>
-                                    <li><a href="/men/watches">Watches</a></li>
-                                    <li><a href="/men/bags">Bags</a></li>
-                                    <li><a href="/men/belts">Belts</a></li>
-                                    <li><a href="/men/wallets">Wallets</a></li>
-                                    <li><a href="/men/sunglasses">Sunglasses</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-column">
-                                <h3>Collections</h3>
-                                <ul>
-                                    <li><a href="/men/new">New Arrivals</a></li>
-                                    <li><a href="/men/bestsellers">Bestsellers</a></li>
-                                    <li><a href="/men/sale">Sale</a></li>
-                                    <li><a href="/men/premium">Premium</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-featured">
-                                <img src="https://images.unsplash.com/photo-1617137968427-85924c800a22?w=300&h=200&fit=crop" alt="Men's Collection">
-                                <h4>Summer Collection</h4>
-                                <p>Fresh styles for the warm season</p>
-                                <a href="/men/summer">Shop Now</a>
-                            </div>
-                        </div>
                     </div>
-                </li>
-                <li>
-                    <a href="/women">
-                        Women
-                        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </a>
-                    <div class="mega-menu">
-                        <div class="mega-menu-inner">
-                            <div class="mega-menu-column">
-                                <h3>Clothing</h3>
-                                <ul>
-                                    <li><a href="/women/dresses">Dresses</a></li>
-                                    <li><a href="/women/tops">Tops</a></li>
-                                    <li><a href="/women/blouses">Blouses</a></li>
-                                    <li><a href="/women/skirts">Skirts</a></li>
-                                    <li><a href="/women/pants">Pants</a></li>
-                                    <li><a href="/women/jackets">Jackets</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-column">
-                                <h3>Shoes</h3>
-                                <ul>
-                                    <li><a href="/women/heels">Heels</a></li>
-                                    <li><a href="/women/flats">Flats</a></li>
-                                    <li><a href="/women/sneakers">Sneakers</a></li>
-                                    <li><a href="/women/boots">Boots</a></li>
-                                    <li><a href="/women/sandals">Sandals</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-column">
-                                <h3>Accessories</h3>
-                                <ul>
-                                    <li><a href="/women/bags">Bags</a></li>
-                                    <li><a href="/women/jewelry">Jewelry</a></li>
-                                    <li><a href="/women/scarves">Scarves</a></li>
-                                    <li><a href="/women/sunglasses">Sunglasses</a></li>
-                                    <li><a href="/women/watches">Watches</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-column">
-                                <h3>Collections</h3>
-                                <ul>
-                                    <li><a href="/women/new">New Arrivals</a></li>
-                                    <li><a href="/women/bestsellers">Bestsellers</a></li>
-                                    <li><a href="/women/sale">Sale</a></li>
-                                    <li><a href="/women/premium">Premium</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-featured">
-                                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=300&h=200&fit=crop" alt="Women's Collection">
-                                <h4>New Arrivals</h4>
-                                <p>Discover the latest trends</p>
-                                <a href="/women/new">Shop Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <a href="/kids">
-                        Kids
-                        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </a>
-                    <div class="mega-menu">
-                        <div class="mega-menu-inner">
-                            <div class="mega-menu-column">
-                                <h3>Boys</h3>
-                                <ul>
-                                    <li><a href="/kids/boys/tops">Tops</a></li>
-                                    <li><a href="/kids/boys/pants">Pants</a></li>
-                                    <li><a href="/kids/boys/shoes">Shoes</a></li>
-                                    <li><a href="/kids/boys/outerwear">Outerwear</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-column">
-                                <h3>Girls</h3>
-                                <ul>
-                                    <li><a href="/kids/girls/dresses">Dresses</a></li>
-                                    <li><a href="/kids/girls/tops">Tops</a></li>
-                                    <li><a href="/kids/girls/shoes">Shoes</a></li>
-                                    <li><a href="/kids/girls/outerwear">Outerwear</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-column">
-                                <h3>Baby</h3>
-                                <ul>
-                                    <li><a href="/kids/baby/clothing">Clothing</a></li>
-                                    <li><a href="/kids/baby/shoes">Shoes</a></li>
-                                    <li><a href="/kids/baby/accessories">Accessories</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-column">
-                                <h3>Collections</h3>
-                                <ul>
-                                    <li><a href="/kids/new">New Arrivals</a></li>
-                                    <li><a href="/kids/sale">Sale</a></li>
-                                    <li><a href="/kids/school">Back to School</a></li>
-                                </ul>
-                            </div>
-                            <div class="mega-menu-featured">
-                                <img src="https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=300&h=200&fit=crop" alt="Kids Collection">
-                                <h4>Back to School</h4>
-                                <p>Get ready for the new year</p>
-                                <a href="/kids/school">Shop Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <a href="/accessories">Accessories</a>
-                </li>
-                <li>
-                    <a href="/sale">Sale</a>
-                </li>
-            </ul>
-
-            <!-- Search -->
-            <div class="search-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input type="text" placeholder="Search products...">
-            </div>
-
-            <!-- Actions -->
-            <div class="nav-actions">
-                <a href="login.php" class="action-btn" aria-label="Login">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
                 </a>
-                <button class="action-btn" id="wishlistBtn" aria-label="Wishlist">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                    <span class="wishlist-count" id="wishlistCount">0</span>
-                </button>
-                <button class="action-btn" id="cartBtn" aria-label="Shopping Cart">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
-                        <path d="M3 6h18"></path>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                    <span class="cart-count">0</span>
-                </button>
-                <button class="menu-toggle" id="menuToggle" aria-label="Menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+
+                <!-- Actions Group (Auth, Wishlist, Cart, Burger) -->
+                <div class="nav-actions">
+                    <div id="userAuthSection">
+                        <a href="login.php" class="action-btn" id="loginBtnNav" aria-label="Login">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <button class="action-btn" id="wishlistBtn" aria-label="Wishlist">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span class="wishlist-count" id="wishlistCount">0</span>
+                    </button>
+
+                    <button class="action-btn" id="cartBtn" aria-label="Shopping Cart">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                            <path d="M3 6h18"></path>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        <span class="cart-count">0</span>
+                    </button>
+
+                    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+                        <div class="burger-container">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </button>
+                </div>
             </div>
+
+            <!-- Nav Links (Visible on Desktop, Scrollable on Mobile) -->
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/men">Men</a></li>
+                <li><a href="/women">Women</a></li>
+                <li><a href="/kids">Kids</a></li>
+                <li><a href="/accessories">Accessories</a></li>
+                <li><a href="/sale">Sale</a></li>
+            </ul>
         </div>
     </nav>
 
@@ -1779,6 +1927,26 @@
         </div>
     </aside>
 
+    <!-- Auth Required Modal -->
+    <div class="auth-modal-overlay" id="authModal">
+        <div class="auth-modal">
+            <div class="auth-modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+            </div>
+            <h3 class="auth-modal-title">Account Required</h3>
+            <p class="auth-modal-text">Ju nuk keni një llogari. Ju lutem regjistrohuni ose hyni në llogarinë tuaj për të vazhduar me porosinë.</p>
+            <div class="auth-modal-btns">
+                <a href="login.php?redirect=checkout.php" class="auth-modal-btn primary">Hyni / Regjistrohuni</a>
+                <button class="auth-modal-btn secondary" id="closeAuthModal">Më vonë</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Page Spacer -->
     <div class="page-spacer"></div>
 
@@ -1787,62 +1955,75 @@
 
    <script>
     // BURGER MENU
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
 
-const menuToggle = document.getElementById('menuToggle');
-const mobileMenu = document.getElementById('mobileMenu');
+        if (menuToggle && mobileMenu) {
+            function openMobileMenu() {
+                menuToggle.classList.add('active');
+                mobileMenu.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
 
-function openMobileMenu() {
-    menuToggle.classList.add('active');
-    mobileMenu.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
+            function closeMobileMenu() {
+                menuToggle.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
 
-function closeMobileMenu() {
-    menuToggle.classList.remove('active');
-    mobileMenu.classList.remove('active');
-    document.body.style.overflow = '';
-}
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (mobileMenu.classList.contains('active')) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            });
 
-menuToggle.addEventListener('click', () => {
-    if (mobileMenu.classList.contains('active')) {
-        closeMobileMenu();
-    } else {
-        openMobileMenu();
-    }
-});
+            // Close with ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeMobileMenu();
+                }
+            });
 
-// Close with ESC
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeMobileMenu();
-    }
-});
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (mobileMenu.classList.contains('active') && !mobileMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                    closeMobileMenu();
+                }
+            });
+        }
 
-// Submenu
-    const mobileNavItems = document.querySelectorAll('.mobile-nav-item[data-has-submenu="true"]');
-
-    mobileNavItems.forEach(item => {
-        const btn = item.querySelector('.mobile-nav-link');
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            item.classList.toggle('open');
+        // Submenu logic
+        const mobileNavItems = document.querySelectorAll('.mobile-nav-item[data-has-submenu="true"]');
+        mobileNavItems.forEach(item => {
+            const btn = item.querySelector('.mobile-nav-link');
+            if (btn) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    item.classList.toggle('open');
+                });
+            }
         });
+
+        // CART & WISHLIST BUTTONS
+        const cartBtn = document.getElementById('cartBtn');
+        const wishlistBtn = document.getElementById('wishlistBtn');
+        const cartClose = document.getElementById('cartClose');
+        const wishlistClose = document.getElementById('wishlistClose');
+        const cartOverlay = document.getElementById('cartOverlay');
+        const wishlistOverlay = document.getElementById('wishlistOverlay');
+
+        if (cartBtn) cartBtn.addEventListener('click', () => { if (typeof openCart === 'function') openCart(); });
+        if (wishlistBtn) wishlistBtn.addEventListener('click', () => { if (typeof openWishlistSidebar === 'function') openWishlistSidebar(); });
+        if (cartClose) cartClose.addEventListener('click', () => { if (typeof closeCart === 'function') closeCart(); });
+        if (wishlistClose) wishlistClose.addEventListener('click', () => { if (typeof closeWishlistSidebar === 'function') closeWishlistSidebar(); });
+        if (cartOverlay) cartOverlay.addEventListener('click', () => { if (typeof closeCart === 'function') closeCart(); });
+        if (wishlistOverlay) wishlistOverlay.addEventListener('click', () => { if (typeof closeWishlistSidebar === 'function') closeWishlistSidebar(); });
     });
-
-    // CART & WISHLIST BUTTONS
-    const cartBtn = document.getElementById('cartBtn');
-    const wishlistBtn = document.getElementById('wishlistBtn');
-    const cartClose = document.getElementById('cartClose');
-    const wishlistClose = document.getElementById('wishlistClose');
-    const cartOverlay = document.getElementById('cartOverlay');
-    const wishlistOverlay = document.getElementById('wishlistOverlay');
-
-    if (cartBtn) cartBtn.addEventListener('click', () => { if (typeof openCart === 'function') openCart(); });
-    if (wishlistBtn) wishlistBtn.addEventListener('click', () => { if (typeof openWishlistSidebar === 'function') openWishlistSidebar(); });
-    if (cartClose) cartClose.addEventListener('click', () => { if (typeof closeCart === 'function') closeCart(); });
-    if (wishlistClose) wishlistClose.addEventListener('click', () => { if (typeof closeWishlistSidebar === 'function') closeWishlistSidebar(); });
-    if (cartOverlay) cartOverlay.addEventListener('click', () => { if (typeof closeCart === 'function') closeCart(); });
-    if (wishlistOverlay) wishlistOverlay.addEventListener('click', () => { if (typeof closeWishlistSidebar === 'function') closeWishlistSidebar(); });
    </script>
     
 

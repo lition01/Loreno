@@ -227,6 +227,13 @@
       html += buildProductCard(products[i]);
     }
     track.innerHTML = html;
+    syncWishlistActiveState();
+  }
+
+  function syncWishlistActiveState() {
+    if (typeof window.syncWishlistButtons === "function") {
+      window.syncWishlistButtons();
+    }
   }
 
   /* ═══════════════════════════════════════════════════════════
