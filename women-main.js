@@ -340,13 +340,27 @@
   }
 
   function renderProducts() {
-    var collection = filterAndSortProducts();
-    var grid = document.getElementById("carouselTrack");
-    var html = "";
-    for (var i = 0; i < collection.length; i++) {
-      html += generateProductCard(collection[i]);
+    var filtered = filterAndSortProducts();
+    var carouselTrack = document.getElementById("carouselTrack");
+    var collection = (typeof womenCollection !== 'undefined') ? womenCollection : [];
+    
+    var visibleCountEl = document.getElementById("visibleCount");
+    var totalCountEl = document.getElementById("totalCount");
+    if (visibleCountEl) visibleCountEl.textContent = filtered.length;
+    if (totalCountEl) totalCountEl.textContent = collection.length;
+
+    if (filtered.length === 0) {
+      carouselTrack.innerHTML =
+        '<div class="no-results"><div class="no-results-icon">' +
+        SVG_SEARCH +
+        "</div><h3>No products found</h3><p>Try adjusting your filters to find what you're looking for.</p></div>";
+    } else {
+      var html = "";
+      for (var i = 0; i < filtered.length; i++) {
+        html += generateProductCard(filtered[i]);
+      }
+      carouselTrack.innerHTML = html;
     }
-    grid.innerHTML = html || '<div class="no-products">No products found matching your filters.</div>';
     
     renderSizeFilters();
     updateCounts();

@@ -1418,6 +1418,17 @@ body {
                     </div>
                 </div>
 
+                <!-- PayPal Info -->
+                <div id="paypalInfo" class="cod-info">
+                    <div class="info-box" style="border-left-color: #0070ba;">
+                        <div style="font-size: 22px; flex-shrink: 0;">🅿️</div>
+                        <div>
+                            <h4>PayPal Checkout</h4>
+                            <p>You will be redirected to PayPal to complete your purchase securely. Fast and easy checkout.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="step-actions">
                     <button class="btn btn-secondary" onclick="goToStep(2)">Back</button>
                     <button class="btn btn-primary" onclick="placeOrder()" id="placeOrderBtn">
@@ -1520,19 +1531,149 @@ body {
 // Global variables
 let currentStep = 1;
 let cart = [];
-let shippingCost = 10.00;
 let orderData = {};
+
+// Default settings (will be overridden by dashboard data)
+let STORE_SETTINGS = {
+    name: 'Atelier Clothing Co.',
+    email: 'hello@atelier.com',
+    currency: 'USD ($)',
+    timezone: 'Europe/Paris',
+    address: '123 Fashion Ave, Paris, France',
+    phone: '+33 1 23 45 67 89',
+    taxid: 'FR 88 123456789',
+    shiprate: '10.00',
+    shipfree: '150.00',
+    shipintl: true,
+    paycod: true,
+    paystripe: false,
+    paypaypal: false,
+    brandcolor: '#b39c80',
+    accentcolor: '#2f2716',
+    motto: 'Timeless Elegance, Modern Craftsmanship'
+};
+
+let shippingCost = 10.00;
 
 // ========================================
 // INITIALIZATION
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
+    loadSettings();
     loadCartFromLocalStorage();
     renderCartItems();
     renderSummaryItems();
+    renderPaymentMethods();
     updateProgressBar();
     initializeCardFormatting();
 });
+
+// ========================================
+// LOAD SETTINGS FROM LOCALSTORAGE
+// ========================================
+function loadSettings() {
+    const savedSettings = localStorage.getItem('dashboard_settings');
+    if (savedSettings) {
+        try {
+            const parsed = JSON.parse(savedSettings);
+            STORE_SETTINGS = { ...STORE_SETTINGS, ...parsed };
+            
+            // Update store name in header if applicable
+            const logoEl = document.querySelector('.header-inner .logo');
+            if (logoEl) {
+                logoEl.textContent = STORE_SETTINGS.name.toUpperCase();
+            }
+
+            // Update shipping cost default
+             shippingCost = parseFloat(STORE_SETTINGS.shiprate) || 0;
+
+             // Apply Brand Colors
+             if (STORE_SETTINGS.brandcolor) {
+                 document.documentElement.style.setProperty('--primary', STORE_SETTINGS.brandcolor);
+             }
+             if (STORE_SETTINGS.accentcolor) {
+                 document.documentElement.style.setProperty('--accent', STORE_SETTINGS.accentcolor);
+             }
+
+         } catch (error) {
+            console.error('Error parsing settings:', error);
+        }
+    }
+}
+
+// ========================================
+// RENDER PAYMENT METHODS
+// ========================================
+function renderPaymentMethods() {
+    const container = document.querySelector('.payment-methods');
+    if (!container) return;
+
+    let html = '';
+    let firstMethod = '';
+
+    // Card (Stripe)
+    if (STORE_SETTINGS.paystripe) {
+        if (!firstMethod) firstMethod = 'card';
+        html += `
+            <div class="payment-method ${firstMethod === 'card' ? 'active' : ''}" data-method="card" onclick="selectPaymentMethod('card')">
+                <div class="method-radio">
+                    <div class="radio-dot"></div>
+                </div>
+                <div class="method-info">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                    </svg>
+                    <span>Credit / Debit Card</span>
+                </div>
+            </div>
+        `;
+    }
+
+    // Cash on Delivery
+    if (STORE_SETTINGS.paycod) {
+        if (!firstMethod) firstMethod = 'cod';
+        html += `
+            <div class="payment-method ${firstMethod === 'cod' ? 'active' : ''}" data-method="cod" onclick="selectPaymentMethod('cod')">
+                <div class="method-radio">
+                    <div class="radio-dot"></div>
+                </div>
+                <div class="method-info">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    <span>Cash on Delivery</span>
+                </div>
+            </div>
+        `;
+    }
+
+    // PayPal
+    if (STORE_SETTINGS.paypaypal) {
+        if (!firstMethod) firstMethod = 'paypal';
+        html += `
+            <div class="payment-method ${firstMethod === 'paypal' ? 'active' : ''}" data-method="paypal" onclick="selectPaymentMethod('paypal')">
+                <div class="method-radio">
+                    <div class="radio-dot"></div>
+                </div>
+                <div class="method-info">
+                    <div style="font-size: 20px;">🅿️</div>
+                    <span>PayPal</span>
+                </div>
+            </div>
+        `;
+    }
+
+    if (!html) {
+        container.innerHTML = '<p style="color: #c44; font-size: 14px; text-align: center; padding: 20px;">No payment methods available. Please contact support.</p>';
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
+        if (placeOrderBtn) placeOrderBtn.disabled = true;
+    } else {
+        container.innerHTML = html;
+        selectPaymentMethod(firstMethod);
+    }
+}
 
 // ========================================
 // LOAD CART FROM LOCALSTORAGE
@@ -1772,12 +1913,19 @@ function updateCartSummary() {
         const price = parseFloat(item.price) || 0;
         return sum + (price * qty);
     }, 0);
+
+    // Apply free shipping threshold
+    const threshold = parseFloat(STORE_SETTINGS.shipfree) || 0;
+    if (threshold > 0 && subtotal >= threshold) {
+        shippingCost = 0;
+    } else {
+        shippingCost = parseFloat(STORE_SETTINGS.shiprate) || 0;
+    }
+
     const total = subtotal + shippingCost;
 
-
-
     document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
-    document.getElementById('shipping').textContent = `$${shippingCost.toFixed(2)}`;
+    document.getElementById('shipping').textContent = shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`;
     document.getElementById('total').textContent = `$${total.toFixed(2)}`;
 }
 
@@ -1895,25 +2043,37 @@ function selectPaymentMethod(method) {
     // Show/hide appropriate forms
     const cardForm = document.getElementById('cardForm');
     const codInfo = document.getElementById('codInfo');
+    const paypalInfo = document.getElementById('paypalInfo');
+
+    // Hide all first
+    if (cardForm) cardForm.classList.remove('active');
+    if (codInfo) codInfo.classList.remove('active');
+    if (paypalInfo) paypalInfo.classList.remove('active');
 
     if (method === 'card') {
-        cardForm.classList.add('active');
-        codInfo.classList.remove('active');
+        if (cardForm) cardForm.classList.add('active');
         
         // Make card fields required
-        document.getElementById('cardNumber').required = true;
-        document.getElementById('cardExpiry').required = true;
-        document.getElementById('cardCVV').required = true;
-        document.getElementById('cardName').required = true;
-    } else {
-        cardForm.classList.remove('active');
-        codInfo.classList.add('active');
+        if (document.getElementById('cardNumber')) document.getElementById('cardNumber').required = true;
+        if (document.getElementById('cardExpiry')) document.getElementById('cardExpiry').required = true;
+        if (document.getElementById('cardCVV')) document.getElementById('cardCVV').required = true;
+        if (document.getElementById('cardName')) document.getElementById('cardName').required = true;
+    } else if (method === 'cod') {
+        if (codInfo) codInfo.classList.add('active');
         
         // Remove required from card fields
-        document.getElementById('cardNumber').required = false;
-        document.getElementById('cardExpiry').required = false;
-        document.getElementById('cardCVV').required = false;
-        document.getElementById('cardName').required = false;
+        if (document.getElementById('cardNumber')) document.getElementById('cardNumber').required = false;
+        if (document.getElementById('cardExpiry')) document.getElementById('cardExpiry').required = false;
+        if (document.getElementById('cardCVV')) document.getElementById('cardCVV').required = false;
+        if (document.getElementById('cardName')) document.getElementById('cardName').required = false;
+    } else if (method === 'paypal') {
+        if (paypalInfo) paypalInfo.classList.add('active');
+
+        // Remove required from card fields
+        if (document.getElementById('cardNumber')) document.getElementById('cardNumber').required = false;
+        if (document.getElementById('cardExpiry')) document.getElementById('cardExpiry').required = false;
+        if (document.getElementById('cardCVV')) document.getElementById('cardCVV').required = false;
+        if (document.getElementById('cardName')) document.getElementById('cardName').required = false;
     }
 
     orderData.paymentMethod = method;
@@ -2054,7 +2214,7 @@ function displayOrderSummary() {
         </div>
         <div class="order-detail-item">
             <strong>Payment Method</strong>
-            <span>${orderData.paymentMethod === 'card' ? 'Credit/Debit Card' : 'Cash on Delivery'}</span>
+            <span>${orderData.paymentMethod === 'card' ? 'Credit/Debit Card' : (orderData.paymentMethod === 'paypal' ? 'PayPal' : 'Cash on Delivery')}</span>
         </div>
         <div class="order-detail-item">
             <strong>Total</strong>

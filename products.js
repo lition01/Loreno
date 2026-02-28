@@ -11,8 +11,7 @@
 (function () {
     // 1. Get products from localStorage
     const dashboardProducts = JSON.parse(localStorage.getItem('dashboard_products') || '[]');
-
-    // 2. Helper to transform dashboard product to collection format
+        // 2. Helper to transform dashboard product to collection format
     function transformProduct(p) {
         // Ensure sizes is an array for the collections
         const sizesArray = p.sizes ? Object.keys(p.sizes) : ["XS", "S", "M", "L", "XL"];

@@ -1617,138 +1617,9 @@
 
   <script>
     // Review Data
-    const reviewsData = [
-      {
-        id: 1,
-        name: "Alexandra Chen",
-        role: "CEO, TechVentures",
-        location: "San Francisco, CA",
-        initials: "AC",
-        rating: 5,
-        title: "Exceeded All Expectations",
-        text: "Working with this team has been an absolute game-changer for our business. Their attention to detail and commitment to excellence is unmatched. The results speak for themselves - we've seen a 40% increase in engagement.",
-        tags: ["Professional", "Responsive", "Quality Work"],
-        date: "2 days ago",
-        verified: true,
-        helpful: 42,
-        featured: true
-      },
-      {
-        id: 2,
-        name: "Marcus Williams",
-        role: "Creative Director",
-        location: "New York, NY",
-        initials: "MW",
-        rating: 5,
-        title: "Phenomenal Creative Partnership",
-        text: "The creative vision and execution were beyond what we imagined. They understood our brand identity perfectly and delivered designs that truly resonate with our audience. Highly recommend!",
-        tags: ["Creative", "Brand-Focused", "Timely"],
-        date: "1 week ago",
-        verified: true,
-        helpful: 38
-      },
-      {
-        id: 3,
-        name: "Sarah Mitchell",
-        role: "Marketing Manager",
-        location: "Austin, TX",
-        initials: "SM",
-        rating: 5,
-        title: "Best Decision We Made This Year",
-        text: "From the initial consultation to the final delivery, every step was handled with professionalism. The communication was excellent, and they were always available to address our concerns promptly.",
-        tags: ["Great Communication", "Professional", "On Budget"],
-        date: "2 weeks ago",
-        verified: true,
-        helpful: 29
-      },
-      {
-        id: 4,
-        name: "David Park",
-        role: "Startup Founder",
-        location: "Seattle, WA",
-        initials: "DP",
-        rating: 4,
-        title: "Solid Work with Room for Growth",
-        text: "Overall a great experience. The team delivered quality work within the timeline. There were minor revision rounds needed, but they handled feedback gracefully and made the necessary adjustments quickly.",
-        tags: ["Reliable", "Good Value", "Flexible"],
-        date: "3 weeks ago",
-        verified: true,
-        helpful: 18
-      },
-      {
-        id: 5,
-        name: "Emily Rodriguez",
-        role: "Brand Strategist",
-        location: "Miami, FL",
-        initials: "ER",
-        rating: 5,
-        title: "Transformed Our Digital Presence",
-        text: "Our online presence has been completely transformed. The strategic approach combined with stunning execution has resulted in measurable improvements across all our digital channels.",
-        tags: ["Strategic", "Results-Driven", "Innovative"],
-        date: "1 month ago",
-        verified: true,
-        helpful: 35
-      },
-      {
-        id: 6,
-        name: "James Thompson",
-        role: "Operations Director",
-        location: "Chicago, IL",
-        initials: "JT",
-        rating: 5,
-        title: "Smooth Process from Start to Finish",
-        text: "The entire process was seamless. Clear milestones, transparent pricing, and exceptional deliverables. They made what seemed like a complex project feel manageable and even enjoyable.",
-        tags: ["Organized", "Transparent", "Efficient"],
-        date: "1 month ago",
-        verified: true,
-        helpful: 24
-      }
-    ];
+    const reviewsData = [];
 
-    const additionalReviews = [
-      {
-        id: 7,
-        name: "Lisa Chang",
-        role: "Product Manager",
-        location: "Los Angeles, CA",
-        initials: "LC",
-        rating: 5,
-        title: "A True Partner in Success",
-        text: "They don't just deliver work - they become invested in your success. The proactive suggestions and insights they provided helped shape our product strategy significantly.",
-        tags: ["Strategic Partner", "Insightful", "Dedicated"],
-        date: "5 weeks ago",
-        verified: true,
-        helpful: 31
-      },
-      {
-        id: 8,
-        name: "Robert Kim",
-        role: "E-commerce Director",
-        location: "Boston, MA",
-        initials: "RK",
-        rating: 4,
-        title: "Great ROI on Our Investment",
-        text: "The return on investment has been substantial. Within three months, we saw significant improvements in our conversion rates. The data-driven approach really paid off.",
-        tags: ["ROI Focused", "Data-Driven", "Effective"],
-        date: "6 weeks ago",
-        verified: true,
-        helpful: 27
-      },
-      {
-        id: 9,
-        name: "Amanda Foster",
-        role: "CMO",
-        location: "Denver, CO",
-        initials: "AF",
-        rating: 5,
-        title: "Unmatched Quality and Service",
-        text: "Having worked with many agencies, I can confidently say this team stands above the rest. Their commitment to quality and customer satisfaction is truly remarkable.",
-        tags: ["Premium Quality", "Customer-Centric", "Expert Team"],
-        date: "2 months ago",
-        verified: true,
-        helpful: 45
-      }
-    ];
+    const additionalReviews = [];
 
     // Render Reviews
     function renderStars(rating) {
@@ -1836,8 +1707,9 @@
 
     // Initialize
     const reviewsGrid = document.getElementById('reviewsGrid');
-    let displayedReviews = [...reviewsData];
-    let allReviews = [...reviewsData, ...additionalReviews];
+    let dbReviews = JSON.parse(localStorage.getItem('dashboard_reviews')) || [];
+    let displayedReviews = dbReviews.length > 0 ? [...dbReviews] : [...reviewsData];
+    let allReviews = dbReviews.length > 0 ? [...dbReviews] : [...reviewsData, ...additionalReviews];
 
     function renderReviews(reviews) {
       reviewsGrid.innerHTML = reviews.map((review, index) => renderReviewCard(review, index)).join('');
@@ -1979,6 +1851,25 @@
     document.getElementById('reviewForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
+      const newReview = {
+        id: Date.now(),
+        name: document.getElementById('reviewName').value,
+        role: document.getElementById('reviewRole').value || 'Customer',
+        location: 'Unknown',
+        initials: document.getElementById('reviewName').value.charAt(0).toUpperCase(),
+        rating: currentRating || 5,
+        title: document.getElementById('reviewTitle').value,
+        text: document.getElementById('reviewText').value,
+        tags: ['New Review'],
+        date: 'Just now',
+        verified: false,
+        helpful: 0
+      };
+
+      let dbReviews = JSON.parse(localStorage.getItem('dashboard_reviews')) || [];
+      dbReviews.unshift(newReview);
+      localStorage.setItem('dashboard_reviews', JSON.stringify(dbReviews));
+
       this.style.display = 'none';
       document.querySelector('.arv-form-header').style.display = 'none';
       document.getElementById('successState').classList.add('show');

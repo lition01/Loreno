@@ -788,7 +788,8 @@
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 24px;
+      margin-bottom: 24px;
     }
 
     @media(max-width:860px) {
@@ -1292,8 +1293,8 @@
     .analytics-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 14px;
-      margin-bottom: 20px;
+      gap: 20px;
+      margin-bottom: 24px;
     }
 
     .an-card {
@@ -1303,6 +1304,12 @@
       padding: 20px;
       text-align: center;
       box-shadow: var(--shadow);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .an-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
     }
 
     .an-val {
@@ -1868,6 +1875,140 @@
       .tbl-search input {
         width: 120px;
       }
+    }
+
+    /* ══ NEW ANALYTICS GRAPHICS ══════════════════════ */
+    .donut-chart-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 20px 0;
+    }
+
+    .donut-chart {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      position: relative;
+      background: conic-gradient(var(--c3) 0% 0%, var(--c2) 0% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-chart::before {
+      content: "";
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      background: var(--surface);
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .donut-inner {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .donut-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--c5);
+      line-height: 1;
+    }
+
+    .donut-lbl {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .trend-line-wrap {
+      height: 180px;
+      width: 100%;
+      margin-top: 24px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 10px;
+    }
+
+    .trend-col-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      height: 100%;
+    }
+
+    .trend-col-bar {
+      width: 32px;
+      background: linear-gradient(180deg, var(--c3), var(--c2));
+      border-radius: 6px 6px 2px 2px;
+      position: absolute;
+      bottom: 0;
+      transition: all .3s ease;
+      cursor: pointer;
+    }
+
+    .trend-col-bar:hover {
+      filter: brightness(1.1);
+      width: 36px;
+    }
+
+    .trend-col-val {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--c4);
+      background: var(--bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      opacity: 0;
+      transition: opacity .2s;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .trend-col-group:hover .trend-col-val {
+      opacity: 1;
+    }
+
+    .trend-col-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 10px;
+      font-weight: 500;
     }
 
     @media(max-width:420px) {
@@ -2559,6 +2700,12 @@
           </svg>
           <span class="sb-label">Products</span>
         </div>
+        <div class="sb-item" data-sec="reviews" data-tip="Reviews" onclick="nav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span class="sb-label">Reviews</span>
+        </div>
         <div class="sb-item" data-sec="addproduct" data-tip="Add Product" onclick="nav(this)">
           <svg viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" />
@@ -2782,6 +2929,46 @@
             <div id="products-dynamic-filters" style="display:flex;gap:10px;"></div>
           </div>
           <div class="prod-grid" id="productGrid"></div>
+        </section>
+
+        <!-- REVIEWS -->
+        <section class="section" id="sec-reviews">
+          <div class="sec-head">
+            <div>
+              <div class="sec-title">Product Reviews</div>
+              <div class="sec-sub" id="reviews-count-sub">Manage customer feedback</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="tbl-toolbar">
+              <div class="tbl-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+                <input type="text" id="reviews-search" placeholder="Search reviews…" oninput="renderDashboardReviews()" />
+              </div>
+              <select class="form-select" style="width:auto;padding:7px 10px;font-size:12px;" id="reviews-rating-filter" onchange="renderDashboardReviews()">
+                <option value="">All Ratings</option>
+                <option value="5">5 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="2">2 Stars</option>
+                <option value="1">1 Star</option>
+              </select>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Rating</th>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="reviewsTbody"></tbody>
+              </table>
+            </div>
+          </div>
         </section>
 
         <!-- ADD PRODUCT -->
@@ -3032,6 +3219,25 @@
           <div class="analytics-grid" id="analyticsCards"></div>
           <div class="two-col">
             <div class="card">
+              <div style="font-size:14px;font-weight:700;color:var(--c5);margin-bottom:14px;">Revenue Trend (Last 6 Months)</div>
+              <div class="trend-line-wrap" id="revenueTrendWrap"></div>
+              <div style="display:flex;justify-content:space-between;margin-top:10px;" id="revenueTrendLabels"></div>
+            </div>
+            <div class="card">
+              <div style="font-size:14px;font-weight:700;color:var(--c5);margin-bottom:14px;">Order Status Distribution</div>
+              <div class="donut-chart-wrap">
+                <div class="donut-chart" id="statusDonut">
+                  <div class="donut-inner">
+                    <div class="donut-val" id="donutTotal">0</div>
+                    <div class="donut-lbl">Orders</div>
+                  </div>
+                </div>
+                <div class="chart-legend" id="statusLegend"></div>
+              </div>
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="card">
               <div style="font-size:14px;font-weight:700;color:var(--c5);margin-bottom:14px;">Sales by Category</div>
               <div class="bar-chart" id="catChart"></div>
             </div>
@@ -3128,6 +3334,95 @@
             <div class="card">
               <div
                 style="font-size:13px;font-weight:700;color:var(--c5);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;">
+                Business Information</div>
+              <div class="form-grid">
+                <div class="form-group form-full"><label class="form-label">Company Address</label><input class="form-input" id="s-address" value="123 Fashion Ave, Paris, France" type="text" /></div>
+                <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="s-phone" value="+33 1 23 45 67 89" type="text" /></div>
+                <div class="form-group"><label class="form-label">VAT / Tax ID</label><input class="form-input" id="s-taxid" value="FR 88 123456789" type="text" /></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div
+                style="font-size:13px;font-weight:700;color:var(--c5);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;">
+                Shipping & Delivery</div>
+              <div class="form-grid">
+                <div class="form-group"><label class="form-label">Flat Shipping Rate ($)</label><input class="form-input" id="s-shiprate" value="10.00" type="number" step="0.01" /></div>
+                <div class="form-group"><label class="form-label">Free Shipping Threshold ($)</label><input class="form-input" id="s-shipfree" value="150.00" type="number" step="0.01" /></div>
+                <div class="form-group form-full">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                      <div style="font-size:13.5px;font-weight:600;color:var(--c5);">International Shipping</div>
+                      <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Allow orders from outside the primary region</div>
+                    </div>
+                    <label class="toggle-wrap"><input type="checkbox" checked id="s-shipintl" /><span class="toggle-track"></span><span class="toggle-thumb"></span></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div
+                style="font-size:13px;font-weight:700;color:var(--c5);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;">
+                Payment Methods</div>
+              <div style="display:grid;gap:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="font-size:20px;">💵</div>
+                    <div>
+                      <div style="font-size:13.5px;font-weight:600;color:var(--c5);">Cash on Delivery</div>
+                      <div style="font-size:11.5px;color:var(--muted);">Pay when the item is delivered</div>
+                    </div>
+                  </div>
+                  <label class="toggle-wrap"><input type="checkbox" checked id="s-paycod" /><span class="toggle-track"></span><span class="toggle-thumb"></span></label>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="font-size:20px;">💳</div>
+                    <div>
+                      <div style="font-size:13.5px;font-weight:600;color:var(--c5);">Stripe (Credit Card)</div>
+                      <div style="font-size:11.5px;color:var(--muted);">Secure online payments via Stripe</div>
+                    </div>
+                  </div>
+                  <label class="toggle-wrap"><input type="checkbox" id="s-paystripe" /><span class="toggle-track"></span><span class="toggle-thumb"></span></label>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;">
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="font-size:20px;">🅿️</div>
+                    <div>
+                      <div style="font-size:13.5px;font-weight:600;color:var(--c5);">PayPal</div>
+                      <div style="font-size:11.5px;color:var(--muted);">Fast and secure checkout via PayPal</div>
+                    </div>
+                  </div>
+                  <label class="toggle-wrap"><input type="checkbox" id="s-paypaypal" /><span class="toggle-track"></span><span class="toggle-thumb"></span></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div
+                style="font-size:13px;font-weight:700;color:var(--c5);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;">
+                Branding & Design</div>
+              <div class="form-grid">
+                <div class="form-group"><label class="form-label">Primary Brand Color</label>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="color" id="s-brandcolor" value="#b39c80" style="width:40px;height:32px;border:none;background:none;cursor:pointer;" />
+                    <input class="form-input" id="s-brandcolor-hex" value="#b39c80" type="text" style="flex:1;" />
+                  </div>
+                </div>
+                <div class="form-group"><label class="form-label">Accent Color</label>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="color" id="s-accentcolor" value="#2f2716" style="width:40px;height:32px;border:none;background:none;cursor:pointer;" />
+                    <input class="form-input" id="s-accentcolor-hex" value="#2f2716" type="text" style="flex:1;" />
+                  </div>
+                </div>
+                <div class="form-group form-full"><label class="form-label">Store Motto / Tagline</label><input class="form-input" id="s-motto" value="Timeless Elegance, Modern Craftsmanship" type="text" /></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div
+                style="font-size:13px;font-weight:700;color:var(--c5);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;">
                 Danger Zone</div>
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
                 <div>
@@ -3195,57 +3490,10 @@
       localStorage.setItem('dashboard_customers', JSON.stringify(CUSTOMERS));
     }
 
-    const ACTIVITY = [{
-        dot: '#a8845e',
-        title: 'Order #ORD-1081 placed by Sophie W.',
-        time: '2 minutes ago'
-      },
-      {
-        dot: '#2d8a5a',
-        title: 'Payment confirmed for #ORD-1080',
-        time: '14 minutes ago'
-      },
-      {
-        dot: '#c0392b',
-        title: 'Order #ORD-1076 was refunded',
-        time: '1 hour ago'
-      },
-      {
-        dot: '#2563eb',
-        title: 'New customer registered',
-        time: '3 hours ago'
-      },
-      {
-        dot: '#b39c80',
-        title: 'Wool Blend Overcoat — low stock',
-        time: '5 hours ago'
-      },
-    ];
+    const ACTIVITY = [];
 
     const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const CAT_LABELS = ['Men', 'Women', 'Kids', 'Acc.'];
-    const CAT_PCT = [65, 80, 45, 35];
-    const TOP_PROD = [{
-        name: 'Oxford Button Shirt',
-        units: 214,
-        rev: '$14,552'
-      },
-      {
-        name: 'Wool Blend Overcoat',
-        units: 89,
-        rev: '$21,805'
-      },
-      {
-        name: 'Merino Wool Hoodie',
-        units: 176,
-        rev: '$19,712'
-      },
-      {
-        name: 'Relaxed Linen Trousers',
-        units: 130,
-        rev: '$9,360'
-      },
-    ];
 
     let orderSort = {
       col: '',
@@ -4221,43 +4469,164 @@
        ANALYTICS
     ════════════════════════════════════════════ */
     function renderAnalytics() {
-      document.getElementById('analyticsCards').innerHTML = [{
-          val: '$84.2K',
-          lbl: 'Total Sales (YTD)',
-          chg: '▲ +12.4% vs last year'
-        },
-        {
-          val: '1,348',
-          lbl: 'Total Orders',
-          chg: '▲ +8.1% vs last year'
-        },
-        {
-          val: '$62.50',
-          lbl: 'Avg. Order Value',
-          chg: '▲ +3.9% vs last year'
-        },
-        {
-          val: '78%',
-          lbl: 'Customer Retention',
-          chg: '▼ -1.2% vs last year'
-        },
-        {
-          val: '329',
-          lbl: 'New Customers',
-          chg: '▼ -2.3% vs last year'
-        },
-        {
-          val: '4.8★',
-          lbl: 'Avg. Product Rating',
-          chg: '▲ +0.2 vs last year'
-        },
-      ].map(a => `<div class="an-card"><div class="an-val">${a.val}</div><div class="an-lbl">${a.lbl}</div><div class="an-chg">${a.chg}</div></div>`).join('');
+      // 1. Core Calculations
+      const totalRevenue = ORDERS.reduce((sum, o) => {
+        if (o.status === 'Refunded') return sum;
+        const price = parseFloat((o.price || '0').toString().replace('$', '').replace(',', '')) || 0;
+        return sum + price;
+      }, 0);
 
-      document.getElementById('catChart').innerHTML = CAT_LABELS.map((l, i) => `
-    <div class="bar-col"><div class="bar" style="height:${CAT_PCT[i]}%"></div><div class="bar-lbl">${l}</div></div>`).join('');
+      const completedOrders = ORDERS.filter(o => o.status === 'Completed').length;
+      const avgOrderValue = ORDERS.length > 0 ? (totalRevenue / ORDERS.length) : 0;
+      
+      // Calculate category distribution (based on sales revenue)
+      const catSales = { 'Men': 0, 'Women': 0, 'Kids': 0, 'Accessories': 0 };
+      ORDERS.forEach(o => {
+        if (o.status === 'Refunded') return;
+        const price = parseFloat((o.price || '0').toString().replace('$', '').replace(',', '')) || 0;
+        // Try to find product category if not in order
+        let cat = 'Men'; // default
+        const prod = PRODUCTS.find(p => p.name === o.prod);
+        if (prod) cat = prod.cat;
+        if (catSales[cat] !== undefined) catSales[cat] += price;
+      });
 
-      document.getElementById('topProdTbody').innerHTML = TOP_PROD.map(p => `
-    <tr><td style="font-weight:600">${p.name}</td><td>${p.units}</td><td style="font-weight:700;color:var(--c4)">${p.rev}</td></tr>`).join('');
+      const maxCatSale = Math.max(...Object.values(catSales), 1);
+      const catPcts = Object.values(catSales).map(val => (val / maxCatSale) * 100);
+
+      // Calculate Top Products
+      const prodStats = {};
+      ORDERS.forEach(o => {
+        if (o.status === 'Refunded') return;
+        const price = parseFloat((o.price || '0').toString().replace('$', '').replace(',', '')) || 0;
+        if (!prodStats[o.prod]) prodStats[o.prod] = { units: 0, rev: 0 };
+        prodStats[o.prod].units += (o.qty || 1);
+        prodStats[o.prod].rev += price;
+      });
+
+      const topProducts = Object.entries(prodStats)
+        .map(([name, stats]) => ({ name, ...stats }))
+        .sort((a, b) => b.rev - a.rev)
+        .slice(0, 4);
+
+      // 1b. Status Distribution
+      const statusCounts = {
+        Completed: 0,
+        Processing: 0,
+        Shipped: 0,
+        Pending: 0,
+        Refunded: 0
+      };
+      ORDERS.forEach(o => {
+        if (statusCounts[o.status] !== undefined) statusCounts[o.status]++;
+      });
+
+      // 1c. Revenue Trend (Last 6 Months)
+      const now = new Date();
+      const trendData = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const label = MONTH_NAMES[d.getMonth()];
+        const monthRev = ORDERS
+          .filter(o => {
+            if (o.status === 'Refunded') return false;
+            const od = o.isoDate ? new Date(o.isoDate) : null;
+            return od && od.getFullYear() === d.getFullYear() && od.getMonth() === d.getMonth();
+          })
+          .reduce((sum, o) => sum + (parseFloat((o.price || '0').toString().replace('$', '').replace(',', '')) || 0), 0);
+        trendData.push({ label, val: monthRev });
+      }
+
+      // 2. Render Cards
+      const cards = [
+        { val: `$${totalRevenue.toLocaleString()}`, lbl: 'Total Revenue', chg: 'Real-time data' },
+        { val: ORDERS.length.toLocaleString(), lbl: 'Total Orders', chg: `${completedOrders} Completed` },
+        { val: `$${avgOrderValue.toFixed(2)}`, lbl: 'Avg. Order Value', chg: 'Across all orders' },
+        { val: CUSTOMERS.length.toLocaleString(), lbl: 'Total Customers', chg: 'Registered users' },
+        { val: REVIEWS.length.toLocaleString(), lbl: 'Total Reviews', chg: 'Customer feedback' },
+        { val: PRODUCTS.length.toLocaleString(), lbl: 'Active Products', chg: 'Catalogue size' },
+      ];
+
+      document.getElementById('analyticsCards').innerHTML = cards.map(a => `
+        <div class="an-card">
+          <div class="an-val">${a.val}</div>
+          <div class="an-lbl">${a.lbl}</div>
+          <div class="an-chg">${a.chg}</div>
+        </div>
+      `).join('');
+
+      // 3. Render Status Donut
+      const totalOrders = ORDERS.length || 1;
+      const colors = { Completed: '#2d8a5a', Processing: '#2563eb', Shipped: '#c9620e', Pending: '#9a8a7a', Refunded: '#c0392b' };
+      let currentDeg = 0;
+      const gradientParts = Object.entries(statusCounts).map(([status, count]) => {
+        const pct = (count / totalOrders) * 100;
+        const start = currentDeg;
+        currentDeg += (pct / 100) * 360;
+        return `${colors[status]} ${start}deg ${currentDeg}deg`;
+      });
+      
+      const donut = document.getElementById('statusDonut');
+      if (donut) {
+        donut.style.background = `conic-gradient(${gradientParts.join(', ') || '#eee 0deg 360deg'})`;
+        document.getElementById('donutTotal').textContent = ORDERS.length;
+      }
+      
+      const legend = document.getElementById('statusLegend');
+      if (legend) {
+        legend.innerHTML = Object.entries(statusCounts).map(([status, count]) => `
+          <div class="legend-item">
+            <div class="legend-dot" style="background:${colors[status]}"></div>
+            <span style="flex:1">${status}</span>
+            <span style="font-weight:700">${count}</span>
+          </div>
+        `).join('');
+      }
+
+      // 4. Render Revenue Trend (Column Chart)
+      const trendWrap = document.getElementById('revenueTrendWrap');
+      if (trendWrap) {
+        const maxVal = Math.max(...trendData.map(d => d.val), 1);
+        const fmt = v => '$' + (v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v.toFixed(0));
+
+        trendWrap.innerHTML = trendData.map(d => {
+          const pct = (d.val / maxVal) * 100;
+          return `
+            <div class="trend-col-group">
+              <div class="trend-col-bar" style="height:${pct}%">
+                <div class="trend-col-val">${fmt(d.val)}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        document.getElementById('revenueTrendLabels').innerHTML = trendData.map(d => `
+          <div style="flex:1;text-align:center;font-size:11px;color:var(--muted);font-weight:600;">${d.label}</div>
+        `).join('');
+      }
+
+      // 5. Render Category Chart
+      const chartLabels = ['Men', 'Women', 'Kids', 'Acc.'];
+      document.getElementById('catChart').innerHTML = chartLabels.map((l, i) => `
+        <div class="bar-col">
+          <div class="bar" style="height:${catPcts[i] || 0}%"></div>
+          <div class="bar-lbl">${l}</div>
+        </div>
+      `).join('');
+
+      // 6. Render Top Products Table
+      const tbody = document.getElementById('topProdTbody');
+      if (topProducts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:20px;color:var(--muted);">No sales data available</td></tr>';
+      } else {
+        tbody.innerHTML = topProducts.map(p => `
+          <tr>
+            <td style="font-weight:600">${p.name}</td>
+            <td>${p.units}</td>
+            <td style="font-weight:700;color:var(--c4)">$${p.rev.toLocaleString()}</td>
+          </tr>
+        `).join('');
+      }
     }
 
     /* ════════════════════════════════════════════
@@ -4356,9 +4725,9 @@
        ADD PRODUCT FORM
     ════════════════════════════════════════════ */
     const SIZE_MAP = {
-      Men: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-      Women: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
-      Kids: ['S', 'M', 'L', 'XL', '2Y', '4Y', '6Y', '8Y', '10Y', '12Y'],
+      Men: ['S', 'M', 'L', 'XL'],
+      Women: ['S', 'M', 'L', 'XL'],
+      Kids: ['2-3', '4-5', '6-7', '8-9', '10-11'],
       Accessories: []
     };
     let activeSizes = [];
@@ -4368,7 +4737,6 @@
       const subcatGroup = document.getElementById('group-subcat');
       const subcatSelect = subcatGroup.querySelector('select');
       const fitGroup = document.getElementById('group-fit');
-      const smellGroup = document.getElementById('group-smell');
       const colorsSizesGroup = document.getElementById('group-colors-sizes');
       const stockInfoWrap = document.getElementById('stock-info-wrap');
       const simpleStockWrap = document.getElementById('simple-stock-wrap');
@@ -4383,7 +4751,6 @@
           <option>Belt</option>
         `;
         fitGroup.style.display = 'none';
-        smellGroup.style.display = 'none';
         colorsSizesGroup.style.display = 'none';
         stockInfoWrap.style.display = 'none';
         simpleStockWrap.style.display = 'block';
@@ -4407,7 +4774,6 @@
           <option>Footwear</option>
         `;
         fitGroup.style.display = 'block';
-        smellGroup.style.display = 'none';
         colorsSizesGroup.style.display = 'block';
         stockInfoWrap.style.display = 'flex';
         simpleStockWrap.style.display = 'none';
@@ -4670,7 +5036,76 @@
     /* ════════════════════════════════════════════
        SETTINGS
     ════════════════════════════════════════════ */
+    let STORE_SETTINGS = JSON.parse(localStorage.getItem('dashboard_settings')) || {
+      name: 'Atelier Clothing Co.',
+      email: 'hello@atelier.com',
+      currency: 'USD ($)',
+      timezone: 'Europe/Paris',
+      address: '123 Fashion Ave, Paris, France',
+      phone: '+33 1 23 45 67 89',
+      taxid: 'FR 88 123456789',
+      shiprate: '10.00',
+      shipfree: '150.00',
+      shipintl: true,
+      paycod: true,
+      paystripe: false,
+      paypaypal: false,
+      brandcolor: '#b39c80',
+      accentcolor: '#2f2716',
+      motto: 'Timeless Elegance, Modern Craftsmanship'
+    };
+
+    function saveSettingsData() {
+      localStorage.setItem('dashboard_settings', JSON.stringify(STORE_SETTINGS));
+    }
+
+    function initSettings() {
+      document.getElementById('s-storename').value = STORE_SETTINGS.name;
+      document.getElementById('s-email').value = STORE_SETTINGS.email;
+      document.getElementById('s-currency').value = STORE_SETTINGS.currency;
+      document.getElementById('s-tz').value = STORE_SETTINGS.timezone;
+      document.getElementById('s-address').value = STORE_SETTINGS.address;
+      document.getElementById('s-phone').value = STORE_SETTINGS.phone;
+      document.getElementById('s-taxid').value = STORE_SETTINGS.taxid;
+      document.getElementById('s-shiprate').value = STORE_SETTINGS.shiprate;
+      document.getElementById('s-shipfree').value = STORE_SETTINGS.shipfree;
+      document.getElementById('s-shipintl').checked = STORE_SETTINGS.shipintl;
+      document.getElementById('s-paycod').checked = STORE_SETTINGS.paycod;
+      document.getElementById('s-paystripe').checked = STORE_SETTINGS.paystripe;
+      document.getElementById('s-paypaypal').checked = STORE_SETTINGS.paypaypal;
+      document.getElementById('s-brandcolor').value = STORE_SETTINGS.brandcolor;
+      document.getElementById('s-brandcolor-hex').value = STORE_SETTINGS.brandcolor;
+      document.getElementById('s-accentcolor').value = STORE_SETTINGS.accentcolor;
+      document.getElementById('s-accentcolor-hex').value = STORE_SETTINGS.accentcolor;
+      document.getElementById('s-motto').value = STORE_SETTINGS.motto;
+
+      // Sync color inputs
+      document.getElementById('s-brandcolor').oninput = (e) => document.getElementById('s-brandcolor-hex').value = e.target.value;
+      document.getElementById('s-brandcolor-hex').oninput = (e) => document.getElementById('s-brandcolor').value = e.target.value;
+      document.getElementById('s-accentcolor').oninput = (e) => document.getElementById('s-accentcolor-hex').value = e.target.value;
+      document.getElementById('s-accentcolor-hex').oninput = (e) => document.getElementById('s-accentcolor').value = e.target.value;
+    }
+
     function doSaveSettings() {
+      STORE_SETTINGS = {
+        name: document.getElementById('s-storename').value,
+        email: document.getElementById('s-email').value,
+        currency: document.getElementById('s-currency').value,
+        timezone: document.getElementById('s-tz').value,
+        address: document.getElementById('s-address').value,
+        phone: document.getElementById('s-phone').value,
+        taxid: document.getElementById('s-taxid').value,
+        shiprate: document.getElementById('s-shiprate').value,
+        shipfree: document.getElementById('s-shipfree').value,
+        shipintl: document.getElementById('s-shipintl').checked,
+        paycod: document.getElementById('s-paycod').checked,
+        paystripe: document.getElementById('s-paystripe').checked,
+        paypaypal: document.getElementById('s-paypaypal').checked,
+        brandcolor: document.getElementById('s-brandcolor').value,
+        accentcolor: document.getElementById('s-accentcolor').value,
+        motto: document.getElementById('s-motto').value
+      };
+      saveSettingsData();
       closeModal('modal-savesettings');
       showToast('Settings saved successfully!', 'success');
     }
@@ -4748,6 +5183,10 @@
         title: 'Settings',
         sub: 'Store preferences and configuration'
       },
+      reviews: {
+        title: 'Product Reviews',
+        sub: 'Manage customer feedback and ratings'
+      },
     };
 
     function nav(el) {
@@ -4761,6 +5200,8 @@
       document.getElementById('pgSub').textContent = m.sub;
       if (sec === 'addproduct') initAddProduct();
       if (sec === 'products') renderProducts();
+      if (sec === 'reviews') renderDashboardReviews();
+      if (sec === 'settings') initSettings();
       closeMob();
     }
 
@@ -4796,6 +5237,80 @@
     }
 
     /* ════════════════════════════════════════════
+       REVIEWS MANAGEMENT
+    ════════════════════════════════════════════ */
+    let REVIEWS = JSON.parse(localStorage.getItem('dashboard_reviews')) || [];
+
+    function saveReviews() {
+      localStorage.setItem('dashboard_reviews', JSON.stringify(REVIEWS));
+    }
+
+    function renderDashboardReviews() {
+      const q = (document.getElementById('reviews-search')?.value || '').toLowerCase();
+      const rf = document.getElementById('reviews-rating-filter')?.value || '';
+
+      const filtered = REVIEWS.filter(r => {
+        const matchQ = !q || (r.name + r.title + (r.text || '')).toLowerCase().includes(q);
+        const matchR = !rf || r.rating === parseInt(rf);
+        return matchQ && matchR;
+      });
+
+      const countSub = document.getElementById('reviews-count-sub');
+      if (countSub) countSub.textContent = `${filtered.length} review${filtered.length !== 1 ? 's' : ''} total`;
+
+      const tbody = document.getElementById('reviewsTbody');
+      if (!tbody) return;
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">No reviews found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((r, i) => {
+        const realIdx = REVIEWS.indexOf(r);
+        return `
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="cust-av" style="background:var(--bg);color:var(--c5);width:32px;height:32px;font-size:11px;">${r.initials || r.name.charAt(0)}</div>
+                <div>
+                  <div style="font-weight:600;font-size:13px;">${r.name}</div>
+                  <div style="font-size:11px;color:var(--muted);">${r.role || 'Customer'}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div style="display:flex;color:#f1c40f;gap:2px;">
+                ${Array(5).fill(0).map((_, idx) => `<svg style="width:12px;height:12px;" viewBox="0 0 24 24" fill="${idx < r.rating ? 'currentColor' : 'none'}" stroke="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`).join('')}
+              </div>
+            </td>
+            <td>
+              <div style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;" title="${r.title}">${r.title}</div>
+              <div style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:var(--muted);" title="${r.text || ''}">${r.text || ''}</div>
+            </td>
+            <td style="font-size:12px;color:var(--muted);">${r.date}</td>
+            <td>
+              <div class="prod-actions">
+                <button class="icon-btn del" title="Delete" onclick="deleteReview(${realIdx})">
+                  <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function deleteReview(idx) {
+      if (confirm('Delete this review permanently?')) {
+        REVIEWS.splice(idx, 1);
+        saveReviews();
+        renderDashboardReviews();
+        showToast('Review deleted', 'success');
+      }
+    }
+
+    /* ════════════════════════════════════════════
        INIT
     ════════════════════════════════════════════ */
     renderOverview();
@@ -4803,6 +5318,7 @@
     renderProducts();
     renderCustomers();
     renderAnalytics();
+    renderDashboardReviews();
   </script>
 </body>
 

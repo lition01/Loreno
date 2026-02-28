@@ -197,10 +197,14 @@
 
   function renderProducts() {
     var filtered = filterAndSortProducts();
-    var carouselTrack = document.getElementById("carouselTrack");
+    var carouselTrack = document.getElementById("productGrid");
     var collection = (typeof accessoriesCollection !== 'undefined') ? accessoriesCollection : [];
-    document.getElementById("visibleCount").textContent = filtered.length;
-    document.getElementById("totalCount").textContent = collection.length;
+    
+    var visibleCountEl = document.getElementById("visibleCount");
+    var totalCountEl = document.getElementById("totalCount");
+    if (visibleCountEl) visibleCountEl.textContent = filtered.length;
+    if (totalCountEl) totalCountEl.textContent = collection.length;
+
     if (filtered.length === 0) {
       carouselTrack.innerHTML =
         '<div class="no-results"><div class="no-results-icon">' +
@@ -213,6 +217,7 @@
       }
       carouselTrack.innerHTML = html;
     }
+    updateCounts();
     updateActiveFilters();
     syncWishlistActiveState();
   }
