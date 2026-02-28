@@ -1587,17 +1587,6 @@ body {
                         </svg>
                     </div>
                 </div>
-                <div class="filter-category-item" data-filter-cat="smell">
-                    <div class="filter-category-header">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.022.547l-2.387 2.387a2 2 0 000 2.828l.596.596a2 2 0 002.828 0l2.387-2.387a2 2 0 00.547-1.022l.477-2.387a6 6 0 00-.517-3.86l-.158-.318a6 6 0 01-.517-3.86L8.79 6.05a2 2 0 00-.547-1.022l-2.387-2.387a2 2 0 00-2.828 0l-.596.596a2 2 0 000 2.828l2.387 2.387z" />
-                        </svg>
-                        <span>Smell</span>
-                        <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </div>
-                </div>
                 <div class="filter-category-item" data-filter-cat="price">
                     <div class="filter-category-header">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1636,103 +1625,44 @@ body {
             </div>
             <div class="mini-popup-body">
                 <label class="filter-option">
-                    <input type="checkbox" value="outerwear" data-filter="category">
+                    <input type="checkbox" value="watch" data-filter="subcategory">
                     <span class="filter-checkbox">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </span>
-                    <span class="filter-label">Outerwear</span>
-                    <span class="filter-count" data-count="outerwear">0</span>
+                    <span class="filter-label">Watch</span>
+                    <span class="filter-count" data-count="watch">0</span>
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" value="shirts" data-filter="category">
+                    <input type="checkbox" value="bag" data-filter="subcategory">
                     <span class="filter-checkbox">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </span>
-                    <span class="filter-label">Shirts</span>
-                    <span class="filter-count" data-count="shirts">0</span>
+                    <span class="filter-label">Bag</span>
+                    <span class="filter-count" data-count="bag">0</span>
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" value="accessories" data-filter="category">
+                    <input type="checkbox" value="jewelry" data-filter="subcategory">
                     <span class="filter-checkbox">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </span>
-                    <span class="filter-label">Accessories</span>
-                    <span class="filter-count" data-count="accessories">0</span>
+                    <span class="filter-label">Jewelry</span>
+                    <span class="filter-count" data-count="jewelry">0</span>
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" value="footwear" data-filter="category">
+                    <input type="checkbox" value="belt" data-filter="subcategory">
                     <span class="filter-checkbox">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </span>
-                    <span class="filter-label">Footwear</span>
-                    <span class="filter-count" data-count="footwear">0</span>
-                </label>
-            </div>
-        </div>
-
-        <!-- Mini Popup for Smell -->
-        <div class="mini-popup" id="miniPopupSmell">
-            <div class="mini-popup-header">
-                <button class="mini-popup-back" data-back="smell">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                <h4>Smell</h4>
-                <button class="mini-popup-close" data-close-mini="smell">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            <div class="mini-popup-body">
-                <label class="filter-option">
-                    <input type="checkbox" value="Summer Smell" data-filter="smell">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">Summer Smell</span>
-                    <span class="filter-count" data-count="Summer Smell">0</span>
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" value="Winter Smell" data-filter="smell">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">Winter Smell</span>
-                    <span class="filter-count" data-count="Winter Smell">0</span>
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" value="Floral Breeze" data-filter="smell">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">Floral Breeze</span>
-                    <span class="filter-count" data-count="Floral Breeze">0</span>
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" value="Ocean Mist" data-filter="smell">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">Ocean Mist</span>
-                    <span class="filter-count" data-count="Ocean Mist">0</span>
+                    <span class="filter-label">Belt</span>
+                    <span class="filter-count" data-count="belt">0</span>
                 </label>
             </div>
         </div>

@@ -19,7 +19,7 @@
     '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>';
 
   var filterState = {
-    category: [],
+    subcategory: [],
     size: [],
     fit: [],
     minPrice: 0,
@@ -29,6 +29,13 @@
 
   function generateProductCard(product) {
     var id = product.id;
+    var subcatInfo = product.subcategory ? '<span style="text-transform:capitalize;">' + product.subcategory + '</span>' : '';
+    var fitInfo = product.fit ? '<span style="text-transform:capitalize;">' + product.fit + '</span>' : '';
+    var metaInfo = (subcatInfo || fitInfo) ? 
+      '<div style="font-size:12px;color:var(--color-sand);margin-bottom:4px;">' + 
+      subcatInfo + (subcatInfo && fitInfo ? ' &bull; ' : '') + fitInfo + 
+      '</div>' : '';
+    
     var popupColorBtns = "";
     for (var ci = 0; ci < product.colors.length; ci++) {
       var selectedClass = ci === 0 ? " selected" : "";
@@ -136,7 +143,9 @@
       "</div>" +
       "</div>" +
       "</div>" +
-      '<div class="product-info"><h3 class="product-name">' +
+      '<div class="product-info">' +
+      metaInfo +
+      '<h3 class="product-name">' +
       product.name +
       '</h3><p class="product-price">' +
       product.price +
@@ -149,8 +158,8 @@
     var collection = (typeof womenCollection !== 'undefined') ? womenCollection : [];
     var filtered = collection.filter(function (product) {
       if (
-        filterState.category.length > 0 &&
-        filterState.category.indexOf(product.category) === -1
+        filterState.subcategory.length > 0 &&
+        filterState.subcategory.indexOf((product.subcategory || "").toLowerCase().trim()) === -1
       )
         return false;
       if (filterState.size.length > 0) {
@@ -165,7 +174,7 @@
       }
       if (
         filterState.fit.length > 0 &&
-        filterState.fit.indexOf(product.fit) === -1
+        filterState.fit.indexOf((product.fit || "").toLowerCase().replace(" fit", "").trim()) === -1
       )
         return false;
       if (
@@ -192,28 +201,27 @@
   }
 
   function updateCounts() {
-    var counts = {
-      outerwear: 0,
-      shirts: 0,
-      accessories: 0,
-      footwear: 0,
-      XS: 0,
-      S: 0,
-      M: 0,
-      L: 0,
-      XL: 0,
-      slim: 0,
-      regular: 0,
-      relaxed: 0,
-    };
+    var counts = {};
     var collection = (typeof womenCollection !== 'undefined') ? womenCollection : [];
+    
+    // Initialize counts for categories and fits
+    ['outerwear', 'shirt', 'jeans', 't-shirt', 'pants', 'shorts', 'sweater', 'footwear', 'slim', 'regular', 'relaxed', 'oversized'].forEach(function(key) {
+      counts[key] = 0;
+    });
+
     collection.forEach(function (p) {
-      if (counts[p.category] !== undefined) counts[p.category]++;
-      if (counts[p.fit] !== undefined) counts[p.fit]++;
+      if (p.subcategory && counts[p.subcategory.toLowerCase().trim()] !== undefined) counts[p.subcategory.toLowerCase().trim()]++;
+      
+      var fitVal = (p.fit || "").toLowerCase().replace(" fit", "").trim();
+      if (counts[fitVal] !== undefined) counts[fitVal]++;
+
       for (var i = 0; i < p.sizes.length; i++) {
-        if (counts[p.sizes[i]] !== undefined) counts[p.sizes[i]]++;
+        var s = p.sizes[i];
+        if (counts[s] === undefined) counts[s] = 0;
+        counts[s]++;
       }
     });
+
     Object.keys(counts).forEach(function (key) {
       document
         .querySelectorAll('[data-count="' + key + '"]')
@@ -223,14 +231,67 @@
     });
   }
 
+  function renderSizeFilters() {
+    var collection = (typeof womenCollection !== 'undefined') ? womenCollection : [];
+    var sizes = new Set();
+    collection.forEach(function(p) {
+      p.sizes.forEach(function(s) { sizes.add(s); });
+    });
+
+    var container = document.getElementById('womenSizeFilterContainer');
+    if (!container) return;
+
+    var sizeOrder = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+    var sortedSizes = Array.from(sizes).sort(function(a, b) {
+      var idxA = sizeOrder.indexOf(a);
+      var idxB = sizeOrder.indexOf(b);
+      if (idxA > -1 && idxB > -1) return idxA - idxB;
+      if (idxA > -1) return -1;
+      if (idxB > -1) return 1;
+      return a.localeCompare(b);
+    });
+
+    var html = sortedSizes.map(function(s) {
+      var checked = filterState.size.indexOf(s) > -1 ? 'checked' : '';
+      return (
+        '<label class="filter-option">' +
+        '<input type="checkbox" value="' + s + '" data-filter="size" ' + checked + '>' +
+        '<span class="filter-checkbox">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">' +
+        '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />' +
+        '</svg>' +
+        '</span>' +
+        '<span class="filter-label">' + s + '</span>' +
+        '<span class="filter-count" data-count="' + s + '">0</span>' +
+        '</label>'
+      );
+    }).join('');
+
+    container.innerHTML = html || '<div style="padding:10px;font-size:12px;color:var(--color-sand);">No sizes available</div>';
+    
+    // Re-attach listeners to new checkboxes
+    container.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+      cb.addEventListener("change", function () {
+        var value = this.value;
+        if (this.checked) {
+          if (filterState.size.indexOf(value) === -1) filterState.size.push(value);
+        } else {
+          var idx = filterState.size.indexOf(value);
+          if (idx > -1) filterState.size.splice(idx, 1);
+        }
+        renderProducts();
+      });
+    });
+  }
+
   function updateActiveFilters() {
     var bar = document.getElementById("activeFiltersBar");
     var pills = [];
-    filterState.category.forEach(function (c) {
+    filterState.subcategory.forEach(function (c) {
       pills.push(
         '<div class="filter-pill">' +
           c +
-          '<button data-remove="category:' +
+          '<button data-remove="subcategory:' +
           c +
           '">' +
           SVG_CLOSE +
@@ -279,23 +340,16 @@
   }
 
   function renderProducts() {
-    var filtered = filterAndSortProducts();
-    var carouselTrack = document.getElementById("carouselTrack");
-    var collection = (typeof womenCollection !== 'undefined') ? womenCollection : [];
-    document.getElementById("visibleCount").textContent = filtered.length;
-    document.getElementById("totalCount").textContent = collection.length;
-    if (filtered.length === 0) {
-      carouselTrack.innerHTML =
-        '<div class="no-results"><div class="no-results-icon">' +
-        SVG_SEARCH +
-        "</div><h3>No products found</h3><p>Try adjusting your filters to find what you're looking for.</p></div>";
-    } else {
-      var html = "";
-      for (var i = 0; i < filtered.length; i++) {
-        html += generateProductCard(filtered[i]);
-      }
-      carouselTrack.innerHTML = html;
+    var collection = filterAndSortProducts();
+    var grid = document.getElementById("carouselTrack");
+    var html = "";
+    for (var i = 0; i < collection.length; i++) {
+      html += generateProductCard(collection[i]);
     }
+    grid.innerHTML = html || '<div class="no-products">No products found matching your filters.</div>';
+    
+    renderSizeFilters();
+    updateCounts();
     updateActiveFilters();
     syncWishlistActiveState();
   }
@@ -319,11 +373,11 @@
 
   function initFilters() {
     document
-      .querySelectorAll('input[type="checkbox"][data-filter]')
+      .querySelectorAll('input[type="checkbox"][data-filter]:not([data-filter="size"])')
       .forEach(function (cb) {
         cb.addEventListener("change", function () {
           var filterType = this.getAttribute("data-filter");
-          var value = this.value;
+          var value = this.value.toLowerCase().trim();
           if (this.checked) {
             if (filterState[filterType].indexOf(value) === -1)
               filterState[filterType].push(value);
@@ -378,7 +432,7 @@
       .getElementById("clearAllBtn")
       .addEventListener("click", function () {
         filterState = {
-          category: [],
+          subcategory: [],
           size: [],
           fit: [],
           minPrice: 0,

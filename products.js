@@ -32,9 +32,9 @@
             badge: p.badge || "New",
             colors: colorsArray,
             sizes: sizesArray,
-            category: (p.cat || "").toLowerCase(),
-            fit: p.fit || "regular",
-            smell: p.smell || ""
+            category: (p.cat || "").toLowerCase().trim(),
+            subcategory: (p.subcat || "").toLowerCase().trim(),
+            fit: (p.fit || "regular").toLowerCase().replace(" fit", "").trim()
         };
     }
 
@@ -47,7 +47,6 @@
     window.womenCollection = [];      // Women (id: 'women')
     window.kidsCollection = [];       // Kids (id: 'kids')
     window.accessoriesCollection = []; // Accessories (id: 'acc')
-    window.bestSellersCollection = []; // Best Sellers (id: 'bestseller')
     window.winterCollection = [];     // Winter (id: 'winter')
     window.summerCollection = [];     // Summer (id: 'summer')
 
@@ -57,14 +56,13 @@
             const transformed = transformProduct(p);
             const placements = p.placements || [];
 
-            // Add to Homepage Carousel if marked as 'new' OR 'bestseller'
-            if (placements.includes('new') || placements.includes('bestseller')) window.products.push(transformed);
+            // Add to Homepage Carousel if marked as 'new'
+            if (placements.includes('new')) window.products.push(transformed);
 
-            if (placements.includes('men')) window.menCollection.push(transformed);
-            if (placements.includes('women')) window.womenCollection.push(transformed);
-            if (placements.includes('kids')) window.kidsCollection.push(transformed);
-            if (placements.includes('acc')) window.accessoriesCollection.push(transformed);
-            if (placements.includes('bestseller')) window.bestSellersCollection.push(transformed);
+            if (p.cat === 'Men') window.menCollection.push(transformed);
+            if (p.cat === 'Women') window.womenCollection.push(transformed);
+            if (p.cat === 'Kids') window.kidsCollection.push(transformed);
+            if (p.cat === 'Accessories') window.accessoriesCollection.push(transformed);
             if (placements.includes('winter')) window.winterCollection.push(transformed);
             if (placements.includes('summer')) window.summerCollection.push(transformed);
         });
@@ -81,7 +79,6 @@
         women: window.womenCollection.length,
         kids: window.kidsCollection.length,
         accessories: window.accessoriesCollection.length,
-        bestSellers: window.bestSellersCollection.length,
         winter: window.winterCollection.length,
         summer: window.summerCollection.length,
         home: window.products.length

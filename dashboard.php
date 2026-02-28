@@ -2203,7 +2203,7 @@
           <div class="form-group"><label class="form-label">Product Name</label><input class="form-input" id="ep-name"
               type="text" /></div>
           <div class="form-group"><label class="form-label">Category</label>
-            <select class="form-select" id="ep-cat">
+            <select class="form-select" id="ep-cat" onchange="handleEditCategoryChange(this.value)">
               <option>Men</option>
               <option>Women</option>
               <option>Kids</option>
@@ -2212,6 +2212,37 @@
           </div>
           <div class="form-group"><label class="form-label">Price ($)</label><input class="form-input" id="ep-price"
               type="text" /></div>
+          <div class="form-group" id="ep-group-subcat"><label class="form-label">Kind (Sub-category)</label>
+            <select class="form-select" id="ep-subcategory">
+              <option value="">Select Kind...</option>
+              <option>Outerwear</option>
+              <option>Shirt</option>
+              <option>Jeans</option>
+              <option>T-shirt</option>
+              <option>Pants</option>
+              <option>Shorts</option>
+              <option>Sweater</option>
+              <option>Footwear</option>
+            </select>
+          </div>
+          <div class="form-group" id="ep-group-fit"><label class="form-label">Fit</label>
+            <select class="form-select" id="ep-fit">
+              <option value="">Select Fit...</option>
+              <option>Slim Fit</option>
+              <option>Regular Fit</option>
+              <option>Relaxed Fit</option>
+              <option>Oversized</option>
+            </select>
+          </div>
+          <div class="form-group form-full" id="ep-group-sizes" style="display:none;">
+            <label class="form-label">Sizes & Quantities</label>
+            <div class="size-picker" id="ep-sizePicker" style="margin-bottom:12px;"></div>
+            <div id="ep-sizeTableWrap"></div>
+          </div>
+          <div class="form-group form-full" id="ep-group-simple-stock" style="display:none;">
+            <label class="form-label">Total Stock</label>
+            <input class="form-input" id="ep-simple-stock" type="number" min="0" placeholder="0" />
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -2741,13 +2772,14 @@
               <input type="text" id="products-search" placeholder="Search products…" oninput="renderProducts()" />
             </div>
             <select class="form-select" style="width:auto;padding:7px 10px;font-size:12px;" id="products-cat-filter"
-              onchange="renderProducts()">
+              onchange="handleProductCatFilterChange()">
               <option value="">All Categories</option>
               <option>Men</option>
               <option>Women</option>
               <option>Kids</option>
               <option>Accessories</option>
             </select>
+            <div id="products-dynamic-filters" style="display:flex;gap:10px;"></div>
           </div>
           <div class="prod-grid" id="productGrid"></div>
         </section>
@@ -2795,6 +2827,22 @@
                 <div class="form-group"><label class="form-label">Price ($)</label><input class="form-input"
                     name="price" type="number" min="0" step="0.01" placeholder="0.00" required /></div>
                 
+                <!-- SUB-CATEGORY (Men, Women, Kids) -->
+                <div class="form-group" id="group-subcat">
+                  <label class="form-label">Kind (Sub-category)</label>
+                  <select class="form-select" name="subcategory">
+                    <option value="">Select Kind...</option>
+                    <option>Outerwear</option>
+                    <option>Shirt</option>
+                    <option>Jeans</option>
+                    <option>T-shirt</option>
+                    <option>Pants</option>
+                    <option>Shorts</option>
+                    <option>Sweater</option>
+                    <option>Footwear</option>
+                  </select>
+                </div>
+
                 <!-- FIT (Men, Women, Kids) -->
                 <div class="form-group" id="group-fit">
                   <label class="form-label">Fit</label>
@@ -2804,18 +2852,6 @@
                     <option>Regular Fit</option>
                     <option>Relaxed Fit</option>
                     <option>Oversized</option>
-                  </select>
-                </div>
-
-                <!-- SMELL (Accessories) -->
-                <div class="form-group" id="group-smell" style="display:none;">
-                  <label class="form-label">Smell</label>
-                  <select class="form-select" name="smell">
-                    <option value="">Select Smell...</option>
-                    <option>Summer Smell</option>
-                    <option>Winter Smell</option>
-                    <option>Floral Breeze</option>
-                    <option>Ocean Mist</option>
                   </select>
                 </div>
 
@@ -3707,14 +3743,53 @@
       }).join('');
     }
 
+    function handleProductCatFilterChange() {
+      const cat = document.getElementById('products-cat-filter').value;
+      const dynamicFilterWrap = document.getElementById('products-dynamic-filters');
+      
+      if (cat === 'Accessories') {
+        dynamicFilterWrap.innerHTML = '';
+      } else if (cat === 'Men' || cat === 'Women' || cat === 'Kids') {
+        dynamicFilterWrap.innerHTML = `
+          <select class="form-select" style="width:auto;padding:7px 10px;font-size:12px;" id="products-subcat-filter" onchange="renderProducts()">
+            <option value="">All Kinds</option>
+            <option>Outerwear</option>
+            <option>Shirt</option>
+            <option>Jeans</option>
+            <option>T-shirt</option>
+            <option>Pants</option>
+            <option>Shorts</option>
+            <option>Sweater</option>
+            <option>Footwear</option>
+          </select>
+          <select class="form-select" style="width:auto;padding:7px 10px;font-size:12px;" id="products-fit-filter" onchange="renderProducts()">
+            <option value="">All Fits</option>
+            <option>Slim Fit</option>
+            <option>Regular Fit</option>
+            <option>Relaxed Fit</option>
+            <option>Oversized</option>
+          </select>
+        `;
+      } else {
+        dynamicFilterWrap.innerHTML = '';
+      }
+      
+      renderProducts();
+    }
+
     function renderProducts() {
       renderCatCounts();
       const q = (document.getElementById('products-search')?.value || '').toLowerCase();
       const cf = document.getElementById('products-cat-filter')?.value || '';
+      const scf = document.getElementById('products-subcat-filter')?.value || '';
+      const ff = document.getElementById('products-fit-filter')?.value || '';
+
       const filtered = PRODUCTS.filter(p => {
-        const matchQ = !q || (p.name + p.cat).toLowerCase().includes(q);
+        const matchQ = !q || (p.name + p.cat + (p.subcat || '')).toLowerCase().includes(q);
         const matchC = !cf || p.cat === cf;
-        return matchQ && matchC;
+        const matchSC = !scf || p.subcat === scf;
+        const matchF = !ff || p.fit === ff;
+        return matchQ && matchC && matchSC && matchF;
       });
       const countSub = document.getElementById('products-count-sub');
       if (countSub) countSub.textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''} in catalogue`;
@@ -3726,6 +3801,7 @@
         const realIdx = PRODUCTS.indexOf(p);
         const stock = calcStock(p);
         const stockColor = stock < 20 ? '#c0392b' : stock < 50 ? '#c9620e' : '#2d8a5a';
+        const subcatBadge = p.subcat ? `<span style="font-weight:700;color:var(--c4);">${p.subcat}</span> &bull; ` : '';
         const placements = (p.placementLabels || p.placements || []);
         const placementBadge = placements.length > 0 ?
           `<div style="font-size:10px;color:var(--c3);font-weight:700;margin-top:4px;">📍 ${placements.join(' · ')}</div>` :
@@ -3741,7 +3817,7 @@
       </div>
       <div class="prod-body">
         <div class="prod-name">${p.name}</div>
-        <div class="prod-cat">${p.cat} &bull; <span style="color:${stockColor};font-weight:700;">${stock} in stock</span></div>
+        <div class="prod-cat">${p.cat} &bull; ${subcatBadge}<span style="color:${stockColor};font-weight:700;">${stock} in stock</span></div>
         ${placementBadge}
         <div class="prod-foot" style="margin-top:8px;">
           <div class="prod-price">${p.price}</div>
@@ -3759,6 +3835,95 @@
       }).join('');
     }
 
+    function handleEditCategoryChange(cat) {
+      const subcatGroup = document.getElementById('ep-group-subcat');
+      const subcatSelect = subcatGroup.querySelector('select');
+      const fitGroup = document.getElementById('ep-group-fit');
+      const sizesGroup = document.getElementById('ep-group-sizes');
+      const simpleStockGroup = document.getElementById('ep-group-simple-stock');
+      
+      if (cat === 'Accessories') {
+        subcatGroup.style.display = 'block';
+        subcatSelect.innerHTML = `
+          <option value="">Select Kind...</option>
+          <option>Watch</option>
+          <option>Bag</option>
+          <option>Jewelry</option>
+          <option>Belt</option>
+        `;
+        fitGroup.style.display = 'none';
+        sizesGroup.style.display = 'none';
+        simpleStockGroup.style.display = 'block';
+      } else {
+        subcatGroup.style.display = 'block';
+        subcatSelect.innerHTML = `
+          <option value="">Select Kind...</option>
+          <option>Outerwear</option>
+          <option>Shirt</option>
+          <option>Jeans</option>
+          <option>T-shirt</option>
+          <option>Pants</option>
+          <option>Shorts</option>
+          <option>Sweater</option>
+          <option>Footwear</option>
+        `;
+        fitGroup.style.display = 'block';
+        sizesGroup.style.display = 'block';
+        simpleStockGroup.style.display = 'none';
+
+        // Initialize size picker
+        const picker = document.getElementById('ep-sizePicker');
+        const sizes = SIZE_MAP[cat] || [];
+        // We'll populate active sizes in the editProduct function
+        picker.innerHTML = sizes.map(s => `<div class="size-pill" data-size="${s}" onclick="toggleEditSize(this)">${s}</div>`).join('');
+      }
+    }
+
+    let editActiveSizes = {}; // Using an object to store sizes and quantities
+
+    function toggleEditSize(el) {
+      const s = el.dataset.size;
+      el.classList.toggle('active');
+      if (el.classList.contains('active')) {
+        if (editActiveSizes[s] === undefined) editActiveSizes[s] = 0;
+      } else {
+        delete editActiveSizes[s];
+      }
+      renderEditSizeTable();
+    }
+
+    function renderEditSizeTable() {
+      const wrap = document.getElementById('ep-sizeTableWrap');
+      const activeKeys = Object.keys(editActiveSizes);
+      if (!activeKeys.length) {
+        wrap.innerHTML = '';
+        return;
+      }
+      wrap.innerHTML = `
+        <div class="size-table-head" style="grid-template-columns:1fr 1fr 1fr 1fr 40px;"><span>Size</span><span>Qty</span><span>Chest</span><span>Length</span><span></span></div>
+        ${activeKeys.map(s => `
+        <div class="size-row" style="grid-template-columns:1fr 1fr 1fr 1fr 40px;">
+          <div><span class="size-tag">${s}</span></div>
+          <input class="form-input ep-size-qty-input" type="number" min="0" value="${editActiveSizes[s]}" style="padding:6px 9px" oninput="updateEditSizeQty('${s}', this.value)"/>
+          <input class="form-input" type="number" min="0" placeholder="0" style="padding:6px 9px"/>
+          <input class="form-input" type="number" min="0" placeholder="0" style="padding:6px 9px"/>
+          <button type="button" class="remove-size" onclick="removeEditSize('${s}')">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>`).join('')}`;
+    }
+
+    function updateEditSizeQty(size, val) {
+      editActiveSizes[size] = parseInt(val) || 0;
+    }
+
+    function removeEditSize(s) {
+      const pill = [...document.getElementById('ep-sizePicker').querySelectorAll('.size-pill')].find(p => p.dataset.size === s);
+      if (pill) pill.classList.remove('active');
+      delete editActiveSizes[s];
+      renderEditSizeTable();
+    }
+
     function editProduct(idx) {
       const p = PRODUCTS[idx];
       document.getElementById('ep-idx').value = idx;
@@ -3766,18 +3931,54 @@
       document.getElementById('ep-name').value = p.name;
       document.getElementById('ep-cat').value = p.cat;
       document.getElementById('ep-price').value = p.price.replace('$', '');
+      
+      handleEditCategoryChange(p.cat);
+      if (p.cat !== 'Accessories') {
+        document.getElementById('ep-subcategory').value = p.subcat || '';
+        document.getElementById('ep-fit').value = p.fit || '';
+        
+        // Populate sizes
+        editActiveSizes = { ...(p.sizes || {}) };
+        const picker = document.getElementById('ep-sizePicker');
+        Object.keys(editActiveSizes).forEach(s => {
+          const pill = [...picker.querySelectorAll('.size-pill')].find(el => el.dataset.size === s);
+          if (pill) pill.classList.add('active');
+        });
+        renderEditSizeTable();
+      } else {
+        document.getElementById('ep-simple-stock').value = p.totalStock || 0;
+      }
+      
       openModal('modal-editproduct');
     }
 
     function saveEditProduct() {
       const idx = parseInt(document.getElementById('ep-idx').value);
       const price = document.getElementById('ep-price').value;
-      PRODUCTS[idx] = {
+      const cat = document.getElementById('ep-cat').value;
+      
+      const updatedProduct = {
         ...PRODUCTS[idx],
         name: document.getElementById('ep-name').value,
-        cat: document.getElementById('ep-cat').value,
+        cat: cat,
+        subcat: cat !== 'Accessories' ? document.getElementById('ep-subcategory').value : '',
         price: '$' + parseFloat(price || 0).toFixed(2),
+        priceValue: parseFloat(price || 0)
       };
+
+      if (cat === 'Accessories') {
+        delete updatedProduct.fit;
+        delete updatedProduct.subcat;
+        delete updatedProduct.sizes;
+        delete updatedProduct.colors;
+        updatedProduct.totalStock = parseInt(document.getElementById('ep-simple-stock').value) || 0;
+      } else {
+        updatedProduct.fit = document.getElementById('ep-fit').value;
+        updatedProduct.sizes = { ...editActiveSizes };
+        updatedProduct.totalStock = Object.values(editActiveSizes).reduce((a, b) => a + b, 0);
+      }
+
+      PRODUCTS[idx] = updatedProduct;
       saveProducts();
       closeModal('modal-editproduct');
       renderProducts();
@@ -3788,35 +3989,12 @@
     /* ════════════════════════════════════════════
        PRODUCT DISPLAY PLACEMENT
     ════════════════════════════════════════════ */
-    const PLACEMENT_OPTIONS = [{
-        id: 'men',
-        icon: '👔',
-        label: 'Men',
-        desc: 'Show in the Men category'
-      },
+    const PLACEMENT_OPTIONS = [
       {
-        id: 'women',
-        icon: '👗',
-        label: 'Women',
-        desc: 'Show in the Women category'
-      },
-      {
-        id: 'kids',
-        icon: '🧒',
-        label: 'Kids',
-        desc: 'Show in the Kids category'
-      },
-      {
-        id: 'acc',
-        icon: '🎩',
-        label: 'Accessories',
-        desc: 'Show in the Accessories category'
-      },
-      {
-        id: 'bestseller',
-        icon: '⭐',
-        label: 'Best Seller',
-        desc: 'Feature in the Best Sellers section'
+        id: 'new',
+        icon: '✨',
+        label: 'New Arrivals',
+        desc: 'Show in the homepage New Arrivals'
       },
       {
         id: 'winter',
@@ -3830,27 +4008,13 @@
         label: 'Summer Collection',
         desc: 'Show in the Summer Collection'
       },
-      {
-        id: 'new',
-        icon: '✨',
-        label: 'New Arrivals',
-        desc: 'Show in the homepage New Arrivals'
-      },
     ];
 
     function renderAddProductPlacements(cat = 'Men') {
       const container = document.getElementById('add-placement-options');
       if (!container) return;
 
-      const filtered = PLACEMENT_OPTIONS.filter(o => {
-        if (cat === 'Accessories') {
-          return !['men', 'women', 'kids'].includes(o.id);
-        } else {
-          return o.id !== 'acc';
-        }
-      });
-
-      container.innerHTML = filtered.map(o => `
+      container.innerHTML = PLACEMENT_OPTIONS.map(o => `
         <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all var(--trans);">
           <input type="checkbox" name="placements" value="${o.id}" style="width:16px;height:16px;accent-color:var(--c3);">
           <div style="font-size:18px;">${o.icon}</div>
@@ -4192,15 +4356,17 @@
        ADD PRODUCT FORM
     ════════════════════════════════════════════ */
     const SIZE_MAP = {
-      Men: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-      Women: ['XS', 'S', 'M', 'L', 'XL'],
-      Kids: ['2-3', '4-5', '6-7', '8-9', '10-11', '12-13'],
+      Men: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+      Women: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
+      Kids: ['S', 'M', 'L', 'XL', '2Y', '4Y', '6Y', '8Y', '10Y', '12Y'],
       Accessories: []
     };
     let activeSizes = [];
     let colorCount = 0;
 
     function handleCategoryChange(cat) {
+      const subcatGroup = document.getElementById('group-subcat');
+      const subcatSelect = subcatGroup.querySelector('select');
       const fitGroup = document.getElementById('group-fit');
       const smellGroup = document.getElementById('group-smell');
       const colorsSizesGroup = document.getElementById('group-colors-sizes');
@@ -4208,8 +4374,16 @@
       const simpleStockWrap = document.getElementById('simple-stock-wrap');
 
       if (cat === 'Accessories') {
+        subcatGroup.style.display = 'block';
+        subcatSelect.innerHTML = `
+          <option value="">Select Kind...</option>
+          <option>Watch</option>
+          <option>Bag</option>
+          <option>Jewelry</option>
+          <option>Belt</option>
+        `;
         fitGroup.style.display = 'none';
-        smellGroup.style.display = 'block';
+        smellGroup.style.display = 'none';
         colorsSizesGroup.style.display = 'none';
         stockInfoWrap.style.display = 'none';
         simpleStockWrap.style.display = 'block';
@@ -4220,6 +4394,18 @@
           simpleInp.addEventListener('input', updateTotalStock);
         }
       } else {
+        subcatGroup.style.display = 'block';
+        subcatSelect.innerHTML = `
+          <option value="">Select Kind...</option>
+          <option>Outerwear</option>
+          <option>Shirt</option>
+          <option>Jeans</option>
+          <option>T-shirt</option>
+          <option>Pants</option>
+          <option>Shorts</option>
+          <option>Sweater</option>
+          <option>Footwear</option>
+        `;
         fitGroup.style.display = 'block';
         smellGroup.style.display = 'none';
         colorsSizesGroup.style.display = 'block';
@@ -4401,11 +4587,6 @@
       /* collect placements */
       const placements = [...document.querySelectorAll('#add-placement-options input[name="placements"]:checked')].map(cb => cb.value);
 
-      if (placements.length === 0) {
-        showToast('Please select at least one storefront placement', 'error');
-        return;
-      }
-
       /* capture image BEFORE resetForm clears preview */
       const previewImg = document.querySelector('#filePreview img');
       const imageUrl = previewImg ? previewImg.src : '';
@@ -4426,6 +4607,7 @@
         id: 'P' + (Date.now()),
         name: data.name || 'New Product',
         cat: category,
+        subcat: data.subcategory || '',
         price: '$' + price.toFixed(2),
         priceValue: price,
         sizes,
@@ -4462,7 +4644,8 @@
     <p><span>Click to upload</span> or drag &amp; drop</p>
     <p style="font-size:11px;margin-top:4px;">PNG, JPG, WEBP up to 5MB</p>`;
       activeSizes = [];
-      document.querySelectorAll('.size-pill').forEach(p => p.classList.remove('active'));
+      const picker = document.getElementById('sizePicker');
+      if (picker) picker.querySelectorAll('.size-pill').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('#add-placement-options input[type="checkbox"]').forEach(cb => cb.checked = false);
       const wrap = document.getElementById('sizeTableWrap');
       if (wrap) wrap.innerHTML = '';
