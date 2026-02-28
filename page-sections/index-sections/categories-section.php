@@ -427,7 +427,7 @@
                 </a>
 
                 <!-- Kids Fashion -->
-                <a href="/category/kids" class="category-card" data-category="kids">
+                <a href="kids-products.php" class="category-card" data-category="kids">
                     <div class="category-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
                              alt="Kids Fashion Collection" 
@@ -452,19 +452,19 @@
                 </a>
 
                 <!-- Accessories -->
-                <a href="/category/accessories" class="category-card" data-category="accessories">
+                <a href="accessories-products.php" class="category-card" data-category="accessories">
                     <div class="category-image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                             alt="Accessories Collection" 
+                        <img src="https://images.unsplash.com/photo-1523293182086-7651a899d37f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                             alt="Premium Accessories Collection" 
                              class="category-image"
                              loading="lazy">
                         <div class="category-overlay"></div>
                     </div>
-                    <span class="category-count">89 Items</span>
+                    <span class="category-count">194 Items</span>
                     <div class="category-content">
-                        <span class="category-badge">Limited Edition</span>
+                        <span class="category-badge">Luxury Items</span>
                         <h3 class="category-name">Accessories</h3>
-                        <p class="category-description">The perfect finishing touches</p>
+                        <p class="category-description">Watches, bags, and luxury accessories</p>
                         <div class="category-cta">
                             <span>Shop Collection</span>
                             <div class="category-cta-icon">

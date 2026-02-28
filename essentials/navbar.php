@@ -499,8 +499,13 @@
         }
 
         .action-btn:hover {
-            background-color: var(--color-light-bg);
             color: var(--color-accent);
+            transform: translateY(-2px);
+        }
+
+        .action-btn:active {
+            transform: scale(0.9);
+            opacity: 0.7;
         }
 
         .action-btn svg {
@@ -553,8 +558,8 @@
         /* Modern Minimal Burger Toggle */
         .menu-toggle {
             display: none;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             align-items: center;
             justify-content: center;
             background: transparent;
@@ -562,20 +567,28 @@
             cursor: pointer;
             position: relative;
             border-radius: 50%;
-            transition: all var(--transition);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
         }
 
         .menu-toggle:hover {
-            background-color: var(--color-light-bg);
+            color: var(--color-accent);
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.9);
+            opacity: 0.7;
         }
 
         .burger-container {
-            width: 20px;
-            height: 12px;
+            width: 22px;
+            height: 14px;
             position: relative;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .menu-toggle span {
@@ -585,34 +598,36 @@
             display: block;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 2px;
+            transform-origin: center;
         }
 
         /* Modern 2-line style (shorter second line) */
         .menu-toggle span:nth-child(2) {
-            width: 70%;
-            margin-left: auto;
+            width: 100%;
+            transform: translateY(0);
         }
         
-        /* Hide third span if it exists or use it for the X */
         .menu-toggle span:nth-child(3) {
-            display: none;
+            width: 60%;
+            margin-left: auto;
         }
 
         .menu-toggle.active .burger-container {
-            height: 20px;
-            justify-content: center;
+            transform: rotate(180deg);
         }
 
         .menu-toggle.active span:nth-child(1) {
-            transform: rotate(45deg) translateY(0);
-            position: absolute;
-            width: 100%;
+            transform: translateY(6px) rotate(45deg);
         }
 
         .menu-toggle.active span:nth-child(2) {
-            transform: rotate(-45deg) translateY(0);
-            position: absolute;
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+
+        .menu-toggle.active span:nth-child(3) {
             width: 100%;
+            transform: translateY(-6.5px) rotate(-45deg);
             margin-left: 0;
         }
 
@@ -1494,15 +1509,18 @@
             right: 0;
             bottom: 0;
             background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             z-index: 998;
             overflow-y: auto;
             padding: 1rem 0;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: block; /* Change from display:none to block for transitions */
+            transform: translateY(-20px);
+            transition: 
+                opacity 0.4s ease,
+                visibility 0.4s ease,
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            display: block;
         }
 
         .mobile-menu-overlay.active {
@@ -1512,15 +1530,15 @@
         }
 
         .mobile-nav-item {
-            border-bottom: 1px solid var(--color-border);
+            border-bottom: 1px solid rgba(232, 228, 222, 0.5);
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-15px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .mobile-menu-overlay.active .mobile-nav-item {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(0);
         }
 
         /* Staggered animation for menu items */
@@ -1534,23 +1552,24 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1.2rem 1.5rem;
+            padding: 1.4rem 1.75rem;
             color: var(--color-dark);
             text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 0.95rem;
+            font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            background: var(--color-white);
+            letter-spacing: 0.08em;
+            background: transparent;
             border: none;
             width: 100%;
             cursor: pointer;
             text-align: left;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .mobile-nav-link:active {
-            background: var(--color-light-bg);
+            background: rgba(179, 156, 128, 0.05);
+            color: var(--color-accent);
         }
 
         .mobile-nav-link svg {
@@ -1575,31 +1594,29 @@
         }
 
         .mobile-submenu-section {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--color-border);
-        }
-
-        .mobile-submenu-section:last-child {
-            border-bottom: none;
+            padding: 0.5rem 1.75rem 1.5rem;
         }
 
         .mobile-submenu-title {
-            font-size: 0.8rem;
-            font-weight: 600;
+            font-size: 0.75rem;
+            font-weight: 700;
             color: var(--color-main);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.75rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
+            opacity: 0.8;
         }
 
         .mobile-submenu a {
             display: block;
-            padding: 0.8rem 0;
+            padding: 0.7rem 0;
             color: var(--color-dark);
             text-decoration: none;
-            font-size: 0.95rem;
-            border-bottom: 1px solid rgba(232, 228, 222, 0.5);
+            font-size: 0.9rem;
+            font-weight: 400;
             transition: all 0.3s ease;
+            border: none;
         }
 
         .mobile-submenu a:hover,
@@ -1610,6 +1627,9 @@
 
         /* Responsive */
         @media (max-width: 900px) {
+            .menu-toggle {
+                display: flex;
+            }
             .navbar {
                 height: var(--navbar-height);
             }
@@ -1635,7 +1655,42 @@
                 position: static;
                 display: flex;
                 align-items: center;
-                gap: 0.25rem;
+                gap: 0.1rem;
+            }
+
+            #userAuthSection {
+                display: flex;
+                align-items: center;
+            }
+
+            .user-profile-btn {
+                padding: 0;
+                width: 40px;
+                height: 40px;
+                justify-content: center;
+                background: transparent;
+                border: none;
+            }
+
+            .user-profile-btn .user-name,
+            .user-profile-btn svg:not(.logo-icon svg) {
+                display: none;
+            }
+
+            .user-profile-btn:hover {
+                color: var(--color-accent);
+                transform: translateY(-2px);
+            }
+
+            .user-profile-btn:active {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+
+            .user-avatar-circle {
+                width: 30px;
+                height: 30px;
+                font-size: 0.75rem;
             }
 
             .nav-links {
@@ -1649,35 +1704,41 @@
 
         @media (max-width: 480px) {
             .navbar-inner {
-                padding: 0 1rem;
+                padding: 0 0.75rem;
             }
 
             .logo-icon {
-                width: 32px;
-                height: 32px;
+                width: 30px;
+                height: 30px;
             }
 
-            .cart-sidebar {
+            .cart-sidebar, .wishlist-sidebar {
                 max-width: 100%;
             }
 
-            .action-btn {
-                width: 44px;
-                height: 44px;
+            .action-btn, .user-profile-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .user-avatar-circle {
+                width: 26px;
+                height: 26px;
+                font-size: 0.7rem;
             }
 
             .action-btn svg {
-                width: 20px;
-                height: 20px;
+                width: 18px;
+                height: 18px;
             }
 
             .menu-toggle {
-                width: 44px;
-                height: 44px;
+                width: 36px;
+                height: 36px;
             }
 
             .nav-actions {
-                gap: 0.25rem;
+                gap: 0;
             }
         }
 
@@ -1766,11 +1827,11 @@
 
             <!-- Nav Links (Visible on Desktop, Scrollable on Mobile) -->
             <ul class="nav-links" id="navLinks">
-                <li><a href="/men">Men</a></li>
-                <li><a href="/women">Women</a></li>
-                <li><a href="/kids">Kids</a></li>
-                <li><a href="/accessories">Accessories</a></li>
-                <li><a href="/sale">Sale</a></li>
+                <li><a href="men-products.php">Men</a></li>
+                <li><a href="women-products.php">Women</a></li>
+                <li><a href="kids-products.php">Kids</a></li>
+                <li><a href="accessories-products.php">Accessories</a></li>
+                <li><a href="sale-products.php">Sale</a></li>
             </ul>
         </div>
     </nav>
@@ -1861,10 +1922,10 @@
             </div>
         </div>
         <div class="mobile-nav-item">
-            <a href="/accessories" class="mobile-nav-link">Accessories</a>
+            <a href="accessories-products.php" class="mobile-nav-link">Accessories</a>
         </div>
         <div class="mobile-nav-item">
-            <a href="/sale" class="mobile-nav-link">Sale</a>
+            <a href="sale-products.php" class="mobile-nav-link">Sale</a>
         </div>
     </div>
 

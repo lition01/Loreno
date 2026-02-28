@@ -33,7 +33,8 @@
             colors: colorsArray,
             sizes: sizesArray,
             category: (p.cat || "").toLowerCase(),
-            fit: p.fit || "regular"
+            fit: p.fit || "regular",
+            smell: p.smell || ""
         };
     }
 

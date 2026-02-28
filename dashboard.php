@@ -2764,23 +2764,79 @@
             <div class="card" style="margin-bottom:16px;">
               <div
                 style="font-size:13px;font-weight:700;color:var(--c5);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;">
+                Category</div>
+              <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                  <input type="radio" name="category" value="Men" checked onchange="handleCategoryChange(this.value)" style="accent-color:var(--c3);width:18px;height:18px;">
+                  <span style="font-size:14px;font-weight:500;">Men</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                  <input type="radio" name="category" value="Women" onchange="handleCategoryChange(this.value)" style="accent-color:var(--c3);width:18px;height:18px;">
+                  <span style="font-size:14px;font-weight:500;">Women</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                  <input type="radio" name="category" value="Kids" onchange="handleCategoryChange(this.value)" style="accent-color:var(--c3);width:18px;height:18px;">
+                  <span style="font-size:14px;font-weight:500;">Kids</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                  <input type="radio" name="category" value="Accessories" onchange="handleCategoryChange(this.value)" style="accent-color:var(--c3);width:18px;height:18px;">
+                  <span style="font-size:14px;font-weight:500;">Accessories</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="card" style="margin-bottom:16px;">
+              <div
+                style="font-size:13px;font-weight:700;color:var(--c5);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;">
                 Basic Info</div>
               <div class="form-grid">
                 <div class="form-group form-full"><label class="form-label">Product Name</label><input class="form-input"
                     name="name" type="text" placeholder="e.g. Classic Oxford Shirt" required /></div>
                 <div class="form-group"><label class="form-label">Price ($)</label><input class="form-input"
                     name="price" type="number" min="0" step="0.01" placeholder="0.00" required /></div>
+                
+                <!-- FIT (Men, Women, Kids) -->
+                <div class="form-group" id="group-fit">
+                  <label class="form-label">Fit</label>
+                  <select class="form-select" name="fit">
+                    <option value="">Select Fit...</option>
+                    <option>Slim Fit</option>
+                    <option>Regular Fit</option>
+                    <option>Relaxed Fit</option>
+                    <option>Oversized</option>
+                  </select>
+                </div>
+
+                <!-- SMELL (Accessories) -->
+                <div class="form-group" id="group-smell" style="display:none;">
+                  <label class="form-label">Smell</label>
+                  <select class="form-select" name="smell">
+                    <option value="">Select Smell...</option>
+                    <option>Summer Smell</option>
+                    <option>Winter Smell</option>
+                    <option>Floral Breeze</option>
+                    <option>Ocean Mist</option>
+                  </select>
+                </div>
+
                 <div class="form-group form-full"><label class="form-label">Description</label><textarea
                     class="form-textarea" name="description"
                     placeholder="Describe the product — fabric, fit, style…"></textarea></div>
               </div>
-              <div
+              <div id="stock-info-wrap"
                 style="margin-top:14px;padding:12px 14px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
                 <div>
                   <div style="font-size:12px;font-weight:700;color:var(--c5);">Total Stock</div>
                   <div style="font-size:11px;color:var(--muted);margin-top:2px;">Auto-calculated from sizes below</div>
                 </div>
                 <div style="font-size:22px;font-weight:900;color:var(--c4);" id="totalStockDisplay">0</div>
+              </div>
+              <!-- Simple stock input for accessories -->
+              <div id="simple-stock-wrap" style="display:none;margin-top:14px;">
+                <div class="form-group">
+                  <label class="form-label">Total Stock</label>
+                  <input class="form-input" name="simpleStock" type="number" min="0" placeholder="0" />
+                </div>
               </div>
             </div>
             <div class="card" style="margin-bottom:16px;">
@@ -2808,38 +2864,40 @@
               </div>
             </div>
 
-            <div class="card" style="margin-bottom:16px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-                <div
-                  style="font-size:13px;font-weight:700;color:var(--c5);text-transform:uppercase;letter-spacing:.5px;">
-                  Available Colors</div>
-                <button type="button" class="add-color-btn" onclick="addColor()">
-                  <svg viewBox="0 0 24 24">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                  Add Color
-                </button>
+            <div id="group-colors-sizes">
+              <div class="card" style="margin-bottom:16px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                  <div
+                    style="font-size:13px;font-weight:700;color:var(--c5);text-transform:uppercase;letter-spacing:.5px;">
+                    Available Colors</div>
+                  <button type="button" class="add-color-btn" onclick="addColor()">
+                    <svg viewBox="0 0 24 24">
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Add Color
+                  </button>
+                </div>
+                <div class="color-list" id="colorList"></div>
               </div>
-              <div class="color-list" id="colorList"></div>
-            </div>
-            <div class="card" style="margin-bottom:16px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-                <div
-                  style="font-size:13px;font-weight:700;color:var(--c5);text-transform:uppercase;letter-spacing:.5px;">
-                  Sizes &amp; Measurements</div>
-                <button type="button" class="btn btn-ghost btn-sm" onclick="addCustomSize()">
-                  <svg viewBox="0 0 24 24">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                  Custom Size
-                </button>
+              <div class="card" style="margin-bottom:16px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                  <div
+                    style="font-size:13px;font-weight:700;color:var(--c5);text-transform:uppercase;letter-spacing:.5px;">
+                    Sizes &amp; Measurements</div>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="addCustomSize()">
+                    <svg viewBox="0 0 24 24">
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Custom Size
+                  </button>
+                </div>
+                <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Select sizes to activate them, then fill
+                  in measurements.</p>
+                <div class="size-picker" id="sizePicker"></div>
+                <div id="sizeTableWrap"></div>
               </div>
-              <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Select sizes to activate them, then fill
-                in measurements.</p>
-              <div class="size-picker" id="sizePicker"></div>
-              <div id="sizeTableWrap"></div>
             </div>
             <div style="display:flex;gap:12px;justify-content:flex-end;">
               <button type="button" class="btn btn-ghost" onclick="confirmDiscard()">Discard</button>
@@ -3780,10 +3838,19 @@
       },
     ];
 
-    function renderAddProductPlacements() {
+    function renderAddProductPlacements(cat = 'Men') {
       const container = document.getElementById('add-placement-options');
       if (!container) return;
-      container.innerHTML = PLACEMENT_OPTIONS.map(o => `
+
+      const filtered = PLACEMENT_OPTIONS.filter(o => {
+        if (cat === 'Accessories') {
+          return !['men', 'women', 'kids'].includes(o.id);
+        } else {
+          return o.id !== 'acc';
+        }
+      });
+
+      container.innerHTML = filtered.map(o => `
         <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all var(--trans);">
           <input type="checkbox" name="placements" value="${o.id}" style="width:16px;height:16px;accent-color:var(--c3);">
           <div style="font-size:18px;">${o.icon}</div>
@@ -4124,21 +4191,60 @@
     /* ════════════════════════════════════════════
        ADD PRODUCT FORM
     ════════════════════════════════════════════ */
-    const ALL_SIZES = ['XS', 'S', 'M', 'L', 'XL'];
+    const SIZE_MAP = {
+      Men: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+      Women: ['XS', 'S', 'M', 'L', 'XL'],
+      Kids: ['2-3', '4-5', '6-7', '8-9', '10-11', '12-13'],
+      Accessories: []
+    };
     let activeSizes = [];
     let colorCount = 0;
 
-    function initAddProduct() {
-      const picker = document.getElementById('sizePicker');
-      if (picker && !picker.children.length) {
-        picker.innerHTML = ALL_SIZES.map(s => `<div class="size-pill" data-size="${s}" onclick="toggleSize(this)">${s}</div>`).join('');
+    function handleCategoryChange(cat) {
+      const fitGroup = document.getElementById('group-fit');
+      const smellGroup = document.getElementById('group-smell');
+      const colorsSizesGroup = document.getElementById('group-colors-sizes');
+      const stockInfoWrap = document.getElementById('stock-info-wrap');
+      const simpleStockWrap = document.getElementById('simple-stock-wrap');
+
+      if (cat === 'Accessories') {
+        fitGroup.style.display = 'none';
+        smellGroup.style.display = 'block';
+        colorsSizesGroup.style.display = 'none';
+        stockInfoWrap.style.display = 'none';
+        simpleStockWrap.style.display = 'block';
+
+        // Listen for simple stock change
+        const simpleInp = simpleStockWrap.querySelector('input');
+        if (simpleInp) {
+          simpleInp.addEventListener('input', updateTotalStock);
+        }
+      } else {
+        fitGroup.style.display = 'block';
+        smellGroup.style.display = 'none';
+        colorsSizesGroup.style.display = 'block';
+        stockInfoWrap.style.display = 'flex';
+        simpleStockWrap.style.display = 'none';
       }
+
+      // Update placements
+      renderAddProductPlacements(cat);
+
+      // Update size picker
+      const picker = document.getElementById('sizePicker');
+      const sizes = SIZE_MAP[cat] || [];
+      activeSizes = [];
+      picker.innerHTML = sizes.map(s => `<div class="size-pill" data-size="${s}" onclick="toggleSize(this)">${s}</div>`).join('');
+      renderSizeTable();
+    }
+
+    function initAddProduct() {
       renderAddProductPlacements();
       if (!colorCount) addColor();
 
-      if (activeSizes.length === 0) {
-        ['S', 'M', 'L', 'XL'].forEach(s => toggleSize(s));
-      }
+      // Set default category
+      const defaultCat = document.querySelector('input[name="category"]:checked')?.value || 'Men';
+      handleCategoryChange(defaultCat);
     }
 
     function toggleSize(el) {
@@ -4194,9 +4300,15 @@
     }
 
     function updateTotalStock() {
-      const inputs = document.querySelectorAll('.size-qty-input');
+      const cat = document.querySelector('input[name="category"]:checked')?.value || 'Men';
       let total = 0;
-      inputs.forEach(inp => total += (parseInt(inp.value) || 0));
+      if (cat !== 'Accessories') {
+        const inputs = document.querySelectorAll('.size-qty-input');
+        inputs.forEach(inp => total += (parseInt(inp.value) || 0));
+      } else {
+        const simpleInp = document.querySelector('input[name="simpleStock"]');
+        total = parseInt(simpleInp?.value || 0);
+      }
       const el = document.getElementById('totalStockDisplay');
       if (el) el.textContent = total.toLocaleString();
     }
@@ -4265,14 +4377,26 @@
       const fd = new FormData(e.target);
       const data = Object.fromEntries(fd.entries());
       const price = parseFloat(data.price || 0);
+      const category = data.category;
+
       /* collect sizes from the size table */
-      const sizeRows = document.querySelectorAll('#sizeTableWrap .size-row');
-      const sizes = {};
-      sizeRows.forEach(row => {
-        const tag = row.querySelector('.size-tag');
-        const qtyInput = row.querySelectorAll('input')[0];
-        if (tag && qtyInput) sizes[tag.textContent.trim()] = parseInt(qtyInput.value) || 0;
-      });
+      let sizes = {};
+      let totalStock = 0;
+
+      if (category !== 'Accessories') {
+        const sizeRows = document.querySelectorAll('#sizeTableWrap .size-row');
+        sizeRows.forEach(row => {
+          const tag = row.querySelector('.size-tag');
+          const qtyInput = row.querySelectorAll('input')[0];
+          if (tag && qtyInput) {
+            const qty = parseInt(qtyInput.value) || 0;
+            sizes[tag.textContent.trim()] = qty;
+            totalStock += qty;
+          }
+        });
+      } else {
+        totalStock = parseInt(data.simpleStock) || 0;
+      }
 
       /* collect placements */
       const placements = [...document.querySelectorAll('#add-placement-options input[name="placements"]:checked')].map(cb => cb.value);
@@ -4282,39 +4406,43 @@
         return;
       }
 
-      /* determine primary category from placements for dashboard listing */
-      let primaryCat = 'Uncategorized';
-      if (placements.includes('men')) primaryCat = 'Men';
-      else if (placements.includes('women')) primaryCat = 'Women';
-      else if (placements.includes('kids')) primaryCat = 'Kids';
-      else if (placements.includes('acc')) primaryCat = 'Accessories';
-
       /* capture image BEFORE resetForm clears preview */
       const previewImg = document.querySelector('#filePreview img');
       const imageUrl = previewImg ? previewImg.src : '';
 
       /* collect colors from the color list */
-      const colorEntries = document.querySelectorAll('#colorList .color-entry');
       const colors = [];
-      colorEntries.forEach(entry => {
-        const colorInput = entry.querySelector('input[type="color"]');
-        if (colorInput) {
-          colors.push(colorInput.value);
-        }
-      });
+      if (category !== 'Accessories') {
+        const colorEntries = document.querySelectorAll('#colorList .color-entry');
+        colorEntries.forEach(entry => {
+          const colorInput = entry.querySelector('input[type="color"]');
+          if (colorInput) {
+            colors.push(colorInput.value);
+          }
+        });
+      }
 
-      PRODUCTS.push({
+      const productObj = {
         id: 'P' + (Date.now()),
         name: data.name || 'New Product',
-        cat: primaryCat,
+        cat: category,
         price: '$' + price.toFixed(2),
         priceValue: price,
         sizes,
         colors,
         imageUrl,
         placements,
+        totalStock,
         badge: 'New' // default badge for dashboard products
-      });
+      };
+
+      if (category === 'Accessories') {
+        productObj.smell = data.smell;
+      } else {
+        productObj.fit = data.fit;
+      }
+
+      PRODUCTS.push(productObj);
       saveProducts();
 
       /* navigate first, then render so the grid is visible and populated */
@@ -4339,8 +4467,12 @@
       const wrap = document.getElementById('sizeTableWrap');
       if (wrap) wrap.innerHTML = '';
 
-      // Re-initialize standard sizes
-      ['S', 'M', 'L', 'XL'].forEach(s => toggleSize(s));
+      // Reset to default category 'Men'
+      const menRadio = document.querySelector('input[name="category"][value="Men"]');
+      if (menRadio) {
+        menRadio.checked = true;
+        handleCategoryChange('Men');
+      }
 
       const totalEl = document.getElementById('totalStockDisplay');
       if (totalEl) totalEl.textContent = '0';

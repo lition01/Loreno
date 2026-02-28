@@ -350,13 +350,13 @@ if (!$product) {
         }
 
         .add-to-cart-btn:hover {
-            background: var(--color-main);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0.9;
         }
 
         .add-to-cart-btn:active {
-            transform: translateY(0);
+            transform: scale(0.98);
+            opacity: 0.9;
         }
 
         .wishlist-btn {
@@ -379,8 +379,14 @@ if (!$product) {
         }
 
         .wishlist-btn:hover {
-            background: var(--color-dark);
-            color: var(--color-white);
+            color: var(--color-accent);
+            border-color: var(--color-accent);
+            transform: translateY(-2px);
+        }
+
+        .wishlist-btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
         }
 
         .wishlist-btn.active {

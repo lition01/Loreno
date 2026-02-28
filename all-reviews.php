@@ -641,10 +641,9 @@
       transition: all 0.3s ease;
     }
 
-    .arv-action-btn:hover {
-      background: var(--arv-cream);
-      border-color: var(--arv-sand);
-      color: var(--arv-espresso);
+    .arv-action-btn:active {
+      transform: scale(0.9);
+      opacity: 0.7;
     }
 
     .arv-action-btn.liked {

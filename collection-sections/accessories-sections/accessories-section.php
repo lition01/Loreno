@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Men's Collection</title>
+    <title>Accessories Collection</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         /* ========================================
@@ -885,22 +885,6 @@ body {
 .action-btn:nth-child(2) { transition-delay: 0.1s; }
 .action-btn:nth-child(3) { transition-delay: 0.15s; }
 
-.action-btn:hover {
-    color: var(--color-coffee);
-    transform: translateY(-2px);
-}
-
-.action-btn:active {
-    transform: scale(0.9);
-    opacity: 0.7;
-}
-
-.action-btn svg {
-    width: 16px;
-    height: 16px;
-    color: var(--color-espresso);
-}
-
 /* Product Info */
 .product-info {
     padding: 16px;
@@ -952,6 +936,7 @@ body {
    ======================================== */
 .quick-add-popup {
     position: absolute;
+    top: auto;
     left: 0;
     right: 0;
     bottom: 0;
@@ -977,12 +962,12 @@ body {
 }
 
 /* Hide quick actions when popup is active */
-.product-card:has(.quick-add-popup.active) .quick-actions {
+.product-image-wrapper:has(.quick-add-popup.active) .quick-actions {
     opacity: 0 !important;
     pointer-events: none;
 }
 
-.product-card:has(.quick-add-popup.active) .wishlist-btn {
+.product-image-wrapper:has(.quick-add-popup.active) .wishlist-btn {
     opacity: 0 !important;
     pointer-events: none;
 }
@@ -1602,23 +1587,12 @@ body {
                         </svg>
                     </div>
                 </div>
-                <div class="filter-category-item" data-filter-cat="size">
+                <div class="filter-category-item" data-filter-cat="smell">
                     <div class="filter-category-header">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.022.547l-2.387 2.387a2 2 0 000 2.828l.596.596a2 2 0 002.828 0l2.387-2.387a2 2 0 00.547-1.022l.477-2.387a6 6 0 00-.517-3.86l-.158-.318a6 6 0 01-.517-3.86L8.79 6.05a2 2 0 00-.547-1.022l-2.387-2.387a2 2 0 00-2.828 0l-.596.596a2 2 0 000 2.828l2.387 2.387z" />
                         </svg>
-                        <span>Size</span>
-                        <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </div>
-                </div>
-                <div class="filter-category-item" data-filter-cat="fit">
-                    <div class="filter-category-header">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                        </svg>
-                        <span>Fit</span>
+                        <span>Smell</span>
                         <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
@@ -1704,16 +1678,16 @@ body {
             </div>
         </div>
 
-        <!-- Mini Popup for Size -->
-        <div class="mini-popup" id="miniPopupSize">
+        <!-- Mini Popup for Smell -->
+        <div class="mini-popup" id="miniPopupSmell">
             <div class="mini-popup-header">
-                <button class="mini-popup-back" data-back="size">
+                <button class="mini-popup-back" data-back="smell">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
-                <h4>Size</h4>
-                <button class="mini-popup-close" data-close-mini="size">
+                <h4>Smell</h4>
+                <button class="mini-popup-close" data-close-mini="smell">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -1721,103 +1695,44 @@ body {
             </div>
             <div class="mini-popup-body">
                 <label class="filter-option">
-                    <input type="checkbox" value="XS" data-filter="size">
+                    <input type="checkbox" value="Summer Smell" data-filter="smell">
                     <span class="filter-checkbox">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </span>
-                    <span class="filter-label">XS</span>
-                    <span class="filter-count" data-count="XS">0</span>
+                    <span class="filter-label">Summer Smell</span>
+                    <span class="filter-count" data-count="Summer Smell">0</span>
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" value="S" data-filter="size">
+                    <input type="checkbox" value="Winter Smell" data-filter="smell">
                     <span class="filter-checkbox">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </span>
-                    <span class="filter-label">S</span>
-                    <span class="filter-count" data-count="S">0</span>
+                    <span class="filter-label">Winter Smell</span>
+                    <span class="filter-count" data-count="Winter Smell">0</span>
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" value="M" data-filter="size">
+                    <input type="checkbox" value="Floral Breeze" data-filter="smell">
                     <span class="filter-checkbox">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </span>
-                    <span class="filter-label">M</span>
-                    <span class="filter-count" data-count="M">0</span>
+                    <span class="filter-label">Floral Breeze</span>
+                    <span class="filter-count" data-count="Floral Breeze">0</span>
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" value="L" data-filter="size">
+                    <input type="checkbox" value="Ocean Mist" data-filter="smell">
                     <span class="filter-checkbox">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </span>
-                    <span class="filter-label">L</span>
-                    <span class="filter-count" data-count="L">0</span>
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" value="XL" data-filter="size">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">XL</span>
-                    <span class="filter-count" data-count="XL">0</span>
-                </label>
-            </div>
-        </div>
-
-        <!-- Mini Popup for Fit -->
-        <div class="mini-popup" id="miniPopupFit">
-            <div class="mini-popup-header">
-                <button class="mini-popup-back" data-back="fit">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                <h4>Fit</h4>
-                <button class="mini-popup-close" data-close-mini="fit">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            <div class="mini-popup-body">
-                <label class="filter-option">
-                    <input type="checkbox" value="slim" data-filter="fit">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">Slim Fit</span>
-                    <span class="filter-count" data-count="slim">0</span>
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" value="regular" data-filter="fit">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">Regular Fit</span>
-                    <span class="filter-count" data-count="regular">0</span>
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" value="relaxed" data-filter="fit">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">Relaxed Fit</span>
-                    <span class="filter-count" data-count="relaxed">0</span>
+                    <span class="filter-label">Ocean Mist</span>
+                    <span class="filter-count" data-count="Ocean Mist">0</span>
                 </label>
             </div>
         </div>
@@ -1892,13 +1807,13 @@ body {
         <!-- Active Filters Pills -->
         <div class="active-filters-bar" id="activeFiltersBar"></div>
 
-        <section class="new-arrivals-section" aria-label="Men's Collection">
+        <section class="new-arrivals-section" aria-label="Accessories Collection">
             <div class="new-arrivals-container">
                 <!-- Section Header -->
                 <header class="section-header">
-                    <span class="section-label">Premium Menswear</span>
-                    <h2 class="section-title">Summer Collection</h2>
-                    <p class="section-subtitle">Discover timeless style and modern sophistication with our curated men's collection</p>
+                    <span class="section-label">Premium Accessories</span>
+                    <h2 class="section-title">Accessories Collection</h2>
+                    <p class="section-subtitle">Complete your look with our curated selection of premium watches, bags, and luxury essentials</p>
                 </header>
 
                 <!-- Grid Layout -->
@@ -1927,9 +1842,9 @@ body {
     </div>
 </div>
 
-<!-- Load products data first, then main logic -->
 <script src="products.js"></script>
-<script src="summer-main.js"></script>
+<script src="accessories-main.js"></script>
+
 
 </body>
 </html>

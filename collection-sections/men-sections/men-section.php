@@ -746,8 +746,8 @@ body {
 
 .carousel-track {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
 }
 
 /* Product Card */
@@ -795,10 +795,10 @@ body {
 /* Wishlist Button */
 .wishlist-btn {
     position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 40px;
-    height: 40px;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
     background: var(--color-white);
     border: none;
     border-radius: 50%;
@@ -819,19 +819,20 @@ body {
 }
 
 .wishlist-btn:hover {
-    background: var(--color-coffee);
-    transform: scale(1.1);
+    color: var(--color-coffee);
+    transform: translateY(-2px);
+}
+
+.wishlist-btn:active {
+    transform: scale(0.9);
+    opacity: 0.7;
 }
 
 .wishlist-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     color: var(--color-espresso);
     transition: all var(--transition-fast);
-}
-
-.wishlist-btn:hover svg {
-    color: var(--color-white);
 }
 
 .wishlist-btn.active svg {
@@ -839,9 +840,10 @@ body {
     color: var(--color-coffee);
 }
 
-.wishlist-btn.active:hover svg {
-    fill: var(--color-white);
-    color: var(--color-white);
+.wishlist-btn.active:active svg {
+    fill: var(--color-coffee);
+    color: var(--color-coffee);
+    opacity: 0.7;
 }
 
 /* Quick Actions Overlay */
@@ -850,11 +852,11 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 20px;
+    padding: 16px;
     background: linear-gradient(to top, rgba(47, 39, 22, 0.85) 0%, transparent 100%);
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.3s ease;
@@ -866,8 +868,8 @@ body {
 }
 
 .action-btn {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     background: var(--color-white);
     border: none;
     border-radius: 50%;
@@ -885,18 +887,18 @@ body {
 
 /* Product Info */
 .product-info {
-    padding: 20px;
+    padding: 16px;
 }
 
 .product-colors {
     display: flex;
-    gap: 6px;
-    margin-bottom: 12px;
+    gap: 5px;
+    margin-bottom: 10px;
 }
 
 .color-dot {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     border: 2px solid var(--color-white);
     box-shadow: 0 0 0 1px var(--color-sand);
@@ -910,10 +912,10 @@ body {
 
 .product-name {
     font-family: var(--font-body);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
     color: var(--color-espresso);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     line-height: 1.4;
     transition: color var(--transition-fast);
 }
@@ -924,7 +926,7 @@ body {
 
 .product-price {
     font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: var(--color-coffee);
 }
@@ -951,8 +953,6 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    overflow-y: auto;
-    max-height: 65%;
 }
 
 .quick-add-popup.active {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Men's Collection</title>
+    <title>Kids' Collection</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         /* ========================================
@@ -885,22 +885,6 @@ body {
 .action-btn:nth-child(2) { transition-delay: 0.1s; }
 .action-btn:nth-child(3) { transition-delay: 0.15s; }
 
-.action-btn:hover {
-    color: var(--color-coffee);
-    transform: translateY(-2px);
-}
-
-.action-btn:active {
-    transform: scale(0.9);
-    opacity: 0.7;
-}
-
-.action-btn svg {
-    width: 16px;
-    height: 16px;
-    color: var(--color-espresso);
-}
-
 /* Product Info */
 .product-info {
     padding: 16px;
@@ -952,6 +936,7 @@ body {
    ======================================== */
 .quick-add-popup {
     position: absolute;
+    top: auto;
     left: 0;
     right: 0;
     bottom: 0;
@@ -977,12 +962,12 @@ body {
 }
 
 /* Hide quick actions when popup is active */
-.product-card:has(.quick-add-popup.active) .quick-actions {
+.product-image-wrapper:has(.quick-add-popup.active) .quick-actions {
     opacity: 0 !important;
     pointer-events: none;
 }
 
-.product-card:has(.quick-add-popup.active) .wishlist-btn {
+.product-image-wrapper:has(.quick-add-popup.active) .wishlist-btn {
     opacity: 0 !important;
     pointer-events: none;
 }
@@ -1892,13 +1877,13 @@ body {
         <!-- Active Filters Pills -->
         <div class="active-filters-bar" id="activeFiltersBar"></div>
 
-        <section class="new-arrivals-section" aria-label="Men's Collection">
+        <section class="new-arrivals-section" aria-label="Kids' Collection">
             <div class="new-arrivals-container">
                 <!-- Section Header -->
                 <header class="section-header">
-                    <span class="section-label">Premium Menswear</span>
-                    <h2 class="section-title">Summer Collection</h2>
-                    <p class="section-subtitle">Discover timeless style and modern sophistication with our curated men's collection</p>
+                    <span class="section-label">Premium Kidswear</span>
+                    <h2 class="section-title">Kids' Collection</h2>
+                    <p class="section-subtitle">Discover comfortable and stylish outfits for every adventure in our curated kids' collection</p>
                 </header>
 
                 <!-- Grid Layout -->
@@ -1927,9 +1912,9 @@ body {
     </div>
 </div>
 
-<!-- Load products data first, then main logic -->
 <script src="products.js"></script>
-<script src="summer-main.js"></script>
+<script src="kids-main.js"></script>
+
 
 </body>
 </html>
