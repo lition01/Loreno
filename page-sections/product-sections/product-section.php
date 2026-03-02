@@ -510,6 +510,41 @@ if (!$product) {
         </div>
     </div>
 
+    <!-- Review Section -->
+    <div class="reviews-section" style="max-width: 1400px; margin: 4rem auto; padding: 0 2rem;">
+        <h2 style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 2rem;">Customer Reviews</h2>
+        
+        <!-- Review Form -->
+        <div id="productReviewForm" style="background: var(--color-white); padding: 2rem; border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 3rem;">
+            <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem;">Write a Review</h3>
+            <div id="reviewAuthMessage" style="display: none; margin-bottom: 1rem; color: var(--color-accent);">
+                Please <a href="login.php" style="color: var(--color-dark); font-weight: 600;">log in</a> to leave a review.
+            </div>
+            <div id="reviewFormContent">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Rating</label>
+                    <div id="starRating" style="display: flex; gap: 0.5rem;">
+                        <span class="star" data-rating="1" style="font-size: 1.5rem; cursor: pointer; color: #d4c9bc;">★</span>
+                        <span class="star" data-rating="2" style="font-size: 1.5rem; cursor: pointer; color: #d4c9bc;">★</span>
+                        <span class="star" data-rating="3" style="font-size: 1.5rem; cursor: pointer; color: #d4c9bc;">★</span>
+                        <span class="star" data-rating="4" style="font-size: 1.5rem; cursor: pointer; color: #d4c9bc;">★</span>
+                        <span class="star" data-rating="5" style="font-size: 1.5rem; cursor: pointer; color: #d4c9bc;">★</span>
+                    </div>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Your Review</label>
+                    <textarea id="reviewText" style="width: 100%; padding: 1rem; border: 1px solid var(--color-border); border-radius: 4px; min-height: 120px; font-family: inherit; resize: vertical;" placeholder="Share your experience with this product..."></textarea>
+                </div>
+                <button id="submitReviewBtn" style="padding: 1rem 2rem; background: var(--color-dark); color: var(--color-white); border: none; border-radius: 4px; cursor: pointer; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; transition: all var(--transition);">Post Review</button>
+            </div>
+        </div>
+
+        <!-- Reviews List -->
+        <div id="reviewsList">
+            <!-- Reviews will be loaded here -->
+        </div>
+    </div>
+
     <div class="toast" id="toast">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -604,7 +639,94 @@ if (!$product) {
         document.addEventListener('DOMContentLoaded', () => {
             // Wait a tiny bit for cart-handler.js to finish loading data
             setTimeout(updateWishlistButtonState, 100);
+            
+            // Setup Reviews
+            setupProductReviews();
         });
+
+        // ── PRODUCT REVIEWS ──────────────────────────────────
+        let currentReviewRating = 0;
+
+        function setupProductReviews() {
+            const starRating = document.getElementById('starRating');
+            const stars = starRating.querySelectorAll('.star');
+            const submitBtn = document.getElementById('submitReviewBtn');
+            const reviewFormContent = document.getElementById('reviewFormContent');
+            const reviewAuthMessage = document.getElementById('reviewAuthMessage');
+            
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            
+            if (!isLoggedIn) {
+                reviewFormContent.style.opacity = '0.5';
+                reviewFormContent.style.pointerEvents = 'none';
+                reviewAuthMessage.style.display = 'block';
+            }
+
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    currentReviewRating = parseInt(star.dataset.rating);
+                    stars.forEach(s => {
+                        s.style.color = parseInt(s.dataset.rating) <= currentReviewRating ? '#c9912a' : '#d4c9bc';
+                    });
+                });
+            });
+
+            submitBtn.addEventListener('click', () => {
+                const text = document.getElementById('reviewText').value.trim();
+                if (!currentReviewRating) return alert('Please select a rating');
+                if (!text) return alert('Please write a review');
+
+                const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+                const newReview = {
+                    id: Date.now(),
+                    product: productData.name,
+                    productId: productData.id,
+                    rating: currentReviewRating,
+                    text: text,
+                    date: new Date().toISOString().split('T')[0]
+                };
+
+                reviews.unshift(newReview);
+                localStorage.setItem('reviews', JSON.stringify(reviews));
+                
+                // Clear form
+                document.getElementById('reviewText').value = '';
+                currentReviewRating = 0;
+                stars.forEach(s => s.style.color = '#d4c9bc');
+                
+                renderProductReviews();
+                
+                // Show success toast
+                const toast = document.getElementById('toast');
+                document.getElementById('toastMessage').textContent = 'Review posted successfully!';
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            });
+
+            renderProductReviews();
+        }
+
+        function renderProductReviews() {
+            const reviewsList = document.getElementById('reviewsList');
+            const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+            const productReviews = reviews.filter(r => r.product === productData.name);
+
+            if (productReviews.length === 0) {
+                reviewsList.innerHTML = '<p style="color: #666; font-style: italic;">No reviews yet. Be the first to review this product!</p>';
+                return;
+            }
+
+            reviewsList.innerHTML = productReviews.map(r => `
+                <div style="background: var(--color-white); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                        <div style="font-weight: 600; font-size: 1rem;">Verified Customer</div>
+                        <div style="color: #c9912a; font-size: 0.875rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+                    </div>
+                    <div style="font-size: 0.75rem; color: #999; margin-bottom: 1rem;">${r.date}</div>
+                    <p style="font-size: 0.95rem; color: #444; line-height: 1.6;">${r.text}</p>
+                </div>
+            `).join('');
+        }
 
         // Listen for global wishlist updates (if needed)
         window.addEventListener('storage', (e) => {

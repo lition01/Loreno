@@ -1458,7 +1458,8 @@ body {
                     </div>
 
                     <div class="confirmation-actions">
-                        <a href="index.php" class="btn btn-primary">Explore Collections</a>
+                        <a href="profile.php#orders" class="btn btn-primary">View My Orders</a>
+                        <a href="index.php" class="btn btn-outline" style="border: 1px solid var(--border); padding: 16px 32px; border-radius: 8px; text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 14px; transition: all 0.3s ease;">Explore Collections</a>
                     </div>
                 </div>
             </div>
@@ -2226,13 +2227,13 @@ function displayOrderSummary() {
 }
 
 // ========================================
-// SAVE ORDER TO DASHBOARD
+// SAVE ORDER TO DASHBOARD & USER ACCOUNT
 // ========================================
 function saveOrderToDashboard(data) {
     try {
-        // 1. Save the Order
-        let orders = JSON.parse(localStorage.getItem('dashboard_orders') || '[]');
-        const newOrder = {
+        // 1. Save the Order to Dashboard (Admin View)
+        let dashOrders = JSON.parse(localStorage.getItem('dashboard_orders') || '[]');
+        const dashOrder = {
             id: data.orderNumber,
             cust: data.shipping.fullName,
             prod: data.cart.length > 1 ? data.cart[0].name + ' (+' + (data.cart.length - 1) + ')' : data.cart[0].name,
@@ -2244,10 +2245,35 @@ function saveOrderToDashboard(data) {
             date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
             items: data.cart // Full items list for details
         };
-        orders.unshift(newOrder);
-        localStorage.setItem('dashboard_orders', JSON.stringify(orders));
+        dashOrders.unshift(dashOrder);
+        localStorage.setItem('dashboard_orders', JSON.stringify(dashOrders));
 
-        // 2. Save/Update the Customer
+        // 2. Save the Order to User Account (My Profile View)
+        let userOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+        const userOrder = {
+            id: data.orderNumber,
+            date: new Date().toISOString().split('T')[0], // YYYY-MM-DD for charts/logic in account.php
+            status: data.paymentMethod === 'cod' ? 'Pending' : 'Processing',
+            total: data.total,
+            items: data.cart.map(item => ({
+                n: item.name,
+                q: parseInt(item.quantity) || 1,
+                p: parseFloat(item.price) || 0
+            }))
+        };
+        userOrders.unshift(userOrder);
+        localStorage.setItem('orders', JSON.stringify(userOrders));
+
+        // 3. Update User Profile if not exists
+        if (!localStorage.getItem('userProfile')) {
+            const initials = data.shipping.fullName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+            localStorage.setItem('userProfile', JSON.stringify({
+                name: data.shipping.fullName,
+                initials: initials
+            }));
+        }
+
+        // 4. Save/Update the Customer for Dashboard
         let customers = JSON.parse(localStorage.getItem('dashboard_customers') || '[]');
         let custIdx = customers.findIndex(c => c.email.toLowerCase() === data.shipping.email.toLowerCase());
         

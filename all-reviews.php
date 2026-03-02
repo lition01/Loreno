@@ -1850,25 +1850,49 @@
     // Form Submission
     document.getElementById('reviewForm').addEventListener('submit', function(e) {
       e.preventDefault();
+
+      if (localStorage.getItem('isLoggedIn') !== 'true') {
+        alert('Please log in to submit a review.');
+        window.location.href = 'login.php?redirect=all-reviews.php';
+        return;
+      }
       
+      const name = document.getElementById('reviewName').value;
+      const role = document.getElementById('reviewRole').value || 'Customer';
+      const title = document.getElementById('reviewTitle').value;
+      const text = document.getElementById('reviewText').value;
+      const ratingValue = currentRating || 5;
+
       const newReview = {
         id: Date.now(),
-        name: document.getElementById('reviewName').value,
-        role: document.getElementById('reviewRole').value || 'Customer',
+        name: name,
+        role: role,
         location: 'Unknown',
-        initials: document.getElementById('reviewName').value.charAt(0).toUpperCase(),
-        rating: currentRating || 5,
-        title: document.getElementById('reviewTitle').value,
-        text: document.getElementById('reviewText').value,
+        initials: name.charAt(0).toUpperCase(),
+        rating: ratingValue,
+        title: title,
+        text: text,
         tags: ['New Review'],
         date: 'Just now',
         verified: false,
         helpful: 0
       };
 
+      // 1. Save to dashboard_reviews (for global view)
       let dbReviews = JSON.parse(localStorage.getItem('dashboard_reviews')) || [];
       dbReviews.unshift(newReview);
       localStorage.setItem('dashboard_reviews', JSON.stringify(dbReviews));
+
+      // 2. Save to user reviews (for profile.php)
+      let userReviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+      userReviews.unshift({
+        id: newReview.id,
+        product: title, // Using title as "product" since this is a general review
+        rating: ratingValue,
+        text: text,
+        date: new Date().toISOString().split('T')[0]
+      });
+      localStorage.setItem('reviews', JSON.stringify(userReviews));
 
       this.style.display = 'none';
       document.querySelector('.arv-form-header').style.display = 'none';
