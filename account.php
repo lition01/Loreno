@@ -1119,7 +1119,7 @@ function goTo(id) {
   $('sidebar').classList.remove('open');
   $('sidebarOverlay').classList.remove('show');
 }
-
+    
 function setupNav() {
   document.querySelectorAll('.nav-item[data-page]').forEach(b => b.addEventListener('click', () => goTo(b.dataset.page)));
 }

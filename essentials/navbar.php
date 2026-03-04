@@ -476,42 +476,78 @@
             background: #fff5f5;
         }
 
-        /* Actions Group */
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.15rem; /* Reduced gap to bring icons closer together */
-        }
-
         .action-btn {
-            width: 40px;
-            height: 40px;
+            width: 36px; /* Slightly more compact button */
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: transparent;
             border: none;
-            color: var(--color-dark);
             cursor: pointer;
-            transition: all var(--transition);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            border-radius: 50%;
+            border-radius: 6px;
         }
 
         .action-btn:hover {
-            color: var(--color-accent);
-            transform: translateY(-2px);
+            background: transparent !important; /* Explicitly removed background */
+            transform: scale(1.08); /* Slightly more prominent scale for the compact size */
+            box-shadow: none !important; /* Explicitly removed shadow */
         }
 
-        .action-btn:active {
-            transform: scale(0.9);
-            opacity: 0.7;
+        /* Unified Compact Icon Design System */
+        .action-btn svg,
+        .wishlist-btn svg,
+        .cart-btn svg {
+            width: 20px !important; /* Reduced from 24px for a more compact presentation */
+            height: 20px !important;
+            stroke-width: 1.75px !important; /* Adjusted stroke for the smaller size */
+            fill: none !important;
+            color: #1a1a1a !important;
+            stroke: #1a1a1a !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
-        .action-btn svg {
-            width: 20px;
-            height: 20px;
-            stroke-width: 1.75;
+        .action-btn:hover svg,
+        .wishlist-btn:hover svg,
+        .cart-btn:hover svg {
+            color: #7e5232 !important; /* Elegant brown shade on hover */
+            stroke: #7e5232 !important;
+            filter: none !important;
+        }
+
+        /* Active state for icons (neutral black) */
+        .action-btn.active svg,
+        .wishlist-btn.active svg,
+        .cart-btn.active svg {
+            color: #000000 !important;
+            stroke: #000000 !important;
+            stroke-width: 2.25px !important;
+        }
+
+        /* Heart active state (neutral) */
+        .wishlist-btn.active svg {
+            fill: none !important;
+        }
+
+        /* Responsive Icons Alignment */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-actions {
+                gap: 0.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-actions {
+                gap: 0.15rem;
+            }
         }
 
         .cart-count,
@@ -543,16 +579,6 @@
 
         .wishlist-count:empty {
             display: none;
-        }
-
-        .action-btn.active svg {
-            fill: var(--color-main);
-            color: var(--color-main);
-        }
-
-        #wishlistBtn.active svg {
-            fill: var(--color-main);
-            color: var(--color-main);
         }
 
         /* Modern Minimal Burger Toggle */
@@ -588,7 +614,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
         }
 
         .menu-toggle span {
@@ -596,39 +622,23 @@
             height: 1.5px;
             background: var(--color-dark);
             display: block;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             border-radius: 2px;
             transform-origin: center;
         }
 
-        /* Modern 2-line style (shorter second line) */
-        .menu-toggle span:nth-child(2) {
-            width: 100%;
-            transform: translateY(0);
-        }
-        
-        .menu-toggle span:nth-child(3) {
-            width: 60%;
-            margin-left: auto;
-        }
-
-        .menu-toggle.active .burger-container {
-            transform: rotate(180deg);
-        }
-
+        /* Simplified transformation */
         .menu-toggle.active span:nth-child(1) {
             transform: translateY(6px) rotate(45deg);
         }
 
         .menu-toggle.active span:nth-child(2) {
             opacity: 0;
-            transform: translateX(-10px);
+            transform: scale(0);
         }
 
         .menu-toggle.active span:nth-child(3) {
-            width: 100%;
-            transform: translateY(-6.5px) rotate(-45deg);
-            margin-left: 0;
+            transform: translateY(-6px) rotate(-45deg);
         }
 
         /* Cart Sidebar */
@@ -1551,7 +1561,6 @@
         .mobile-nav-link {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             padding: 1.4rem 1.75rem;
             color: var(--color-dark);
             text-decoration: none;
@@ -1570,59 +1579,6 @@
         .mobile-nav-link:active {
             background: rgba(179, 156, 128, 0.05);
             color: var(--color-accent);
-        }
-
-        .mobile-nav-link svg {
-            width: 18px;
-            height: 18px;
-            transition: transform 0.3s ease;
-        }
-
-        .mobile-nav-item.open .mobile-nav-link svg {
-            transform: rotate(180deg);
-        }
-
-        .mobile-submenu {
-            max-height: 0;
-            overflow: hidden;
-            background: var(--color-light-bg);
-            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .mobile-nav-item.open .mobile-submenu {
-            max-height: 1000px; /* High enough value for dynamic content */
-        }
-
-        .mobile-submenu-section {
-            padding: 0.5rem 1.75rem 1.5rem;
-        }
-
-        .mobile-submenu-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--color-main);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.5rem;
-            margin-top: 1rem;
-            opacity: 0.8;
-        }
-
-        .mobile-submenu a {
-            display: block;
-            padding: 0.7rem 0;
-            color: var(--color-dark);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 400;
-            transition: all 0.3s ease;
-            border: none;
-        }
-
-        .mobile-submenu a:hover,
-        .mobile-submenu a:active {
-            color: var(--color-accent);
-            padding-left: 5px;
         }
 
         /* Responsive */
@@ -1655,7 +1611,7 @@
                 position: static;
                 display: flex;
                 align-items: center;
-                gap: 0.1rem;
+                gap: 0.25rem;
             }
 
             #userAuthSection {
@@ -1664,33 +1620,7 @@
             }
 
             .user-profile-btn {
-                padding: 0;
-                width: 40px;
-                height: 40px;
-                justify-content: center;
-                background: transparent;
-                border: none;
-            }
-
-            .user-profile-btn .user-name,
-            .user-profile-btn svg:not(.logo-icon svg) {
                 display: none;
-            }
-
-            .user-profile-btn:hover {
-                color: var(--color-accent);
-                transform: translateY(-2px);
-            }
-
-            .user-profile-btn:active {
-                transform: scale(0.9);
-                opacity: 0.7;
-            }
-
-            .user-avatar-circle {
-                width: 30px;
-                height: 30px;
-                font-size: 0.75rem;
             }
 
             .nav-links {
@@ -1716,29 +1646,13 @@
                 max-width: 100%;
             }
 
-            .action-btn, .user-profile-btn {
-                width: 36px;
-                height: 36px;
-            }
-
-            .user-avatar-circle {
-                width: 26px;
-                height: 26px;
-                font-size: 0.7rem;
-            }
-
-            .action-btn svg {
-                width: 18px;
-                height: 18px;
-            }
-
             .menu-toggle {
                 width: 36px;
                 height: 36px;
             }
 
             .nav-actions {
-                gap: 0;
+                gap: 0.15rem;
             }
         }
 
@@ -1805,12 +1719,12 @@
                             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                             
                             if (isLoggedIn) {
-                                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-                                const initials = userProfile.initials || 'U';
-                                
                                 userAuthSection.innerHTML = `
-                                    <a href="profile.php" class="action-btn" title="My Profile" style="display: flex; align-items: center; justify-content: center; background: var(--color-main); color: white; width: 34px; height: 34px; border-radius: 50%; font-size: 12px; font-weight: 700; text-decoration: none;">
-                                        ${initials}
+                                    <a href="profile.php" class="action-btn" title="My Profile" aria-label="Profile">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
                                     </a>
                                 `;
                             }
@@ -1833,7 +1747,7 @@
                         <span class="cart-count">0</span>
                     </button>
 
-                    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+                    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" role="button" tabindex="0">
                         <div class="burger-container">
                             <span></span>
                             <span></span>
@@ -1856,88 +1770,14 @@
 
     <!-- Mobile Menu Overlay -->
     <div class="mobile-menu-overlay" id="mobileMenu">
-        <div class="mobile-nav-item" data-has-submenu="true">
-            <button class="mobile-nav-link">
-                Men
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-            </button>
-            <div class="mobile-submenu">
-                <div class="mobile-submenu-section">
-                    <div class="mobile-submenu-title">Clothing</div>
-                    <a href="/men/t-shirts">T-Shirts</a>
-                    <a href="/men/shirts">Shirts</a>
-                    <a href="/men/jackets">Jackets</a>
-                    <a href="/men/pants">Pants</a>
-                    <a href="/men/jeans">Jeans</a>
-                </div>
-                <div class="mobile-submenu-section">
-                    <div class="mobile-submenu-title">Shoes</div>
-                    <a href="/men/sneakers">Sneakers</a>
-                    <a href="/men/boots">Boots</a>
-                    <a href="/men/loafers">Loafers</a>
-                </div>
-                <div class="mobile-submenu-section">
-                    <div class="mobile-submenu-title">Accessories</div>
-                    <a href="/men/watches">Watches</a>
-                    <a href="/men/bags">Bags</a>
-                    <a href="/men/belts">Belts</a>
-                </div>
-            </div>
+        <div class="mobile-nav-item">
+            <a href="men-products.php" class="mobile-nav-link">Men</a>
         </div>
-        <div class="mobile-nav-item" data-has-submenu="true">
-            <button class="mobile-nav-link">
-                Women
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-            </button>
-            <div class="mobile-submenu">
-                <div class="mobile-submenu-section">
-                    <div class="mobile-submenu-title">Clothing</div>
-                    <a href="/women/dresses">Dresses</a>
-                    <a href="/women/tops">Tops</a>
-                    <a href="/women/blouses">Blouses</a>
-                    <a href="/women/skirts">Skirts</a>
-                    <a href="/women/pants">Pants</a>
-                </div>
-                <div class="mobile-submenu-section">
-                    <div class="mobile-submenu-title">Shoes</div>
-                    <a href="/women/heels">Heels</a>
-                    <a href="/women/flats">Flats</a>
-                    <a href="/women/sneakers">Sneakers</a>
-                    <a href="/women/boots">Boots</a>
-                </div>
-                <div class="mobile-submenu-section">
-                    <div class="mobile-submenu-title">Accessories</div>
-                    <a href="/women/bags">Bags</a>
-                    <a href="/women/jewelry">Jewelry</a>
-                    <a href="/women/scarves">Scarves</a>
-                </div>
-            </div>
+        <div class="mobile-nav-item">
+            <a href="women-products.php" class="mobile-nav-link">Women</a>
         </div>
-        <div class="mobile-nav-item" data-has-submenu="true">
-            <button class="mobile-nav-link">
-                Kids
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-            </button>
-            <div class="mobile-submenu">
-                <div class="mobile-submenu-section">
-                    <div class="mobile-submenu-title">Boys</div>
-                    <a href="/kids/boys/tops">Tops</a>
-                    <a href="/kids/boys/pants">Pants</a>
-                    <a href="/kids/boys/shoes">Shoes</a>
-                </div>
-                <div class="mobile-submenu-section">
-                    <div class="mobile-submenu-title">Girls</div>
-                    <a href="/kids/girls/dresses">Dresses</a>
-                    <a href="/kids/girls/tops">Tops</a>
-                    <a href="/kids/girls/shoes">Shoes</a>
-                </div>
-            </div>
+        <div class="mobile-nav-item">
+            <a href="kids-products.php" class="mobile-nav-link">Kids</a>
         </div>
         <div class="mobile-nav-item">
             <a href="accessories-products.php" class="mobile-nav-link">Accessories</a>
@@ -2060,6 +1900,18 @@
                 }
             });
 
+            // Keyboard support (Enter/Space)
+            menuToggle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (mobileMenu.classList.contains('active')) {
+                        closeMobileMenu();
+                    } else {
+                        openMobileMenu();
+                    }
+                }
+            });
+
             // Close with ESC
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
@@ -2074,19 +1926,6 @@
                 }
             });
         }
-
-        // Submenu logic
-        const mobileNavItems = document.querySelectorAll('.mobile-nav-item[data-has-submenu="true"]');
-        mobileNavItems.forEach(item => {
-            const btn = item.querySelector('.mobile-nav-link');
-            if (btn) {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    item.classList.toggle('open');
-                });
-            }
-        });
 
         // CART & WISHLIST BUTTONS
         const cartBtn = document.getElementById('cartBtn');
