@@ -148,34 +148,7 @@
   function filterAndSortProducts() {
     var collection =
       typeof summerCollection !== "undefined" ? summerCollection : [];
-    var filtered = collection.filter(function (product) {
-      if (
-        filterState.category.length > 0 &&
-        filterState.category.indexOf(product.category) === -1
-      )
-        return false;
-      if (filterState.size.length > 0) {
-        var hasSize = false;
-        for (var i = 0; i < filterState.size.length; i++) {
-          if (product.sizes.indexOf(filterState.size[i]) !== -1) {
-            hasSize = true;
-            break;
-          }
-        }
-        if (!hasSize) return false;
-      }
-      if (
-        filterState.fit.length > 0 &&
-        filterState.fit.indexOf(product.fit) === -1
-      )
-        return false;
-      if (
-        product.priceValue < filterState.minPrice ||
-        product.priceValue > filterState.maxPrice
-      )
-        return false;
-      return true;
-    });
+    var filtered = collection.slice();
     if (filterState.sortOrder === "asc") {
       filtered.sort(function (a, b) {
         return a.priceValue - b.priceValue;
@@ -227,55 +200,8 @@
 
   function updateActiveFilters() {
     var bar = document.getElementById("activeFiltersBar");
-    var pills = [];
-    filterState.category.forEach(function (c) {
-      pills.push(
-        '<div class="filter-pill">' +
-          c +
-          '<button data-remove="category:' +
-          c +
-          '">' +
-          SVG_CLOSE +
-          "</button></div>",
-      );
-    });
-    filterState.size.forEach(function (s) {
-      pills.push(
-        '<div class="filter-pill">Size: ' +
-          s +
-          '<button data-remove="size:' +
-          s +
-          '">' +
-          SVG_CLOSE +
-          "</button></div>",
-      );
-    });
-    filterState.fit.forEach(function (f) {
-      pills.push(
-        '<div class="filter-pill">' +
-          f +
-          ' fit<button data-remove="fit:' +
-          f +
-          '">' +
-          SVG_CLOSE +
-          "</button></div>",
-      );
-    });
-    if (filterState.minPrice > 0 || filterState.maxPrice < 500) {
-      pills.push(
-        '<div class="filter-pill">$' +
-          filterState.minPrice +
-          " – $" +
-          filterState.maxPrice +
-          '<button data-remove="price">' +
-          SVG_CLOSE +
-          "</button></div>",
-      );
-    }
-    if (pills.length > 0) {
-      bar.innerHTML = pills.join("");
-      bar.classList.remove("empty");
-    } else {
+    if (bar) {
+      bar.innerHTML = "";
       bar.classList.add("empty");
     }
   }

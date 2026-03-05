@@ -232,7 +232,8 @@
             z-index: 3;
         }
 
-        .product-card:hover .quick-actions { opacity: 1; transform: translateY(0); }
+        .product-card:hover .quick-actions,
+        .product-card:focus-within .quick-actions { opacity: 1; transform: translateY(0); }
 
         .action-btn {
             width: 40px; height: 40px;

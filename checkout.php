@@ -1431,7 +1431,7 @@ body {
 
                 <div class="step-actions">
                     <button class="btn btn-secondary" onclick="goToStep(2)">Back</button>
-                    <button class="btn btn-primary" onclick="placeOrder()" id="placeOrderBtn">
+                    <button class="btn btn-primary" onclick="validateAndPlaceOrder()" id="placeOrderBtn">
                         <span class="btn-text">Place Order</span>
                         <span class="spinner"></span>
                     </button>
@@ -2122,33 +2122,41 @@ function initializeCardFormatting() {
 }
 
 // ========================================
-// PLACE ORDER
+// VALIDATE AND PLACE ORDER
 // ========================================
-function placeOrder() {
-    const btn = document.getElementById('placeOrderBtn');
-    
-    // Validate payment method selection
-    if (!orderData.paymentMethod) {
-        orderData.paymentMethod = 'card'; // Default to card
-    }
+function validateAndPlaceOrder() {
+    const method = orderData.paymentMethod || 'card';
 
-    // If card payment, validate card form
-    if (orderData.paymentMethod === 'card') {
-        const cardForm = document.getElementById('cardForm');
-        if (!cardForm.checkValidity()) {
-            cardForm.reportValidity();
+    if (method === 'card') {
+        const form = document.getElementById('cardForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
             return;
         }
 
-        // Store card data (in real app, this would be sent to payment processor)
+        // Store card data (simulated)
         orderData.payment = {
             cardNumber: document.getElementById('cardNumber').value,
             cardExpiry: document.getElementById('cardExpiry').value,
             cardCVV: document.getElementById('cardCVV').value,
             cardName: document.getElementById('cardName').value
         };
+    } else if (method === 'paypal') {
+        // In a real app, this would handle PayPal redirection/popup
+        // For now, we just simulate success
+        showToast('Connecting to PayPal...', 'info');
     }
 
+    // All valid, proceed to place order
+    placeOrder();
+}
+
+// ========================================
+// PLACE ORDER
+// ========================================
+function placeOrder() {
+    const btn = document.getElementById('placeOrderBtn');
+    
     // Show loading state
     btn.classList.add('btn-loading');
 

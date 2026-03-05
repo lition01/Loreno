@@ -321,11 +321,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initQuickView();
 });
 
-// ======= Quick View Button Handler =======
+// ======= Quick View Button Handler (Event Delegation) =======
 function initQuickView() {
-    // Find all Quick View buttons (buttons with "Quick View" tooltip)
-    document.querySelectorAll('.action-btn[data-tooltip="Quick View"]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+    // Using event delegation to handle dynamically rendered product cards
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.action-btn[data-tooltip="Quick View"]');
+        if (btn) {
             e.stopPropagation();
             // Find the parent product card
             const productCard = btn.closest('.product-card');
@@ -336,7 +337,7 @@ function initQuickView() {
                     window.location.href = `page-product.php?id=${productId}`;
                 }
             }
-        });
+        }
     });
 }
 
@@ -1005,7 +1006,14 @@ function renderCart() {
 
     // Update total items in cart icon
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    cartCount.textContent = totalItems;
+    
+    // Hide or show cart count based on whether it's empty
+    if (totalItems > 0) {
+        cartCount.textContent = totalItems;
+        cartCount.style.display = 'flex';
+    } else {
+        cartCount.style.display = 'none';
+    }
 
     // Update cart items count in header
     const cartItemsCountEl = document.getElementById('cartItemsCount');
@@ -1316,7 +1324,18 @@ window.addEventListener('storage', (e) => {
 // TOAST NOTIFICATION
 // ========================================
 function showToast(message) {
-    toastMessage.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
+    if (typeof toastMessage !== 'undefined' && typeof toast !== 'undefined') {
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    } else {
+        console.log("Toast:", message);
+    }
 }
+
+// Export to window for access from other scripts
+window.addToCart = addToCart;
+window.toggleWishlist = toggleWishlist;
+window.renderCart = renderCart;
+window.saveCart = saveCart;
+window.showToast = showToast;

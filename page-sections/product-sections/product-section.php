@@ -1,6 +1,6 @@
 <?php
-// Product data structure
-$products = [
+// Product data structure (Static Fallback)
+$staticProducts = [
     1 => [
         'id' => 1,
         'name' => 'Linen Blend Shirt',
@@ -84,23 +84,10 @@ $products = [
 ];
 
 // Get product ID from URL
-$productId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$product = isset($products[$productId]) ? $products[$productId] : null;
-
-// Redirect to home if product not found
-if (!$product) {
-    header('Location: index.php');
-    exit;
-}
+$productId = isset($_GET['id']) ? (string)$_GET['id'] : '';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($product['name']); ?> - Fashion Store</title>
-    <?php include "essentials/navbar.php" ?>
-    <style>
+<style>
+    /* ... existing styles preserved ... */
         * {
             margin: 0;
             padding: 0;
@@ -299,6 +286,38 @@ if (!$product) {
             margin-bottom: 2rem;
         }
 
+        .product-not-found {
+            text-align: center;
+            padding: 5rem 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .product-not-found h2 {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .product-not-found p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        .loading-state {
+            text-align: center;
+            padding: 5rem 2rem;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--color-border);
+            border-top-color: var(--color-dark);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         .quantity-controls {
             display: flex;
             align-items: center;
@@ -437,111 +456,24 @@ if (!$product) {
             }
         }
     </style>
-</head>
-<body>
-    <?php include "essentials/navbar.php" ?>
-    <div class="product-page">
-        <div class="product-container">
-            <div class="product-image-section">
-                <div class="product-image-wrapper">
-                    <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
-                    <?php if ($product['badge']): ?>
-                        <span class="product-badge"><?php echo htmlspecialchars($product['badge']); ?></span>
-                    <?php endif; ?>
-                </div>
-            </div>
 
-            <div class="product-info-section">
-                <h1 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h1>
-                <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
-                <p class="product-description"><?php echo htmlspecialchars($product['description']); ?></p>
-
-                <div class="product-options">
-                    <?php if (!empty($product['colors'])): ?>
-                    <div class="option-group">
-                        <label class="option-label">Color</label>
-                        <div class="color-options">
-                            <?php foreach ($product['colors'] as $index => $color): ?>
-                                <button class="color-btn <?php echo $index === 0 ? 'selected' : ''; ?>" 
-                                        style="background-color: <?php echo htmlspecialchars($color); ?>"
-                                        data-color-index="<?php echo $index; ?>"
-                                        data-color="<?php echo htmlspecialchars($color); ?>"
-                                        aria-label="Select color <?php echo $index + 1; ?>"></button>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-
-                    <?php if (!empty($product['sizes'])): ?>
-                    <div class="option-group">
-                        <label class="option-label">Size</label>
-                        <div class="size-options">
-                            <?php foreach ($product['sizes'] as $index => $size): ?>
-                                <button class="size-btn <?php echo $index === 0 ? 'selected' : ''; ?>" 
-                                        data-size-index="<?php echo $index; ?>"
-                                        data-size="<?php echo htmlspecialchars($size); ?>"><?php echo htmlspecialchars($size); ?></button>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-
-                    <div class="option-group">
-                        <label class="option-label">Quantity</label>
-                        <div class="quantity-group">
-                            <div class="quantity-controls">
-                                <button class="qty-btn qty-minus" aria-label="Decrease quantity">-</button>
-                                <span class="qty-value" id="productQty">1</span>
-                                <button class="qty-btn qty-plus" aria-label="Increase quantity">+</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="add-to-cart-btn" id="addToCartBtn" data-product-id="<?php echo $product['id']; ?>">
-                    Add to Cart
-                </button>
-                <button class="wishlist-btn" id="wishlistBtn" data-product-id="<?php echo $product['id']; ?>">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                    Add to Wishlist
-                </button>
-            </div>
+    <div id="productDetailContainer">
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading product details...</p>
         </div>
     </div>
 
-    <!-- Review Section -->
-    <div class="reviews-section" style="max-width: 1400px; margin: 4rem auto; padding: 0 2rem;">
-        <h2 style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 2rem;">Customer Reviews</h2>
-        
-        <!-- Review Form -->
-        <div id="productReviewForm" style="background: var(--color-white); padding: 2rem; border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 3rem;">
-            <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem;">Write a Review</h3>
-            <div id="reviewAuthMessage" style="display: none; margin-bottom: 1rem; color: var(--color-accent);">
-                Please <a href="login.php" style="color: var(--color-dark); font-weight: 600;">log in</a> to leave a review.
+    <!-- Suggestions Section -->
+    <div id="suggestionsWrapper" style="display: none; background: var(--color-white); padding: 4rem 0; border-top: 1px solid var(--color-border);">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h2 style="font-family: var(--font-heading); font-size: 2.5rem; color: var(--color-dark); margin-bottom: 1rem;">You May Also Like</h2>
+                <div style="width: 60px; height: 2px; background: var(--color-main); margin: 0 auto;"></div>
             </div>
-            <div id="reviewFormContent">
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Rating</label>
-                    <div id="starRating" style="display: flex; gap: 0.5rem;">
-                        <span class="star" data-rating="1" style="font-size: 1.5rem; cursor: pointer; color: #d4c9bc;">★</span>
-                        <span class="star" data-rating="2" style="font-size: 1.5rem; cursor: pointer; color: #d4c9bc;">★</span>
-                        <span class="star" data-rating="3" style="font-size: 1.5rem; cursor: pointer; color: #d4c9bc;">★</span>
-                        <span class="star" data-rating="4" style="font-size: 1.5rem; cursor: pointer; color: #d4c9bc;">★</span>
-                        <span class="star" data-rating="5" style="font-size: 1.5rem; cursor: pointer; color: #d4c9bc;">★</span>
-                    </div>
-                </div>
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Your Review</label>
-                    <textarea id="reviewText" style="width: 100%; padding: 1rem; border: 1px solid var(--color-border); border-radius: 4px; min-height: 120px; font-family: inherit; resize: vertical;" placeholder="Share your experience with this product..."></textarea>
-                </div>
-                <button id="submitReviewBtn" style="padding: 1rem 2rem; background: var(--color-dark); color: var(--color-white); border: none; border-radius: 4px; cursor: pointer; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; transition: all var(--transition);">Post Review</button>
+            <div id="suggestionsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem;">
+                <!-- Suggestions will be loaded here -->
             </div>
-        </div>
-
-        <!-- Reviews List -->
-        <div id="reviewsList">
-            <!-- Reviews will be loaded here -->
         </div>
     </div>
 
@@ -553,187 +485,261 @@ if (!$product) {
     </div>
 
     <script>
-        // Product data from PHP
-        const productData = <?php echo json_encode($product); ?>;
-        
-        // Product page state
-        let selectedColor = 0;
-        let selectedSize = 0;
-        let quantity = 1;
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
 
-        // DOM elements
-        const colorButtons = document.querySelectorAll('.color-btn');
-        const sizeButtons = document.querySelectorAll('.size-btn');
-        const qtyMinus = document.querySelector('.qty-minus');
-        const qtyPlus = document.querySelector('.qty-plus');
-        const qtyValue = document.getElementById('productQty');
-        const addToCartBtn = document.getElementById('addToCartBtn');
-        const wishlistBtn = document.getElementById('wishlistBtn');
-
-        // Color selection
-        colorButtons.forEach((btn, index) => {
-            btn.addEventListener('click', () => {
-                colorButtons.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                selectedColor = index;
-            });
-        });
-
-        // Size selection
-        sizeButtons.forEach((btn, index) => {
-            btn.addEventListener('click', () => {
-                sizeButtons.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                selectedSize = index;
-            });
-        });
-
-        // Quantity controls
-        qtyMinus.addEventListener('click', () => {
-            if (quantity > 1) {
-                quantity--;
-                qtyValue.textContent = quantity;
-            }
-        });
-
-        qtyPlus.addEventListener('click', () => {
-            if (quantity < 10) {
-                quantity++;
-                qtyValue.textContent = quantity;
-            }
-        });
-
-        // Add to cart
-        addToCartBtn.addEventListener('click', () => {
-            const color = colorButtons[selectedColor]?.dataset.color || '';
-            const size = sizeButtons[selectedSize]?.dataset.size || productData.sizes[0] || '';
-            
-            // Call global function from cart-handler.js
-            if (typeof window.addToCart === 'function') {
-                window.addToCart(productData, quantity, color, size);
-            }
-        });
-
-        // Wishlist functionality
-        wishlistBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const productId = wishlistBtn.dataset.productId;
-            if (typeof window.toggleWishlist === 'function') {
-                window.toggleWishlist(productId, productData);
-                updateWishlistButtonState();
-            }
-        });
-
-        function updateWishlistButtonState() {
-            if (typeof window.wishlist !== 'undefined') {
-                const isInWishlist = window.wishlist.some(p => String(p.id) === String(productData.id));
-                wishlistBtn.classList.toggle('active', isInWishlist);
-                const btnText = wishlistBtn.querySelector('span') || wishlistBtn;
-                if (btnText.tagName === 'SPAN') {
-                    btnText.textContent = isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist';
+            function findProduct(id) {
+                // 1. Try Dashboard Products (localStorage)
+                const dashboardProducts = JSON.parse(localStorage.getItem('dashboard_products') || '[]');
+                const dashProd = dashboardProducts.find(p => String(p.id) === String(id));
+                if (dashProd) {
+                    const sizesArray = dashProd.sizes ? (Array.isArray(dashProd.sizes) ? dashProd.sizes : Object.keys(dashProd.sizes)) : ["XS", "S", "M", "L", "XL"];
+                    return {
+                        id: dashProd.id,
+                        name: dashProd.name,
+                        price: typeof dashProd.price === 'string' ? parseFloat(dashProd.price.replace(/[$,]/g, '')) : dashProd.price,
+                        image: dashProd.imageUrl || dashProd.image,
+                        description: dashProd.description || 'No description available.',
+                        colors: dashProd.colors || ["#b39c80", "#2f2716"],
+                        sizes: sizesArray,
+                        badge: dashProd.badge || "New"
+                    };
                 }
-            }
-        }
 
-        // Check if product is in wishlist on load
-        document.addEventListener('DOMContentLoaded', () => {
-            // Wait a tiny bit for cart-handler.js to finish loading data
-            setTimeout(updateWishlistButtonState, 100);
-            
-            // Setup Reviews
-            setupProductReviews();
-        });
-
-        // ── PRODUCT REVIEWS ──────────────────────────────────
-        let currentReviewRating = 0;
-
-        function setupProductReviews() {
-            const starRating = document.getElementById('starRating');
-            const stars = starRating.querySelectorAll('.star');
-            const submitBtn = document.getElementById('submitReviewBtn');
-            const reviewFormContent = document.getElementById('reviewFormContent');
-            const reviewAuthMessage = document.getElementById('reviewAuthMessage');
-            
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            
-            if (!isLoggedIn) {
-                reviewFormContent.style.opacity = '0.5';
-                reviewFormContent.style.pointerEvents = 'none';
-                reviewAuthMessage.style.display = 'block';
+                // 2. Try Static Fallback (Hardcoded)
+                const staticProducts = {
+                    1: { id: 1, name: 'Linen Blend Shirt', price: 89, image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=800&fit=crop', description: 'Classic linen blend shirt perfect for any occasion.', colors: ['#c6baa5', '#2f2716', '#ffffff'], sizes: ['XS', 'S', 'M', 'L', 'XL'], badge: 'New' },
+                    2: { id: 2, name: 'Pleated Midi Skirt', price: 125, image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop', description: 'Elegant pleated midi skirt with a flowing silhouette.', colors: ['#a8845e', '#7e5232', '#c6baa5'], sizes: ['XS', 'S', 'M', 'L'], badge: 'New' },
+                    3: { id: 3, name: 'Oversized Wool Coat', price: 345, image: 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&h=800&fit=crop', description: 'Stylish oversized wool coat for the modern wardrobe.', colors: ['#b39c80', '#2f2716'], sizes: ['S', 'M', 'L', 'XL'], badge: 'New' },
+                    4: { id: 4, name: 'Silk Camisole Top', price: 78, image: 'https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?w=600&h=800&fit=crop', description: 'Luxurious silk camisole top with delicate details.', colors: ['#c6baa5', '#a8845e', '#ffffff'], sizes: ['XS', 'S', 'M', 'L'], badge: 'New' },
+                    5: { id: 5, name: 'High-Waist Trousers', price: 145, image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop', description: 'Comfortable high-waist trousers with a flattering fit.', colors: ['#2f2716', '#7e5232', '#b39c80'], sizes: ['XS', 'S', 'M', 'L', 'XL'], badge: 'New' },
+                    6: { id: 6, name: 'Cashmere Turtleneck', price: 195, image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&h=800&fit=crop', description: 'Premium cashmere turtleneck sweater.', colors: ['#c6baa5', '#a8845e', '#2f2716'], sizes: ['S', 'M', 'L', 'XL'], badge: 'New' },
+                    7: { id: 7, name: 'Leather Belt Bag', price: 165, image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop', description: 'Stylish leather belt bag with multiple compartments.', colors: ['#7e5232', '#2f2716', '#a8845e'], sizes: ['One Size'], badge: 'New' },
+                    8: { id: 8, name: 'Structured Blazer', price: 265, image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&h=800&fit=crop', description: 'Elegant structured blazer with sharp tailoring.', colors: ['#b39c80', '#2f2716', '#7e5232'], sizes: ['XS', 'S', 'M', 'L', 'XL'], badge: 'New' }
+                };
+                return staticProducts[id] || null;
             }
 
-            stars.forEach(star => {
-                star.addEventListener('click', () => {
-                    currentReviewRating = parseInt(star.dataset.rating);
-                    stars.forEach(s => {
-                        s.style.color = parseInt(s.dataset.rating) <= currentReviewRating ? '#c9912a' : '#d4c9bc';
+            function renderNotFound() {
+                document.getElementById('productDetailContainer').innerHTML = `
+                    <div class="product-not-found">
+                        <h2>Product Not Found</h2>
+                        <p>We couldn't find the product you're looking for. It might have been removed or the link is incorrect.</p>
+                        <a href="index.php" class="add-to-cart-btn" style="display: inline-block; text-decoration: none; width: auto;">Back to Shop</a>
+                    </div>
+                `;
+            }
+
+            function renderProduct(product) {
+                window.productData = product;
+                const container = document.getElementById('productDetailContainer');
+                const suggestionsWrapper = document.getElementById('suggestionsWrapper');
+                if (suggestionsWrapper) suggestionsWrapper.style.display = 'block';
+                container.innerHTML = `
+                    <div class="product-page">
+                        <div class="product-container">
+                            <div class="product-image-section">
+                                <div class="product-image-wrapper">
+                                    <img src="${product.image}" alt="${product.name}">
+                                    ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="product-info-section">
+                                <h1 class="product-title">${product.name}</h1>
+                                <p class="product-price">$${parseFloat(product.price).toFixed(2)}</p>
+                                <p class="product-description">${product.description}</p>
+                                <div class="product-options">
+                                    ${product.colors && product.colors.length > 0 ? `
+                                    <div class="option-group">
+                                        <label class="option-label">Color</label>
+                                        <div class="color-options">
+                                            ${product.colors.map((color, index) => `
+                                                <button class="color-btn ${index === 0 ? 'selected' : ''}" 
+                                                        style="background-color: ${color}"
+                                                        data-color-index="${index}"
+                                                        data-color="${color}"
+                                                        aria-label="Select color ${index + 1}"></button>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                    ` : ''}
+                                    ${product.sizes && product.sizes.length > 0 ? `
+                                    <div class="option-group">
+                                        <label class="option-label">Size</label>
+                                        <div class="size-options">
+                                            ${product.sizes.map((size, index) => `
+                                                <button class="size-btn ${index === 0 ? 'selected' : ''}" 
+                                                        data-size-index="${index}"
+                                                        data-size="${size}">${size}</button>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                    ` : ''}
+                                    <div class="option-group">
+                                        <label class="option-label">Quantity</label>
+                                        <div class="quantity-group">
+                                            <div class="quantity-controls">
+                                                <button class="qty-btn qty-minus" aria-label="Decrease quantity">-</button>
+                                                <span class="qty-value" id="productQty">1</span>
+                                                <button class="qty-btn qty-plus" aria-label="Increase quantity">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="add-to-cart-btn" id="addToCartBtn" data-product-id="${product.id}">Add to Cart</button>
+                                <button class="wishlist-btn" id="productWishlistBtn" data-product-id="${product.id}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                    <span>Add to Wishlist</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                initProductPageInteractions();
+            }
+
+            function initProductPageInteractions() {
+                const productData = window.productData;
+                let selectedColor = 0;
+                let selectedSize = 0;
+                let quantity = 1;
+
+                const container = document.getElementById('productDetailContainer');
+                const colorButtons = container.querySelectorAll('.color-btn');
+                const sizeButtons = container.querySelectorAll('.size-btn');
+                const qtyMinus = container.querySelector('.qty-minus');
+                const qtyPlus = container.querySelector('.qty-plus');
+                const qtyValue = container.querySelector('#productQty');
+                const addToCartBtn = container.querySelector('#addToCartBtn');
+                const wishlistBtn = container.querySelector('#productWishlistBtn');
+
+                colorButtons.forEach((btn, index) => {
+                    btn.addEventListener('click', () => {
+                        colorButtons.forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        selectedColor = index;
                     });
                 });
-            });
 
-            submitBtn.addEventListener('click', () => {
-                const text = document.getElementById('reviewText').value.trim();
-                if (!currentReviewRating) return alert('Please select a rating');
-                if (!text) return alert('Please write a review');
+                sizeButtons.forEach((btn, index) => {
+                    btn.addEventListener('click', () => {
+                        sizeButtons.forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        selectedSize = index;
+                    });
+                });
 
-                const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
-                const newReview = {
-                    id: Date.now(),
-                    product: productData.name,
-                    productId: productData.id,
-                    rating: currentReviewRating,
-                    text: text,
-                    date: new Date().toISOString().split('T')[0]
-                };
+                qtyMinus.addEventListener('click', () => {
+                    if (quantity > 1) {
+                        quantity--;
+                        qtyValue.textContent = quantity;
+                    }
+                });
 
-                reviews.unshift(newReview);
-                localStorage.setItem('reviews', JSON.stringify(reviews));
-                
-                // Clear form
-                document.getElementById('reviewText').value = '';
-                currentReviewRating = 0;
-                stars.forEach(s => s.style.color = '#d4c9bc');
-                
-                renderProductReviews();
-                
-                // Show success toast
-                const toast = document.getElementById('toast');
-                document.getElementById('toastMessage').textContent = 'Review posted successfully!';
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 3000);
-            });
+                qtyPlus.addEventListener('click', () => {
+                    if (quantity < 10) {
+                        quantity++;
+                        qtyValue.textContent = quantity;
+                    }
+                });
 
-            renderProductReviews();
-        }
+                addToCartBtn.addEventListener('click', () => {
+                    const color = colorButtons[selectedColor]?.dataset.color || '';
+                    const size = sizeButtons[selectedSize]?.dataset.size || productData.sizes[0] || '';
+                    if (typeof window.addToCart === 'function') {
+                        window.addToCart(productData, quantity, color, size);
+                    }
+                });
 
-        function renderProductReviews() {
-            const reviewsList = document.getElementById('reviewsList');
-            const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
-            const productReviews = reviews.filter(r => r.product === productData.name);
+                wishlistBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (typeof window.toggleWishlist === 'function') {
+                        window.toggleWishlist(productData.id, productData);
+                        updateWishlistButtonState();
+                    }
+                });
 
-            if (productReviews.length === 0) {
-                reviewsList.innerHTML = '<p style="color: #666; font-style: italic;">No reviews yet. Be the first to review this product!</p>';
-                return;
-            }
+                function updateWishlistButtonState() {
+                    if (typeof window.wishlist !== 'undefined') {
+                        const isInWishlist = window.wishlist.some(p => String(p.id) === String(productData.id));
+                        wishlistBtn.classList.toggle('active', isInWishlist);
+                        const btnText = wishlistBtn.querySelector('span');
+                        if (btnText) {
+                            btnText.textContent = isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist';
+                        }
+                    }
+                }
 
-            reviewsList.innerHTML = productReviews.map(r => `
-                <div style="background: var(--color-white); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
-                        <div style="font-weight: 600; font-size: 1rem;">Verified Customer</div>
-                        <div style="color: #c9912a; font-size: 0.875rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
-                    </div>
-                    <div style="font-size: 0.75rem; color: #999; margin-bottom: 1rem;">${r.date}</div>
-                    <p style="font-size: 0.95rem; color: #444; line-height: 1.6;">${r.text}</p>
-                </div>
-            `).join('');
-        }
-
-        // Listen for global wishlist updates (if needed)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'wishlist') {
                 updateWishlistButtonState();
+                renderProductSuggestions();
             }
-        });
+
+            async function renderProductSuggestions() {
+                const grid = document.getElementById('suggestionsGrid');
+                const wrapper = document.getElementById('suggestionsWrapper');
+                if (!grid || !wrapper) return;
+
+                const currentProduct = window.productData;
+                
+                // 1. Exclusively fetch dashboard products
+                const dashboardProducts = JSON.parse(localStorage.getItem('dashboard_products') || '[]');
+                
+                // 2. Filter out current product and validate dashboard-only items
+                let suggestions = dashboardProducts
+                    .filter(p => String(p.id) !== String(currentProduct.id))
+                    .map(p => ({
+                        id: p.id,
+                        name: p.name,
+                        price: typeof p.price === 'string' ? parseFloat(p.price.replace(/[$,]/g, '')) : p.price,
+                        image: p.imageUrl || p.image,
+                        cat: p.cat || 'General'
+                    }));
+
+                // 3. Logging for audit/tracking
+                console.log(`[Suggestion Engine] Generated ${suggestions.length} suggestions from dashboard inventory.`);
+                
+                // 4. Handle empty dashboard or no matching suggestions
+                if (suggestions.length === 0) {
+                    wrapper.style.display = 'none';
+                    console.warn('[Suggestion Engine] No dashboard products available for recommendations.');
+                    return;
+                }
+
+                // 5. Shuffle and pick up to 4
+                suggestions.sort(() => Math.random() - 0.5);
+                suggestions = suggestions.slice(0, 4);
+
+                wrapper.style.display = 'block';
+                grid.innerHTML = suggestions.map(p => `
+                    <div class="product-card" onclick="window.location.href='page-product.php?id=${p.id}'" style="cursor: pointer; background: var(--color-light-bg); border-radius: 8px; overflow: hidden; transition: var(--transition); border: 1px solid var(--color-border);">
+                        <div style="position: relative; width: 100%; padding-top: 125%; overflow: hidden;">
+                            <img src="${p.image}" alt="${p.name}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                        </div>
+                        <div style="padding: 1.5rem; text-align: center;">
+                            <h3 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--color-dark);">${p.name}</h3>
+                            <p style="font-weight: 600; color: var(--color-accent);">$${parseFloat(p.price).toFixed(2)}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Start initialization
+            window.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => {
+                    const product = findProduct(productId);
+                    if (product) {
+                        renderProduct(product);
+                    } else {
+                        renderNotFound();
+                    }
+                }, 500);
+            });
+        })();
     </script>
-</body>
-</html>
+<?php
+// Stop original script execution here as we handled it with JS
+return;
+?>

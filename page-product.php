@@ -9,5 +9,6 @@
     <?php include "essentials/navbar.php" ?>
     <?php include "page-sections/product-sections/product-section.php" ?>
     <?php include "essentials/footer.php" ?>
+    <script src="products.js"></script>
 </body>
 </html>

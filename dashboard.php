@@ -5239,10 +5239,16 @@
     /* ════════════════════════════════════════════
        REVIEWS MANAGEMENT
     ════════════════════════════════════════════ */
-    let REVIEWS = JSON.parse(localStorage.getItem('dashboard_reviews')) || [];
+    let REVIEWS = [];
 
-    function saveReviews() {
-      localStorage.setItem('dashboard_reviews', JSON.stringify(REVIEWS));
+    async function fetchDashboardReviews() {
+      try {
+        const response = await fetch('handle-reviews.php');
+        REVIEWS = await response.json();
+        renderDashboardReviews();
+      } catch (err) {
+        console.error('Error fetching reviews:', err);
+      }
     }
 
     function renderDashboardReviews() {
@@ -5250,7 +5256,7 @@
       const rf = document.getElementById('reviews-rating-filter')?.value || '';
 
       const filtered = REVIEWS.filter(r => {
-        const matchQ = !q || (r.name + r.title + (r.text || '')).toLowerCase().includes(q);
+        const matchQ = !q || (r.name + (r.title || '') + (r.text || '')).toLowerCase().includes(q);
         const matchR = !rf || r.rating === parseInt(rf);
         return matchQ && matchR;
       });
@@ -5266,8 +5272,7 @@
         return;
       }
 
-      tbody.innerHTML = filtered.map((r, i) => {
-        const realIdx = REVIEWS.indexOf(r);
+      tbody.innerHTML = filtered.map((r) => {
         return `
           <tr>
             <td>
@@ -5275,7 +5280,7 @@
                 <div class="cust-av" style="background:var(--bg);color:var(--c5);width:32px;height:32px;font-size:11px;">${r.initials || r.name.charAt(0)}</div>
                 <div>
                   <div style="font-weight:600;font-size:13px;">${r.name}</div>
-                  <div style="font-size:11px;color:var(--muted);">${r.role || 'Customer'}</div>
+                  <div style="font-size:11px;color:var(--muted);">${r.userEmail || 'Customer'}</div>
                 </div>
               </div>
             </td>
@@ -5285,13 +5290,13 @@
               </div>
             </td>
             <td>
-              <div style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;" title="${r.title}">${r.title}</div>
+              <div style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;" title="${r.product}">${r.product}</div>
               <div style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:var(--muted);" title="${r.text || ''}">${r.text || ''}</div>
             </td>
             <td style="font-size:12px;color:var(--muted);">${r.date}</td>
             <td>
               <div class="prod-actions">
-                <button class="icon-btn del" title="Delete" onclick="deleteReview(${realIdx})">
+                <button class="icon-btn del" title="Delete" onclick="deleteReview('${r.id}')">
                   <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
                 </button>
               </div>
@@ -5301,12 +5306,19 @@
       }).join('');
     }
 
-    function deleteReview(idx) {
+    async function deleteReview(id) {
       if (confirm('Delete this review permanently?')) {
-        REVIEWS.splice(idx, 1);
-        saveReviews();
-        renderDashboardReviews();
-        showToast('Review deleted', 'success');
+        try {
+          const response = await fetch(`handle-reviews.php?id=${id}`, { method: 'DELETE' });
+          if (response.ok) {
+            fetchDashboardReviews();
+            showToast('Review deleted', 'success');
+          } else {
+            alert('Failed to delete review');
+          }
+        } catch (err) {
+          console.error('Error deleting review:', err);
+        }
       }
     }
 
@@ -5318,7 +5330,7 @@
     renderProducts();
     renderCustomers();
     renderAnalytics();
-    renderDashboardReviews();
+    fetchDashboardReviews();
   </script>
 </body>
 

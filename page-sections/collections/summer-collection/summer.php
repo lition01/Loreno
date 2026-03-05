@@ -119,6 +119,15 @@ body {
     color: var(--color-coffee);
 }
 
+.filter-trigger-btn,
+#filterPopup,
+#filterPopupOverlay,
+.mini-popup,
+#miniPopupOverlay,
+.active-filters-bar {
+    display: none !important;
+}
+
 /* ========================================
    FILTER POPUP (Desktop: dropdown, Mobile: bottom sheet)
    ======================================== */
@@ -862,7 +871,8 @@ body {
     transition: all 0.3s ease;
 }
 
-.product-card:hover .quick-actions {
+.product-card:hover .quick-actions,
+.product-card:focus-within .quick-actions {
     opacity: 1;
     transform: translateY(0);
 }

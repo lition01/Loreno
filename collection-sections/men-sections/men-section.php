@@ -862,7 +862,8 @@ body {
     transition: all 0.3s ease;
 }
 
-.product-card:hover .quick-actions {
+.product-card:hover .quick-actions,
+.product-card:focus-within .quick-actions {
     opacity: 1;
     transform: translateY(0);
 }

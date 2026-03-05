@@ -85,6 +85,15 @@
         .results-count { font-size: 1rem; color: var(--color-espresso); }
         .results-count span { font-weight: 700; color: var(--color-coffee); }
 
+.filter-trigger-btn,
+#filterPopup,
+#filterPopupOverlay,
+.mini-popup,
+#miniPopupOverlay,
+.active-filters-bar {
+    display: none !important;
+}
+
         /* ========================================
            OVERLAYS
            ======================================== */
@@ -637,7 +646,8 @@
             transition: all 0.3s ease;
         }
 
-        .product-card:hover .quick-actions { opacity: 1; transform: translateY(0); }
+        .product-card:hover .quick-actions,
+        .product-card:focus-within .quick-actions { opacity: 1; transform: translateY(0); }
 
         .action-btn {
             width: 40px; height: 40px;

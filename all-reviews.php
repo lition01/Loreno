@@ -1617,9 +1617,34 @@
 
   <script>
     // Review Data
-    const reviewsData = [];
+    let reviewsData = [];
 
-    const additionalReviews = [];
+    async function fetchAllReviews() {
+        try {
+            const response = await fetch('handle-reviews.php');
+            const data = await response.json();
+            reviewsData = data.map(r => ({
+                id: r.id,
+                name: r.name,
+                role: 'Verified Customer',
+                location: 'Site User',
+                initials: (r.name || 'U').charAt(0).toUpperCase(),
+                rating: r.rating,
+                title: r.product,
+                text: r.text,
+                tags: ['Real Review'],
+                date: r.date,
+                verified: true,
+                helpful: 0
+            }));
+            renderReviews();
+        } catch (err) {
+            console.error('Error fetching reviews:', err);
+        }
+    }
+
+    // Call fetch on load
+    document.addEventListener('DOMContentLoaded', fetchAllReviews);
 
     // Render Reviews
     function renderStars(rating) {
@@ -1848,7 +1873,7 @@
     }
 
     // Form Submission
-    document.getElementById('reviewForm').addEventListener('submit', function(e) {
+    document.getElementById('reviewForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
       if (localStorage.getItem('isLoggedIn') !== 'true') {
@@ -1858,45 +1883,57 @@
       }
       
       const name = document.getElementById('reviewName').value;
-      const role = document.getElementById('reviewRole').value || 'Customer';
       const title = document.getElementById('reviewTitle').value;
       const text = document.getElementById('reviewText').value;
       const ratingValue = currentRating || 5;
+      const userEmail = localStorage.getItem('userEmail');
 
-      const newReview = {
-        id: Date.now(),
-        name: name,
-        role: role,
-        location: 'Unknown',
-        initials: name.charAt(0).toUpperCase(),
-        rating: ratingValue,
-        title: title,
-        text: text,
-        tags: ['New Review'],
-        date: 'Just now',
-        verified: false,
-        helpful: 0
-      };
+      const submitBtn = this.querySelector('.arv-submit-btn');
+      if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Submitting...';
+      }
 
-      // 1. Save to dashboard_reviews (for global view)
-      let dbReviews = JSON.parse(localStorage.getItem('dashboard_reviews')) || [];
-      dbReviews.unshift(newReview);
-      localStorage.setItem('dashboard_reviews', JSON.stringify(dbReviews));
+      try {
+          const response = await fetch('handle-reviews.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  productId: 'general', // General site review
+                  product: title || 'General Review',
+                  userEmail: userEmail,
+                  rating: ratingValue,
+                  text: text,
+                  name: name
+              })
+          });
 
-      // 2. Save to user reviews (for profile.php)
-      let userReviews = JSON.parse(localStorage.getItem('reviews') || '[]');
-      userReviews.unshift({
-        id: newReview.id,
-        product: title, // Using title as "product" since this is a general review
-        rating: ratingValue,
-        text: text,
-        date: new Date().toISOString().split('T')[0]
-      });
-      localStorage.setItem('reviews', JSON.stringify(userReviews));
+          const result = await response.json();
 
-      this.style.display = 'none';
-      document.querySelector('.arv-form-header').style.display = 'none';
-      document.getElementById('successState').classList.add('show');
+          if (response.ok) {
+              this.style.display = 'none';
+              document.querySelector('.arv-form-header').style.display = 'none';
+              document.getElementById('successState').classList.add('show');
+              
+              // Refresh reviews list
+              fetchAllReviews();
+              
+              // Also sync with user's local reviews for profile page
+              let userReviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+              userReviews.unshift(result.review);
+              localStorage.setItem('reviews', JSON.stringify(userReviews));
+          } else {
+              alert(result.error || 'Failed to submit review');
+          }
+      } catch (err) {
+          console.error('Error submitting review:', err);
+          alert('An error occurred. Please try again.');
+      } finally {
+          if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Post Review';
+          }
+      }
     });
 
     function resetForm() {

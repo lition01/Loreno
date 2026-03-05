@@ -563,7 +563,7 @@
             font-size: 0.6rem;
             font-weight: 600;
             border-radius: 8px;
-            display: flex;
+            display: none; /* Hidden by default, shown via JS or CSS logic */
             align-items: center;
             justify-content: center;
             line-height: 1;
