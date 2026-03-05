@@ -22,18 +22,23 @@
             colorsArray = p.colors;
         }
 
+        const activePrice = (p.onSale && p.salePrice) ? p.salePrice : p.price;
+        const priceValue = parseFloat(activePrice.replace(/[$,]/g, '')) || 0;
+
         return {
             id: p.id,
             name: p.name,
             price: p.price,
-            priceValue: p.priceValue || parseFloat(p.price.replace(/[$,]/g, '')),
+            priceValue: priceValue,
             image: p.imageUrl || p.image,
             badge: p.badge || "New",
             colors: colorsArray,
             sizes: sizesArray,
             category: (p.cat || "").toLowerCase().trim(),
             subcategory: (p.subcat || "").toLowerCase().trim(),
-            fit: (p.fit || "regular").toLowerCase().replace(" fit", "").trim()
+            fit: (p.fit || "regular").toLowerCase().replace(" fit", "").trim(),
+            onSale: p.onSale || false,
+            salePrice: p.salePrice || null
         };
     }
 
@@ -46,6 +51,7 @@
     window.womenCollection = [];      // Women (id: 'women')
     window.kidsCollection = [];       // Kids (id: 'kids')
     window.accessoriesCollection = []; // Accessories (id: 'acc')
+    window.saleCollection = [];       // Sale (id: 'sale')
     window.winterCollection = [];     // Winter (id: 'winter')
     window.summerCollection = [];     // Summer (id: 'summer')
 
@@ -55,13 +61,14 @@
             const transformed = transformProduct(p);
             const placements = p.placements || [];
 
-            // Add to Homepage Carousel if marked as 'new'
+            // Add to Homepage Carousel if marked as 'new' (which is labeled 'Best Sellers' in dashboard)
             if (placements.includes('new')) window.products.push(transformed);
 
             if (p.cat === 'Men') window.menCollection.push(transformed);
             if (p.cat === 'Women') window.womenCollection.push(transformed);
             if (p.cat === 'Kids') window.kidsCollection.push(transformed);
             if (p.cat === 'Accessories') window.accessoriesCollection.push(transformed);
+            if (placements.includes('sale') || p.onSale) window.saleCollection.push(transformed);
             if (placements.includes('winter')) window.winterCollection.push(transformed);
             if (placements.includes('summer')) window.summerCollection.push(transformed);
         });
@@ -78,6 +85,7 @@
         women: window.womenCollection.length,
         kids: window.kidsCollection.length,
         accessories: window.accessoriesCollection.length,
+        sale: window.saleCollection.length,
         winter: window.winterCollection.length,
         summer: window.summerCollection.length,
         home: window.products.length

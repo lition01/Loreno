@@ -148,7 +148,9 @@
       '<h3 class="product-name">' +
       product.name +
       '</h3><p class="product-price">' +
-      product.price +
+      (product.onSale && product.salePrice ? 
+        '<span style="color:var(--color-sale);">' + product.salePrice + '</span> <span style="text-decoration:line-through;color:var(--color-sand);font-size:0.85em;font-weight:400;">' + product.price + '</span>' : 
+        product.price) +
       "</p></div>" +
       "</article>"
     );

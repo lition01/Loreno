@@ -1,6 +1,6 @@
 /**
- * summer-main.js
- * Summer Collection — DOM rendering & interaction logic.
+ * sale-main.js
+ * Sale Collection — DOM rendering & interaction logic.
  */
 (function () {
   var SVG_HEART =
@@ -20,7 +20,7 @@
 
   var filterState = {
     mainCategory: "",
-    category: [],
+    subcategory: [],
     size: [],
     fit: [],
     minPrice: 0,
@@ -30,6 +30,13 @@
 
   function generateProductCard(product) {
     var id = product.id;
+    var subcatInfo = product.subcategory ? '<span style="text-transform:capitalize;">' + product.subcategory + '</span>' : '';
+    var fitInfo = product.fit ? '<span style="text-transform:capitalize;">' + product.fit + '</span>' : '';
+    var metaInfo = (subcatInfo || fitInfo) ? 
+      '<div style="font-size:12px;color:var(--color-sand);margin-bottom:4px;">' + 
+      subcatInfo + (subcatInfo && fitInfo ? ' &bull; ' : '') + fitInfo + 
+      '</div>' : '';
+    
     var popupColorBtns = "";
     for (var ci = 0; ci < product.colors.length; ci++) {
       var selectedClass = ci === 0 ? " selected" : "";
@@ -138,6 +145,7 @@
       "</div>" +
       "</div>" +
       '<div class="product-info">' +
+      metaInfo +
       '<h3 class="product-name">' +
       product.name +
       '</h3><p class="product-price">' +
@@ -150,17 +158,16 @@
   }
 
   function filterAndSortProducts() {
-    var collection =
-      typeof summerCollection !== "undefined" ? summerCollection : [];
+    var collection = (typeof saleCollection !== 'undefined') ? saleCollection : [];
     var filtered = collection.filter(function (product) {
       if (
         filterState.mainCategory !== "" &&
-        (product.mainCategory || product.category || "").toLowerCase().trim() !== filterState.mainCategory
+        (product.category || "").toLowerCase().trim() !== filterState.mainCategory
       )
         return false;
       if (
-        filterState.category.length > 0 &&
-        filterState.category.indexOf((product.category || "").toLowerCase().trim()) === -1
+        filterState.subcategory.length > 0 &&
+        filterState.subcategory.indexOf((product.subcategory || "").toLowerCase().trim()) === -1
       )
         return false;
       if (filterState.size.length > 0) {
@@ -202,30 +209,30 @@
   }
 
   function updateCounts() {
-    var counts = {
-      outerwear: 0,
-      shirts: 0,
-      accessories: 0,
-      footwear: 0,
-      XS: 0,
-      S: 0,
-      M: 0,
-      L: 0,
-      XL: 0,
-      slim: 0,
-      regular: 0,
-      relaxed: 0,
-    };
-    var collection =
-      typeof summerCollection !== "undefined" ? summerCollection : [];
+    var counts = {};
+    var collection = (typeof saleCollection !== 'undefined') ? saleCollection : [];
+    
+    // Initialize counts for categories and fits
+    ['outerwear', 'shirt', 'jeans', 't-shirt', 'pants', 'shorts', 'sweater', 'footwear', 'slim', 'regular', 'relaxed', 'oversized'].forEach(function(key) {
+      counts[key] = 0;
+    });
+
     collection.forEach(function (p) {
-      if (filterState.mainCategory !== "" && (p.mainCategory || p.category || "").toLowerCase().trim() !== filterState.mainCategory) return;
-      if (counts[p.category] !== undefined) counts[p.category]++;
-      if (counts[p.fit] !== undefined) counts[p.fit]++;
+      // Only count if it matches the selected main category
+      if (filterState.mainCategory !== "" && (p.category || "").toLowerCase().trim() !== filterState.mainCategory) return;
+
+      if (p.subcategory && counts[p.subcategory.toLowerCase().trim()] !== undefined) counts[p.subcategory.toLowerCase().trim()]++;
+      
+      var fitVal = (p.fit || "").toLowerCase().replace(" fit", "").trim();
+      if (counts[fitVal] !== undefined) counts[fitVal]++;
+
       for (var i = 0; i < p.sizes.length; i++) {
-        if (counts[p.sizes[i]] !== undefined) counts[p.sizes[i]]++;
+        var s = p.sizes[i];
+        if (counts[s] === undefined) counts[s] = 0;
+        counts[s]++;
       }
     });
+
     Object.keys(counts).forEach(function (key) {
       document
         .querySelectorAll('[data-count="' + key + '"]')
@@ -235,10 +242,123 @@
     });
   }
 
+  function renderSizeFilters() {
+    var collection = (typeof saleCollection !== 'undefined') ? saleCollection : [];
+    var sizes = new Set();
+    collection.forEach(function(p) {
+      // Only show sizes available in the selected main category
+      if (filterState.mainCategory !== "" && (p.category || "").toLowerCase().trim() !== filterState.mainCategory) return;
+      p.sizes.forEach(function(s) { sizes.add(s); });
+    });
+
+    var container = document.getElementById('saleSizeFilterContainer');
+    if (!container) return;
+
+    var sizeOrder = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+    var sortedSizes = Array.from(sizes).sort(function(a, b) {
+      var idxA = sizeOrder.indexOf(a);
+      var idxB = sizeOrder.indexOf(b);
+      if (idxA > -1 && idxB > -1) return idxA - idxB;
+      if (idxA > -1) return -1;
+      if (idxB > -1) return 1;
+      return a.localeCompare(b);
+    });
+
+    var html = sortedSizes.map(function(s) {
+      var checked = filterState.size.indexOf(s) > -1 ? 'checked' : '';
+      return (
+        '<label class="filter-option">' +
+        '<input type="checkbox" value="' + s + '" data-filter="size" ' + checked + '>' +
+        '<span class="filter-checkbox">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">' +
+        '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />' +
+        '</svg>' +
+        '</span>' +
+        '<span class="filter-label">' + s + '</span>' +
+        '<span class="filter-count" data-count="' + s + '">0</span>' +
+        '</label>'
+      );
+    }).join('');
+
+    container.innerHTML = html || '<div style="padding:10px;font-size:12px;color:var(--color-sand);">No sizes available</div>';
+    
+    // Re-attach listeners to new checkboxes
+    container.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+      cb.addEventListener("change", function () {
+        var value = this.value;
+        if (this.checked) {
+          if (filterState.size.indexOf(value) === -1) filterState.size.push(value);
+        } else {
+          var idx = filterState.size.indexOf(value);
+          if (idx > -1) filterState.size.splice(idx, 1);
+        }
+        renderProducts();
+      });
+    });
+  }
+
   function updateActiveFilters() {
     var bar = document.getElementById("activeFiltersBar");
-    if (bar) {
-      bar.innerHTML = "";
+    var pills = [];
+    if (filterState.mainCategory !== "") {
+      pills.push(
+        '<div class="filter-pill">' +
+          filterState.mainCategory.toUpperCase() +
+          '<button data-remove="mainCategory:' +
+          filterState.mainCategory +
+          '">' +
+          SVG_CLOSE +
+          "</button></div>",
+      );
+    }
+    filterState.subcategory.forEach(function (c) {
+      pills.push(
+        '<div class="filter-pill">' +
+          c +
+          '<button data-remove="subcategory:' +
+          c +
+          '">' +
+          SVG_CLOSE +
+          "</button></div>",
+      );
+    });
+    filterState.size.forEach(function (s) {
+      pills.push(
+        '<div class="filter-pill">Size: ' +
+          s +
+          '<button data-remove="size:' +
+          s +
+          '">' +
+          SVG_CLOSE +
+          "</button></div>",
+      );
+    });
+    filterState.fit.forEach(function (f) {
+      pills.push(
+        '<div class="filter-pill">' +
+          f +
+          ' fit<button data-remove="fit:' +
+          f +
+          '">' +
+          SVG_CLOSE +
+          "</button></div>",
+      );
+    });
+    if (filterState.minPrice > 0 || filterState.maxPrice < 500) {
+      pills.push(
+        '<div class="filter-pill">$' +
+          filterState.minPrice +
+          " – $" +
+          filterState.maxPrice +
+          '<button data-remove="price">' +
+          SVG_CLOSE +
+          "</button></div>",
+      );
+    }
+    if (pills.length > 0) {
+      bar.innerHTML = pills.join("");
+      bar.classList.remove("empty");
+    } else {
       bar.classList.add("empty");
     }
   }
@@ -246,8 +366,7 @@
   function renderProducts() {
     var filtered = filterAndSortProducts();
     var carouselTrack = document.getElementById("carouselTrack");
-    var collection =
-      typeof summerCollection !== "undefined" ? summerCollection : [];
+    var collection = (typeof saleCollection !== 'undefined') ? saleCollection : [];
     
     var visibleCountEl = document.getElementById("visibleCount");
     var totalCountEl = document.getElementById("totalCount");
@@ -266,6 +385,7 @@
       }
       carouselTrack.innerHTML = html;
     }
+    renderSizeFilters();
     updateCounts();
     updateActiveFilters();
     syncWishlistActiveState();
@@ -280,6 +400,7 @@
     document.querySelectorAll(".mini-popup").forEach(function (mp) {
       mp.classList.remove("active");
     });
+    // Reset to step 1 when closing
     goToStep(1);
   }
   function closeMiniPopups() {
@@ -317,9 +438,11 @@
     };
     var miniOverlay = document.getElementById("miniPopupOverlay");
 
+    // Event delegation for all filter popup interactions
     var filterPopup = document.getElementById("filterPopup");
     if (filterPopup) {
       filterPopup.addEventListener("click", function(e) {
+        // Step 1: Main Category Selection
         var mainCatItem = e.target.closest(".main-cat-item");
         if (mainCatItem) {
           var cat = mainCatItem.getAttribute("data-main-cat");
@@ -329,6 +452,7 @@
           return;
         }
 
+        // Sub-filter Selection (Kind, Size, Fit, Price Range)
         var subCatItem = e.target.closest(".filter-category-item");
         if (subCatItem && !subCatItem.classList.contains("main-cat-item")) {
           e.stopPropagation();
@@ -345,6 +469,7 @@
       });
     }
 
+    // Back Button in Header
     var backBtn = document.getElementById("filterPopupBack");
     if (backBtn) {
       backBtn.addEventListener("click", function() {
@@ -353,11 +478,11 @@
     }
 
     document
-      .querySelectorAll('input[type="checkbox"][data-filter]')
+      .querySelectorAll('input[type="checkbox"][data-filter]:not([data-filter="size"])')
       .forEach(function (cb) {
         cb.addEventListener("change", function () {
           var filterType = this.getAttribute("data-filter");
-          var value = this.value;
+          var value = this.value.toLowerCase().trim();
           if (this.checked) {
             if (filterState[filterType].indexOf(value) === -1)
               filterState[filterType].push(value);
@@ -413,7 +538,7 @@
       .addEventListener("click", function () {
         filterState = {
           mainCategory: "",
-          category: [],
+          subcategory: [],
           size: [],
           fit: [],
           minPrice: 0,
@@ -499,15 +624,20 @@
         var btn = e.target.closest("button[data-remove]");
         if (!btn) return;
         var parts = btn.getAttribute("data-remove").split(":");
-        if (parts[0] === "price") {
+        var filterType = parts[0];
+        var value = parts[1];
+
+        if (filterType === "price") {
           filterState.minPrice = 0;
           filterState.maxPrice = 500;
           minSlider.value = 0;
           maxSlider.value = 500;
           updatePriceSlider();
+        } else if (filterType === "mainCategory") {
+          filterState.mainCategory = "";
+          goToStep(1);
+          renderProducts();
         } else {
-          var filterType = parts[0];
-          var value = parts[1];
           var idx = filterState[filterType].indexOf(value);
           if (idx > -1) filterState[filterType].splice(idx, 1);
           var checkbox = document.querySelector(

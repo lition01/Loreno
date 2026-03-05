@@ -17,6 +17,7 @@
     --color-coffee: #7e5232;
     --color-espresso: #2f2716;
     --color-white: #ffffff;
+    --color-sale: #c0392b;
     
     --font-display: 'Cormorant Garamond', Georgia, serif;
     --font-body: 'Inter', -apple-system, sans-serif;
@@ -1624,47 +1625,8 @@ body {
                     </svg>
                 </button>
             </div>
-            <div class="mini-popup-body">
-                <label class="filter-option">
-                    <input type="checkbox" value="watch" data-filter="subcategory">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">Watch</span>
-                    <span class="filter-count" data-count="watch">0</span>
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" value="bag" data-filter="subcategory">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">Bag</span>
-                    <span class="filter-count" data-count="bag">0</span>
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" value="jewelry" data-filter="subcategory">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">Jewelry</span>
-                    <span class="filter-count" data-count="jewelry">0</span>
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" value="belt" data-filter="subcategory">
-                    <span class="filter-checkbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </span>
-                    <span class="filter-label">Belt</span>
-                    <span class="filter-count" data-count="belt">0</span>
-                </label>
+            <div class="mini-popup-body" id="subcategoryFilterContainer">
+                <!-- Subcategories will be injected by JavaScript -->
             </div>
         </div>
 

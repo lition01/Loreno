@@ -14,11 +14,12 @@
   var SVG_CLOSE =
     '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>';
   var SVG_CHECK =
-    '<svg xmlns="http://www.w3.org/02000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>';
+    '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>';
   var SVG_SEARCH =
     '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>';
 
   var filterState = {
+    mainCategory: "",
     category: [],
     size: [],
     fit: [],
@@ -136,10 +137,13 @@
       "</div>" +
       "</div>" +
       "</div>" +
-      '<div class="product-info"><h3 class="product-name">' +
+      '<div class="product-info">' +
+      '<h3 class="product-name">' +
       product.name +
       '</h3><p class="product-price">' +
-      product.price +
+      (product.onSale && product.salePrice ? 
+        '<span style="color:var(--color-sale);">' + product.salePrice + '</span> <span style="text-decoration:line-through;color:var(--color-sand);font-size:0.85em;font-weight:400;">' + product.price + '</span>' : 
+        product.price) +
       "</p></div>" +
       "</article>"
     );
@@ -148,7 +152,39 @@
   function filterAndSortProducts() {
     var collection =
       typeof winterCollection !== "undefined" ? winterCollection : [];
-    var filtered = collection.slice();
+    var filtered = collection.filter(function (product) {
+      if (
+        filterState.mainCategory !== "" &&
+        (product.mainCategory || product.category || "").toLowerCase().trim() !== filterState.mainCategory
+      )
+        return false;
+      if (
+        filterState.category.length > 0 &&
+        filterState.category.indexOf((product.category || "").toLowerCase().trim()) === -1
+      )
+        return false;
+      if (filterState.size.length > 0) {
+        var hasSize = false;
+        for (var i = 0; i < filterState.size.length; i++) {
+          if (product.sizes.indexOf(filterState.size[i]) !== -1) {
+            hasSize = true;
+            break;
+          }
+        }
+        if (!hasSize) return false;
+      }
+      if (
+        filterState.fit.length > 0 &&
+        filterState.fit.indexOf((product.fit || "").toLowerCase().replace(" fit", "").trim()) === -1
+      )
+        return false;
+      if (
+        product.priceValue < filterState.minPrice ||
+        product.priceValue > filterState.maxPrice
+      )
+        return false;
+      return true;
+    });
     if (filterState.sortOrder === "asc") {
       filtered.sort(function (a, b) {
         return a.priceValue - b.priceValue;
@@ -183,6 +219,7 @@
     var collection =
       typeof winterCollection !== "undefined" ? winterCollection : [];
     collection.forEach(function (p) {
+      if (filterState.mainCategory !== "" && (p.mainCategory || p.category || "").toLowerCase().trim() !== filterState.mainCategory) return;
       if (counts[p.category] !== undefined) counts[p.category]++;
       if (counts[p.fit] !== undefined) counts[p.fit]++;
       for (var i = 0; i < p.sizes.length; i++) {
@@ -211,8 +248,12 @@
     var carouselTrack = document.getElementById("carouselTrack");
     var collection =
       typeof winterCollection !== "undefined" ? winterCollection : [];
-    document.getElementById("visibleCount").textContent = filtered.length;
-    document.getElementById("totalCount").textContent = collection.length;
+    
+    var visibleCountEl = document.getElementById("visibleCount");
+    var totalCountEl = document.getElementById("totalCount");
+    if (visibleCountEl) visibleCountEl.textContent = filtered.length;
+    if (totalCountEl) totalCountEl.textContent = collection.length;
+
     if (filtered.length === 0) {
       carouselTrack.innerHTML =
         '<div class="no-results"><div class="no-results-icon">' +
@@ -225,6 +266,7 @@
       }
       carouselTrack.innerHTML = html;
     }
+    updateCounts();
     updateActiveFilters();
     syncWishlistActiveState();
   }
@@ -238,6 +280,7 @@
     document.querySelectorAll(".mini-popup").forEach(function (mp) {
       mp.classList.remove("active");
     });
+    goToStep(1);
   }
   function closeMiniPopups() {
     document.querySelectorAll(".mini-popup").forEach(function (mp) {
@@ -246,7 +289,69 @@
     document.getElementById("miniPopupOverlay").classList.remove("active");
   }
 
+  function goToStep(step) {
+    var step1 = document.getElementById("filterStep1");
+    var step2 = document.getElementById("filterStep2");
+    var backBtn = document.getElementById("filterPopupBack");
+    var title = document.getElementById("filterPopupTitle");
+
+    if (step === 1) {
+      if (step1) step1.style.display = "block";
+      if (step2) step2.style.display = "none";
+      if (backBtn) backBtn.style.display = "none";
+      if (title) title.textContent = "Filters";
+    } else {
+      if (step1) step1.style.display = "none";
+      if (step2) step2.style.display = "block";
+      if (backBtn) backBtn.style.display = "inline-flex";
+      if (title) title.textContent = filterState.mainCategory.charAt(0).toUpperCase() + filterState.mainCategory.slice(1);
+    }
+  }
+
   function initFilters() {
+    var miniPopupMap = {
+      category: document.getElementById("miniPopupCategory"),
+      size: document.getElementById("miniPopupSize"),
+      fit: document.getElementById("miniPopupFit"),
+      price: document.getElementById("miniPopupPrice"),
+    };
+    var miniOverlay = document.getElementById("miniPopupOverlay");
+
+    var filterPopup = document.getElementById("filterPopup");
+    if (filterPopup) {
+      filterPopup.addEventListener("click", function(e) {
+        var mainCatItem = e.target.closest(".main-cat-item");
+        if (mainCatItem) {
+          var cat = mainCatItem.getAttribute("data-main-cat");
+          filterState.mainCategory = cat;
+          goToStep(2);
+          renderProducts();
+          return;
+        }
+
+        var subCatItem = e.target.closest(".filter-category-item");
+        if (subCatItem && !subCatItem.classList.contains("main-cat-item")) {
+          e.stopPropagation();
+          var catType = subCatItem.getAttribute("data-filter-cat");
+          var target = miniPopupMap[catType];
+          if (!target) return;
+          Object.keys(miniPopupMap).forEach(function (key) {
+            if (key !== catType) miniPopupMap[key].classList.remove("active");
+          });
+          target.classList.toggle("active");
+          if (window.innerWidth <= 900) miniOverlay.classList.add("active");
+          return;
+        }
+      });
+    }
+
+    var backBtn = document.getElementById("filterPopupBack");
+    if (backBtn) {
+      backBtn.addEventListener("click", function() {
+        goToStep(1);
+      });
+    }
+
     document
       .querySelectorAll('input[type="checkbox"][data-filter]')
       .forEach(function (cb) {
@@ -307,6 +412,7 @@
       .getElementById("clearAllBtn")
       .addEventListener("click", function () {
         filterState = {
+          mainCategory: "",
           category: [],
           size: [],
           fit: [],
@@ -330,7 +436,6 @@
         updatePriceSlider();
         closeAllFilterPopups();
       });
-    var filterPopup = document.getElementById("filterPopup");
     var filterOverlay = document.getElementById("filterPopupOverlay");
     var filterClose = document.getElementById("filterPopupClose");
     document
@@ -372,25 +477,7 @@
       orderPopup.classList.remove("active");
       orderOverlay.classList.remove("active");
     });
-    var miniPopupMap = {
-      category: document.getElementById("miniPopupCategory"),
-      size: document.getElementById("miniPopupSize"),
-      fit: document.getElementById("miniPopupFit"),
-      price: document.getElementById("miniPopupPrice"),
-    };
-    var miniOverlay = document.getElementById("miniPopupOverlay");
-    document.querySelectorAll(".filter-category-item").forEach(function (item) {
-      item.addEventListener("click", function () {
-        var cat = this.getAttribute("data-filter-cat");
-        var target = miniPopupMap[cat];
-        if (!target) return;
-        Object.keys(miniPopupMap).forEach(function (key) {
-          if (key !== cat) miniPopupMap[key].classList.remove("active");
-        });
-        target.classList.toggle("active");
-        if (window.innerWidth <= 900) miniOverlay.classList.add("active");
-      });
-    });
+
     document.querySelectorAll(".mini-popup-back").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var cat = this.getAttribute("data-back");
@@ -436,7 +523,6 @@
     updateCounts();
     renderProducts();
     initFilters();
-    // The cart popup and interactions are now handled by cart-handler.js delegation
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

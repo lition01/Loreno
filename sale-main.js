@@ -1,6 +1,6 @@
 /**
  * sale-main.js
- * Sale Collection — Simplified rendering without filters.
+ * Sale Collection — DOM rendering & interaction logic.
  */
 (function () {
   var SVG_HEART =
@@ -18,6 +18,16 @@
   var SVG_SEARCH =
     '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>';
 
+  var filterState = {
+    mainCategory: "", // men, women, kids, accessories
+    subcategory: [],
+    size: [],
+    fit: [],
+    minPrice: 0,
+    maxPrice: 500,
+    sortOrder: "",
+  };
+
   function generateProductCard(product) {
     var id = product.id;
     var subcatInfo = product.subcategory ? '<span style="text-transform:capitalize;">' + product.subcategory + '</span>' : '';
@@ -26,113 +36,643 @@
       '<div style="font-size:12px;color:var(--color-sand);margin-bottom:4px;">' + 
       subcatInfo + (subcatInfo && fitInfo ? ' &bull; ' : '') + fitInfo + 
       '</div>' : '';
-
-    var priceHTML = '<span style="color:#c0392b;font-weight:700;">$' + product.salePrice + '</span>' +
-                  '<span style="text-decoration:line-through;color:var(--color-sand);font-size:0.85rem;margin-left:8px;">' + product.price + '</span>';
     
-    var badgeHTML = '<span class="product-badge" style="background:#c0392b;">-' + product.saleDiscount + '%</span>';
-
     var popupColorBtns = "";
-    for (var ci = 0; ci < product.colors.length; ci++) {
-      var selectedClass = ci === 0 ? " selected" : "";
-      popupColorBtns +=
-        '<button class="popup-color-btn' +
-        selectedClass +
-        '" style="background-color:' +
-        product.colors[ci] +
-        '" data-color-index="' +
-        ci +
-        '" data-product-id="' +
-        id +
-        '" aria-label="Select color ' +
-        (ci + 1) +
-        '"></button>\n';
+    if (product.colors && product.colors.length > 0) {
+      for (var ci = 0; ci < product.colors.length; ci++) {
+        var selectedClass = ci === 0 ? " selected" : "";
+        popupColorBtns +=
+          '<button class="popup-color-btn' +
+          selectedClass +
+          '" style="background-color:' +
+          product.colors[ci] +
+          '" data-color-index="' +
+          ci +
+          '" data-product-id="' +
+          id +
+          '" aria-label="Select color ' +
+          (ci + 1) +
+          '"></button>\n';
+      }
     }
     var popupSizeBtns = "";
-    for (var si = 0; si < product.sizes.length; si++) {
-      var selectedSizeClass = si === 0 ? " selected" : "";
-      popupSizeBtns +=
-        '<button class="popup-size-btn' +
-        selectedSizeClass +
-        '" data-size-index="' +
-        si +
-        '" data-product-id="' +
-        id +
-        '">' +
-        product.sizes[si] +
-        "</button>\n";
+    if (product.sizes && product.sizes.length > 0) {
+      for (var si = 0; si < product.sizes.length; si++) {
+        var selectedSizeClass = si === 0 ? " selected" : "";
+        popupSizeBtns +=
+          '<button class="popup-size-btn' +
+          selectedSizeClass +
+          '" data-size-index="' +
+          si +
+          '" data-product-id="' +
+          id +
+          '">' +
+          product.sizes[si] +
+          "</button>\n";
+      }
     }
 
+    // RED STICKER FOR SALE
+    var saleSticker = product.onSale ? '<div class="sale-sticker">Sale</div>' : '';
+
     return (
-      '<article class="product-card" data-product-id="' + id + '">' +
+      '<article class="product-card" data-product-id="' +
+      id +
+      '">' +
       '<div class="product-image-wrapper">' +
-      '<img src="' + product.image + '" alt="' + product.name + '" class="product-image" loading="lazy">' +
-      badgeHTML +
-      '<button class="wishlist-btn" aria-label="Add to wishlist" data-product-id="' + id + '">' + SVG_HEART + '</button>' +
+      saleSticker +
+      '<img src="' +
+      product.image +
+      '" alt="' +
+      product.name +
+      '" class="product-image" loading="lazy">' +
+      '<span class="product-badge' + (product.onSale ? ' sale' : '') + '">' +
+      (product.onSale ? "Sale" : product.badge) +
+      "</span>" +
+      '<button class="wishlist-btn" aria-label="Add to wishlist" data-product-id="' +
+      id +
+      '">' +
+      SVG_HEART +
+      "</button>" +
       '<div class="quick-actions">' +
-      '<button class="action-btn cart-btn" data-tooltip="Add to Cart" data-product-id="' + id + '">' + SVG_BAG + '</button>' +
-      '<button class="action-btn" data-tooltip="Quick View">' + SVG_EYE + '</button>' +
-      '<button class="action-btn" data-tooltip="Share">' + SVG_SHARE + '</button>' +
-      '</div>' +
-      '<div class="quick-add-popup" id="popup-' + id + '">' +
-      '<div class="popup-form" id="popup-form-' + id + '">' +
+      '<button class="action-btn cart-btn" data-tooltip="Add to Cart" data-product-id="' +
+      id +
+      '" aria-label="Add to cart">' +
+      SVG_BAG +
+      "</button>" +
+      '<button class="action-btn" data-tooltip="Quick View" aria-label="Quick view">' +
+      SVG_EYE +
+      "</button>" +
+      '<button class="action-btn" data-tooltip="Share" aria-label="Share product">' +
+      SVG_SHARE +
+      "</button>" +
+      "</div>" +
+      '<div class="quick-add-popup" id="popup-' +
+      id +
+      '">' +
+      '<div class="popup-form" id="popup-form-' +
+      id +
+      '">' +
       '<div class="popup-header">' +
-      '<h4>Quick Add</h4>' +
-      '<button class="popup-close" data-product-id="' + id + '">' + SVG_CLOSE + '</button>' +
-      '</div>' +
-      '<div class="popup-option-group"><label class="popup-option-label">Color</label><div class="popup-colors">' + popupColorBtns + '</div></div>' +
-      '<div class="popup-option-group"><label class="popup-option-label">Size</label><div class="popup-sizes">' + popupSizeBtns + '</div></div>' +
+      "<h4>Quick Add</h4>" +
+      '<button class="popup-close" data-product-id="' +
+      id +
+      '" aria-label="Close popup">' +
+      SVG_CLOSE +
+      "</button>" +
+      "</div>" +
+      (popupColorBtns ? '<div class="popup-option-group"><label class="popup-option-label">Color</label><div class="popup-colors">' +
+      popupColorBtns +
+      "</div></div>" : "") +
+      (popupSizeBtns ? '<div class="popup-option-group"><label class="popup-option-label">Size</label><div class="popup-sizes">' +
+      popupSizeBtns +
+      "</div></div>" : "") +
       '<div class="popup-option-group"><label class="popup-option-label">Quantity</label><div class="popup-quantity">' +
-      '<button class="qty-btn qty-minus" data-product-id="' + id + '">-</button>' +
-      '<span class="qty-value" id="qty-' + id + '">1</span>' +
-      '<button class="qty-btn qty-plus" data-product-id="' + id + '">+</button>' +
-      '</div></div>' +
-      '<button class="popup-add-btn" data-product-id="' + id + '">Add to Cart</button>' +
-      '</div>' +
-      '<div class="popup-success" id="popup-success-' + id + '">' +
-      '<div class="success-icon">' + SVG_CHECK + '</div>' +
-      '<h5>Added to Cart!</h5>' +
-      '<p>Item added successfully</p>' +
-      '</div>' +
-      '</div>' +
-      '</div>' +
+      '<button class="qty-btn qty-minus" data-product-id="' +
+      id +
+      '" aria-label="Decrease quantity">-</button>' +
+      '<span class="qty-value" id="qty-' +
+      id +
+      '">1</span>' +
+      '<button class="qty-btn qty-plus" data-product-id="' +
+      id +
+      '" aria-label="Increase quantity">+</button>' +
+      "</div></div>" +
+      '<button class="popup-add-btn" data-product-id="' +
+      id +
+      '">Add to Cart</button>' +
+      "</div>" +
+      '<div class="popup-success" id="popup-success-' +
+      id +
+      '">' +
+      '<div class="success-icon">' +
+      SVG_CHECK +
+      "</div>" +
+      "<h5>Added to Cart!</h5>" +
+      "<p>Item added successfully</p>" +
+      "</div>" +
+      "</div>" +
+      "</div>" +
       '<div class="product-info">' +
       metaInfo +
-      '<h3 class="product-name">' + product.name + '</h3>' +
-      '<p class="product-price">' + priceHTML + '</p>' +
-      '</div>' +
-      '</article>'
+      '<h3 class="product-name">' +
+      product.name +
+      '</h3><p class="product-price">' +
+      (product.onSale && product.salePrice ? 
+        '<span class="sale-price">' + product.salePrice + '</span> <span class="original-price">' + product.price + '</span>' : 
+        product.price) +
+      "</p></div>" +
+      "</article>"
     );
   }
 
+  function filterAndSortProducts() {
+    var collection = (typeof saleCollection !== 'undefined') ? saleCollection : [];
+    var filtered = collection.filter(function (product) {
+      if (filterState.mainCategory && product.category !== filterState.mainCategory) return false;
+
+      if (
+        filterState.subcategory.length > 0 &&
+        filterState.subcategory.indexOf((product.subcategory || "").toLowerCase().trim()) === -1
+      )
+        return false;
+      if (filterState.size.length > 0) {
+        var hasSize = false;
+        for (var i = 0; i < filterState.size.length; i++) {
+          if (product.sizes.indexOf(filterState.size[i]) !== -1) {
+            hasSize = true;
+            break;
+          }
+        }
+        if (!hasSize) return false;
+      }
+      if (
+        filterState.fit.length > 0 &&
+        filterState.fit.indexOf((product.fit || "").toLowerCase().replace(" fit", "").trim()) === -1
+      )
+        return false;
+      
+      var priceValue = parseFloat((product.onSale && product.salePrice ? product.salePrice : product.price).replace(/[^0-9.]/g, ''));
+      if (
+        priceValue < filterState.minPrice ||
+        priceValue > filterState.maxPrice
+      )
+        return false;
+      return true;
+    });
+    if (filterState.sortOrder === "asc") {
+      filtered.sort(function (a, b) {
+        var valA = parseFloat((a.onSale && a.salePrice ? a.salePrice : a.price).replace(/[^0-9.]/g, ''));
+        var valB = parseFloat((b.onSale && b.salePrice ? b.salePrice : b.price).replace(/[^0-9.]/g, ''));
+        return valA - valB;
+      });
+    } else if (filterState.sortOrder === "desc") {
+      filtered.sort(function (a, b) {
+        var valA = parseFloat((a.onSale && a.salePrice ? a.salePrice : a.price).replace(/[^0-9.]/g, ''));
+        var valB = parseFloat((b.onSale && b.salePrice ? b.salePrice : b.price).replace(/[^0-9.]/g, ''));
+        return valB - valA;
+      });
+    } else if (filterState.sortOrder === "name") {
+      filtered.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+      });
+    }
+    return filtered;
+  }
+
+  function updateCounts() {
+    var counts = {};
+    var collection = (typeof saleCollection !== 'undefined') ? saleCollection : [];
+    
+    // Initialize counts for categories we care about
+    var categories = ['men', 'women', 'kids', 'accessories'];
+    categories.forEach(function(c) { counts[c] = 0; });
+
+    collection.forEach(function (p) {
+      if (p.category && counts[p.category.toLowerCase()] !== undefined) counts[p.category.toLowerCase()]++;
+      
+      // Only count sub-filters if they belong to current mainCategory (if selected)
+      if (!filterState.mainCategory || p.category === filterState.mainCategory) {
+          if (p.subcategory) {
+              var sub = p.subcategory.toLowerCase().trim();
+              counts[sub] = (counts[sub] || 0) + 1;
+          }
+          var fitVal = (p.fit || "").toLowerCase().replace(" fit", "").trim();
+          if (fitVal) counts[fitVal] = (counts[fitVal] || 0) + 1;
+
+          if (p.sizes) {
+              for (var i = 0; i < p.sizes.length; i++) {
+                var s = p.sizes[i];
+                counts[s] = (counts[s] || 0) + 1;
+              }
+          }
+      }
+    });
+
+    Object.keys(counts).forEach(function (key) {
+      document
+        .querySelectorAll('[data-count="' + key + '"]')
+        .forEach(function (el) {
+          el.textContent = counts[key];
+        });
+    });
+  }
+
+  function renderSubcategoryFilters() {
+    var collection = (typeof saleCollection !== 'undefined') ? saleCollection : [];
+    var subs = new Set();
+    collection.forEach(function(p) {
+        if (!filterState.mainCategory || p.category === filterState.mainCategory) {
+            if (p.subcategory) subs.add(p.subcategory.trim());
+        }
+    });
+
+    var container = document.querySelector('#miniPopupCategory .mini-popup-body');
+    if (!container) return;
+
+    var sortedSubs = Array.from(subs).sort();
+    var html = sortedSubs.map(function(s) {
+        var sLower = s.toLowerCase();
+        var checked = filterState.subcategory.indexOf(sLower) > -1 ? 'checked' : '';
+        return (
+            '<label class="filter-option">' +
+            '<input type="checkbox" value="' + sLower + '" data-filter="subcategory" ' + checked + '>' +
+            '<span class="filter-checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>' +
+            '<span class="filter-label" style="text-transform:capitalize;">' + s + '</span>' +
+            '<span class="filter-count" data-count="' + sLower + '">0</span>' +
+            '</label>'
+        );
+    }).join('');
+
+    container.innerHTML = html || '<div style="padding:10px;font-size:12px;color:var(--color-sand);">Choose a Product Kind first</div>';
+    
+    container.querySelectorAll('input').forEach(function(cb) {
+        cb.addEventListener('change', function() {
+            var val = this.value;
+            if (this.checked) {
+                if (filterState.subcategory.indexOf(val) === -1) filterState.subcategory.push(val);
+            } else {
+                var idx = filterState.subcategory.indexOf(val);
+                if (idx > -1) filterState.subcategory.splice(idx, 1);
+            }
+            renderProducts();
+        });
+    });
+  }
+
+  function renderSizeFilters() {
+    var collection = (typeof saleCollection !== 'undefined') ? saleCollection : [];
+    var sizes = new Set();
+    collection.forEach(function(p) {
+        if (!filterState.mainCategory || p.category === filterState.mainCategory) {
+            if (p.sizes) p.sizes.forEach(function(s) { sizes.add(s); });
+        }
+    });
+
+    var container = document.getElementById('saleSizeFilterContainer');
+    if (!container) return;
+
+    var sizeOrder = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+    var sortedSizes = Array.from(sizes).sort(function(a, b) {
+      var idxA = sizeOrder.indexOf(a);
+      var idxB = sizeOrder.indexOf(b);
+      if (idxA > -1 && idxB > -1) return idxA - idxB;
+      if (idxA > -1) return -1;
+      if (idxB > -1) return 1;
+      return a.localeCompare(b);
+    });
+
+    var html = sortedSizes.map(function(s) {
+      var checked = filterState.size.indexOf(s) > -1 ? 'checked' : '';
+      return (
+        '<label class="filter-option">' +
+        '<input type="checkbox" value="' + s + '" data-filter="size" ' + checked + '>' +
+        '<span class="filter-checkbox">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">' +
+        '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />' +
+        '</svg>' +
+        '</span>' +
+        '<span class="filter-label">' + s + '</span>' +
+        '<span class="filter-count" data-count="' + s + '">0</span>' +
+        '</label>'
+      );
+    }).join('');
+
+    container.innerHTML = html || '<div style="padding:10px;font-size:12px;color:var(--color-sand);">Choose a Product Kind first</div>';
+    
+    container.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+      cb.addEventListener("change", function () {
+        var value = this.value;
+        if (this.checked) {
+          if (filterState.size.indexOf(value) === -1) filterState.size.push(value);
+        } else {
+          var idx = filterState.size.indexOf(value);
+          if (idx > -1) filterState.size.splice(idx, 1);
+        }
+        renderProducts();
+      });
+    });
+  }
+
+  function updateActiveFilters() {
+    var bar = document.getElementById("activeFiltersBar");
+    var pills = [];
+    if (filterState.mainCategory) {
+        pills.push('<div class="filter-pill" style="text-transform:capitalize;">' + filterState.mainCategory + '<button data-remove="mainCategory">' + SVG_CLOSE + '</button></div>');
+    }
+    filterState.subcategory.forEach(function (c) {
+      pills.push(
+        '<div class="filter-pill">' +
+          c +
+          '<button data-remove="subcategory:' +
+          c +
+          '">' +
+          SVG_CLOSE +
+          "</button></div>",
+      );
+    });
+    filterState.size.forEach(function (s) {
+      pills.push(
+        '<div class="filter-pill">Size: ' +
+          s +
+          '<button data-remove="size:' +
+          s +
+          '">' +
+          SVG_CLOSE +
+          "</button></div>",
+      );
+    });
+    filterState.fit.forEach(function (f) {
+      pills.push(
+        '<div class="filter-pill">' +
+          f +
+          ' fit<button data-remove="fit:' +
+          f +
+          '">' +
+          SVG_CLOSE +
+          "</button></div>",
+      );
+    });
+    if (filterState.minPrice > 0 || filterState.maxPrice < 500) {
+      pills.push(
+        '<div class="filter-pill">$' +
+          filterState.minPrice +
+          " – $" +
+          filterState.maxPrice +
+          '<button data-remove="price">' +
+          SVG_CLOSE +
+          "</button></div>",
+      );
+    }
+    if (pills.length > 0) {
+      bar.innerHTML = pills.join("");
+      bar.classList.remove("empty");
+    } else {
+      bar.classList.add("empty");
+    }
+  }
+
   function renderProducts() {
+    var filtered = filterAndSortProducts();
     var carouselTrack = document.getElementById("carouselTrack");
     var collection = (typeof saleCollection !== 'undefined') ? saleCollection : [];
     
     var visibleCountEl = document.getElementById("visibleCount");
-    if (visibleCountEl) visibleCountEl.textContent = collection.length;
+    var totalCountEl = document.getElementById("totalCount");
+    if (visibleCountEl) visibleCountEl.textContent = filtered.length;
+    if (totalCountEl) totalCountEl.textContent = collection.length;
 
-    if (!carouselTrack) return;
-
-    if (collection.length === 0) {
+    if (filtered.length === 0) {
       carouselTrack.innerHTML =
-        '<div class="no-results"><div class="no-results-icon">' +
+        '<div class="no-results" style="grid-column: 1/-1; padding: 100px 20px; text-align: center;"><div class="no-results-icon" style="font-size: 48px; margin-bottom: 20px;">' +
         SVG_SEARCH +
-        "</div><h3>No sale products found</h3><p>Check back later for new deals.</p></div>";
+        "</div><h3>No products found</h3><p>Try adjusting your filters to find what you're looking for.</p></div>";
     } else {
       var html = "";
-      for (var i = 0; i < collection.length; i++) {
-        html += generateProductCard(collection[i]);
+      for (var i = 0; i < filtered.length; i++) {
+        html += generateProductCard(filtered[i]);
       }
       carouselTrack.innerHTML = html;
     }
+    renderSubcategoryFilters();
+    renderSizeFilters();
+    updateCounts();
+    updateActiveFilters();
     syncWishlistActiveState();
   }
 
-  function init() {
-    renderProducts();
+  function closeAllFilterPopups() {
+    document.getElementById("filterPopup").classList.remove("active");
+    document.getElementById("filterPopupOverlay").classList.remove("active");
+    document.getElementById("miniPopupOverlay").classList.remove("active");
+    document.getElementById("orderPopup").classList.remove("active");
+    document.getElementById("orderPopupOverlay").classList.remove("active");
+    document.querySelectorAll(".mini-popup").forEach(function (mp) {
+      mp.classList.remove("active");
+    });
+  }
+  function closeMiniPopups() {
+    document.querySelectorAll(".mini-popup").forEach(function (mp) {
+      mp.classList.remove("active");
+    });
+    document.getElementById("miniPopupOverlay").classList.remove("active");
   }
 
+  function initFilters() {
+    // Main Category Radio Listeners
+    document.querySelectorAll('input[name="mainCategory"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                filterState.mainCategory = this.value;
+                // Reset sub-filters when main kind changes
+                filterState.subcategory = [];
+                filterState.size = [];
+                filterState.fit = [];
+                renderProducts();
+            }
+        });
+    });
+
+    document
+      .querySelectorAll('input[type="checkbox"][data-filter]:not([data-filter="size"]):not([data-filter="subcategory"])')
+      .forEach(function (cb) {
+        cb.addEventListener("change", function () {
+          var filterType = this.getAttribute("data-filter");
+          var value = this.value.toLowerCase().trim();
+          if (this.checked) {
+            if (filterState[filterType].indexOf(value) === -1)
+              filterState[filterType].push(value);
+          } else {
+            var idx = filterState[filterType].indexOf(value);
+            if (idx > -1) filterState[filterType].splice(idx, 1);
+          }
+          renderProducts();
+        });
+      });
+    var minSlider = document.getElementById("minPriceSlider");
+    var maxSlider = document.getElementById("maxPriceSlider");
+    var minDisplay = document.getElementById("minPriceDisplay");
+    var maxDisplay = document.getElementById("maxPriceDisplay");
+    var priceTrack = document.getElementById("priceTrack");
+    function updatePriceSlider() {
+      var min = parseInt(minSlider.value);
+      var max = parseInt(maxSlider.value);
+      if (min > max - 10) {
+        minSlider.value = max - 10;
+        min = max - 10;
+      }
+      filterState.minPrice = min;
+      filterState.maxPrice = max;
+      minDisplay.textContent = "$" + min;
+      maxDisplay.textContent = "$" + max;
+      var pMin = (min / 500) * 100;
+      var pMax = (max / 500) * 100;
+      priceTrack.style.left = pMin + "%";
+      priceTrack.style.width = pMax - pMin + "%";
+      renderProducts();
+    }
+    minSlider.addEventListener("input", updatePriceSlider);
+    maxSlider.addEventListener("input", updatePriceSlider);
+    var sortDropdown = document.getElementById("sortDropdown");
+    if (sortDropdown) {
+      sortDropdown.addEventListener("change", function () {
+        filterState.sortOrder = this.value;
+        renderProducts();
+      });
+    }
+    document
+      .querySelectorAll('input[name="sortOrder"]')
+      .forEach(function (radio) {
+        radio.addEventListener("change", function () {
+          filterState.sortOrder = this.value;
+          if (sortDropdown) sortDropdown.value = this.value;
+          renderProducts();
+        });
+      });
+    document
+      .getElementById("clearAllBtn")
+      .addEventListener("click", function () {
+        filterState = {
+          mainCategory: "",
+          subcategory: [],
+          size: [],
+          fit: [],
+          minPrice: 0,
+          maxPrice: 500,
+          sortOrder: "",
+        };
+        document
+          .querySelectorAll('input[type="checkbox"], input[type="radio"]')
+          .forEach(function (cb) {
+            cb.checked = false;
+          });
+        document
+          .querySelectorAll('input[name="sortOrder"]')
+          .forEach(function (r) {
+            r.checked = r.value === "";
+          });
+        minSlider.value = 0;
+        maxSlider.value = 500;
+        if (sortDropdown) sortDropdown.value = "";
+        updatePriceSlider();
+        closeAllFilterPopups();
+      });
+    var filterPopup = document.getElementById("filterPopup");
+    var filterOverlay = document.getElementById("filterPopupOverlay");
+    var filterClose = document.getElementById("filterPopupClose");
+    document
+      .getElementById("filterTriggerBtn")
+      .addEventListener("click", function () {
+        document.getElementById("orderPopup").classList.remove("active");
+        document.getElementById("orderPopupOverlay").classList.remove("active");
+        closeMiniPopups();
+        filterPopup.classList.toggle("active");
+        filterOverlay.classList.toggle("active");
+      });
+    filterClose.addEventListener("click", function () {
+      filterPopup.classList.remove("active");
+      filterOverlay.classList.remove("active");
+      closeMiniPopups();
+    });
+    filterOverlay.addEventListener("click", function () {
+      filterPopup.classList.remove("active");
+      filterOverlay.classList.remove("active");
+      closeMiniPopups();
+    });
+    var orderPopup = document.getElementById("orderPopup");
+    var orderOverlay = document.getElementById("orderPopupOverlay");
+    var orderClose = document.getElementById("orderPopupClose");
+    document
+      .getElementById("orderTriggerBtn")
+      .addEventListener("click", function () {
+        filterPopup.classList.remove("active");
+        filterOverlay.classList.remove("active");
+        closeMiniPopups();
+        orderPopup.classList.toggle("active");
+        orderOverlay.classList.toggle("active");
+      });
+    orderClose.addEventListener("click", function () {
+      orderPopup.classList.remove("active");
+      orderOverlay.classList.remove("active");
+    });
+    orderOverlay.addEventListener("click", function () {
+      orderPopup.classList.remove("active");
+      orderOverlay.classList.remove("active");
+    });
+    var miniPopupMap = {
+      'main-category': document.getElementById("miniPopupMainCategory"),
+      category: document.getElementById("miniPopupCategory"),
+      size: document.getElementById("miniPopupSize"),
+      fit: document.getElementById("miniPopupFit"),
+      price: document.getElementById("miniPopupPrice"),
+    };
+    var miniOverlay = document.getElementById("miniPopupOverlay");
+    document.querySelectorAll(".filter-category-item").forEach(function (item) {
+      item.addEventListener("click", function () {
+        var cat = this.getAttribute("data-filter-cat");
+        var target = miniPopupMap[cat];
+        if (!target) return;
+        Object.keys(miniPopupMap).forEach(function (key) {
+          if (key !== cat) miniPopupMap[key].classList.remove("active");
+        });
+        target.classList.toggle("active");
+        if (window.innerWidth <= 900) miniOverlay.classList.add("active");
+      });
+    });
+    document.querySelectorAll(".mini-popup-back").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var cat = this.getAttribute("data-back");
+        if (miniPopupMap[cat]) miniPopupMap[cat].classList.remove("active");
+        if (window.innerWidth <= 900) miniOverlay.classList.remove("active");
+      });
+    });
+    document.querySelectorAll(".mini-popup-close").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        closeAllFilterPopups();
+      });
+    });
+    miniOverlay.addEventListener("click", function () {
+      closeMiniPopups();
+    });
+    document
+      .getElementById("activeFiltersBar")
+      .addEventListener("click", function (e) {
+        var btn = e.target.closest("button[data-remove]");
+        if (!btn) return;
+        var parts = btn.getAttribute("data-remove").split(":");
+        var filterType = parts[0];
+        
+        if (filterType === "price") {
+          filterState.minPrice = 0;
+          filterState.maxPrice = 500;
+          minSlider.value = 0;
+          maxSlider.value = 500;
+          updatePriceSlider();
+        } else if (filterType === "mainCategory") {
+            filterState.mainCategory = "";
+            filterState.subcategory = [];
+            filterState.size = [];
+            filterState.fit = [];
+            document.querySelectorAll('input[name="mainCategory"]').forEach(function(r) { r.checked = false; });
+            renderProducts();
+        } else {
+          var value = parts[1];
+          var idx = filterState[filterType].indexOf(value);
+          if (idx > -1) filterState[filterType].splice(idx, 1);
+          var checkbox = document.querySelector(
+            'input[data-filter="' + filterType + '"][value="' + value + '"]',
+          );
+          if (checkbox) checkbox.checked = false;
+          renderProducts();
+        }
+      });
+  }
+
+  function init() {
+    updateCounts();
+    renderProducts();
+    initFilters();
+  }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {

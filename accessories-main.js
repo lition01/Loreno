@@ -29,6 +29,49 @@
     var id = product.id;
     var subcatInfo = product.subcategory ? '<div style="font-size:12px;color:var(--color-sand);margin-bottom:4px;text-transform:capitalize;">' + product.subcategory + '</div>' : '';
     
+    var popupColorBtns = "";
+    if (product.colors && product.colors.length > 0) {
+        for (var ci = 0; ci < product.colors.length; ci++) {
+            var selectedClass = ci === 0 ? " selected" : "";
+            popupColorBtns +=
+                '<button class="popup-color-btn' +
+                selectedClass +
+                '" style="background-color:' +
+                product.colors[ci] +
+                '" data-color-index="' +
+                ci +
+                '" data-product-id="' +
+                id +
+                '" aria-label="Select color ' +
+                (ci + 1) +
+                '"></button>\n';
+        }
+    }
+    var popupSizeBtns = "";
+    if (product.sizes && product.sizes.length > 0) {
+        for (var si = 0; si < product.sizes.length; si++) {
+            var selectedSizeClass = si === 0 ? " selected" : "";
+            popupSizeBtns +=
+                '<button class="popup-size-btn' +
+                selectedSizeClass +
+                '" data-size-index="' +
+                si +
+                '" data-product-id="' +
+                id +
+                '">' +
+                product.sizes[si] +
+                "</button>\n";
+        }
+    }
+
+    var priceHtml = '';
+    if (product.onSale && product.salePrice) {
+        priceHtml = '<span class="sale-price">' + product.salePrice + '</span>' + 
+                    '<span class="original-price">' + product.price + '</span>';
+    } else {
+        priceHtml = '<span>' + product.price + '</span>';
+    }
+
     return (
       '<article class="product-card" data-product-id="' +
       id +
@@ -39,8 +82,8 @@
       '" alt="' +
       product.name +
       '" class="product-image" loading="lazy">' +
-      '<span class="product-badge">' +
-      product.badge +
+      '<span class="product-badge' + (product.onSale ? ' sale' : '') + '">' +
+      (product.onSale ? 'Sale' : (product.badge || 'New')) +
       "</span>" +
       '<button class="wishlist-btn" aria-label="Add to wishlist" data-product-id="' +
       id +
@@ -74,6 +117,12 @@
       SVG_CLOSE +
       "</button>" +
       "</div>" +
+      (popupColorBtns ? '<div class="popup-option-group"><label class="popup-option-label">Color</label><div class="popup-colors">' +
+      popupColorBtns +
+      "</div></div>" : "") +
+      (popupSizeBtns ? '<div class="popup-option-group"><label class="popup-option-label">Size</label><div class="popup-sizes">' +
+      popupSizeBtns +
+      "</div></div>" : "") +
       '<div class="popup-option-group"><label class="popup-option-label">Quantity</label><div class="popup-quantity">' +
       '<button class="qty-btn qty-minus" data-product-id="' +
       id +
@@ -105,7 +154,7 @@
       '<h3 class="product-name">' +
       product.name +
       '</h3><p class="product-price">' +
-      product.price +
+      priceHtml +
       "</p></div>" +
       "</article>"
     );
@@ -119,20 +168,26 @@
         filterState.subcategory.indexOf((product.subcategory || "").toLowerCase().trim()) === -1
       )
         return false;
+      
+      var priceValue = parseFloat((product.onSale && product.salePrice ? product.salePrice : product.price).replace(/[^0-9.]/g, ''));
       if (
-        product.priceValue < filterState.minPrice ||
-        product.priceValue > filterState.maxPrice
+        priceValue < filterState.minPrice ||
+        priceValue > filterState.maxPrice
       )
         return false;
       return true;
     });
     if (filterState.sortOrder === "asc") {
       filtered.sort(function (a, b) {
-        return a.priceValue - b.priceValue;
+        var valA = parseFloat((a.onSale && a.salePrice ? a.salePrice : a.price).replace(/[^0-9.]/g, ''));
+        var valB = parseFloat((b.onSale && b.salePrice ? b.salePrice : b.price).replace(/[^0-9.]/g, ''));
+        return valA - valB;
       });
     } else if (filterState.sortOrder === "desc") {
       filtered.sort(function (a, b) {
-        return b.priceValue - a.priceValue;
+        var valA = parseFloat((a.onSale && a.salePrice ? a.salePrice : a.price).replace(/[^0-9.]/g, ''));
+        var valB = parseFloat((b.onSale && b.salePrice ? b.salePrice : b.price).replace(/[^0-9.]/g, ''));
+        return valB - valA;
       });
     } else if (filterState.sortOrder === "name") {
       filtered.sort(function (a, b) {
@@ -143,16 +198,17 @@
   }
 
   function updateCounts() {
-    var counts = {
-      watch: 0,
-      bag: 0,
-      jewelry: 0,
-      belt: 0
-    };
+    var counts = {};
     var collection = (typeof accessoriesCollection !== 'undefined') ? accessoriesCollection : [];
+    
+    // Count subcategories
     collection.forEach(function (p) {
-      if (p.subcategory && counts[p.subcategory.trim().toLowerCase()] !== undefined) counts[p.subcategory.trim().toLowerCase()]++;
+      if (p.subcategory) {
+        var sub = p.subcategory.trim().toLowerCase();
+        counts[sub] = (counts[sub] || 0) + 1;
+      }
     });
+
     Object.keys(counts).forEach(function (key) {
       document
         .querySelectorAll('[data-count="' + key + '"]')
@@ -197,7 +253,7 @@
 
   function renderProducts() {
     var filtered = filterAndSortProducts();
-    var carouselTrack = document.getElementById("productGrid");
+    var carouselTrack = document.getElementById("carouselTrack");
     var collection = (typeof accessoriesCollection !== 'undefined') ? accessoriesCollection : [];
     
     var visibleCountEl = document.getElementById("visibleCount");
@@ -205,9 +261,11 @@
     if (visibleCountEl) visibleCountEl.textContent = filtered.length;
     if (totalCountEl) totalCountEl.textContent = collection.length;
 
+    if (!carouselTrack) return;
+
     if (filtered.length === 0) {
       carouselTrack.innerHTML =
-        '<div class="no-results"><div class="no-results-icon">' +
+        '<div class="no-results" style="grid-column: 1/-1; padding: 100px 20px; text-align: center;"><div class="no-results-icon" style="font-size: 48px; margin-bottom: 20px;">' +
         SVG_SEARCH +
         "</div><h3>No products found</h3><p>Try adjusting your filters to find what you're looking for.</p></div>";
     } else {
@@ -421,7 +479,54 @@
       });
   }
 
+  function renderSubcategoryFilters() {
+    var collection = (typeof accessoriesCollection !== 'undefined') ? accessoriesCollection : [];
+    var subcategories = new Set();
+    collection.forEach(function(p) {
+      if (p.subcategory) subcategories.add(p.subcategory.trim());
+    });
+
+    var container = document.getElementById('subcategoryFilterContainer');
+    if (!container) return;
+
+    var sortedSubs = Array.from(subcategories).sort();
+
+    var html = sortedSubs.map(function(s) {
+      var sLower = s.toLowerCase();
+      var checked = filterState.subcategory.indexOf(sLower) > -1 ? 'checked' : '';
+      return (
+        '<label class="filter-option">' +
+        '<input type="checkbox" value="' + sLower + '" data-filter="subcategory" ' + checked + '>' +
+        '<span class="filter-checkbox">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">' +
+        '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />' +
+        '</svg>' +
+        '</span>' +
+        '<span class="filter-label" style="text-transform: capitalize;">' + s + '</span>' +
+        '<span class="filter-count" data-count="' + sLower + '">0</span>' +
+        '</label>'
+      );
+    }).join('');
+
+    container.innerHTML = html || '<div style="padding:10px;font-size:12px;color:var(--color-sand);">No categories available</div>';
+    
+    // Re-attach listeners to new checkboxes
+    container.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+      cb.addEventListener("change", function () {
+        var value = this.value;
+        if (this.checked) {
+          if (filterState.subcategory.indexOf(value) === -1) filterState.subcategory.push(value);
+        } else {
+          var idx = filterState.subcategory.indexOf(value);
+          if (idx > -1) filterState.subcategory.splice(idx, 1);
+        }
+        renderProducts();
+      });
+    });
+  }
+
   function init() {
+    renderSubcategoryFilters();
     updateCounts();
     renderProducts();
     initFilters();

@@ -2351,8 +2351,31 @@
               <option>Accessories</option>
             </select>
           </div>
-          <div class="form-group"><label class="form-label">Price ($)</label><input class="form-input" id="ep-price"
-              type="text" /></div>
+          <div class="form-full" style="margin-top: 10px; padding: 18px; background: #fdf6ef; border: 1.5px solid var(--c2); border-radius: var(--radius); margin-bottom: 16px;">
+            <div class="form-label" style="margin-bottom: 14px; color: var(--c4); display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px; height:18px;"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Pricing & Promotion
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Regular Price ($)</label>
+                <input class="form-input" id="ep-price" type="text" style="background: #fff;"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Sale Price ($)</label>
+                <input class="form-input" id="ep-saleprice" type="text" style="background: #fff;"/>
+              </div>
+              <div class="form-full">
+                <label class="placement-row" id="ep-onsale-row" style="background: #fff; border-radius: var(--radius-sm); border: 1.5px solid var(--border);">
+                  <div class="placement-check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+                  </div>
+                  <input type="checkbox" id="ep-onsale" style="display:none;" onchange="this.parentElement.classList.toggle('checked', this.checked)">
+                  <span class="form-label" style="margin:0; text-transform: none; letter-spacing: normal; font-size: 13px;">Enable Promotional Sale Price</span>
+                </label>
+              </div>
+            </div>
+          </div>
           <div class="form-group" id="ep-group-subcat"><label class="form-label">Kind (Sub-category)</label>
             <select class="form-select" id="ep-subcategory">
               <option value="">Select Kind...</option>
@@ -3011,8 +3034,31 @@
               <div class="form-grid">
                 <div class="form-group form-full"><label class="form-label">Product Name</label><input class="form-input"
                     name="name" type="text" placeholder="e.g. Classic Oxford Shirt" required /></div>
-                <div class="form-group"><label class="form-label">Price ($)</label><input class="form-input"
-                    name="price" type="number" min="0" step="0.01" placeholder="0.00" required /></div>
+                <div class="form-full" style="margin-top: 10px; padding: 18px; background: #fdf6ef; border: 1.5px solid var(--c2); border-radius: var(--radius); margin-bottom: 16px;">
+                  <div class="form-label" style="margin-bottom: 14px; color: var(--c4); display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px; height:18px;"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Pricing & Promotion
+                  </div>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label class="form-label">Regular Price ($)</label>
+                      <input class="form-input" name="price" type="number" min="0" step="0.01" placeholder="0.00" required style="background: #fff;"/>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Sale Price ($)</label>
+                      <input class="form-input" name="salePrice" type="number" min="0" step="0.01" placeholder="0.00" style="background: #fff;"/>
+                    </div>
+                    <div class="form-full">
+                      <label class="placement-row" style="background: #fff; border-radius: var(--radius-sm); border: 1.5px solid var(--border);">
+                        <div class="placement-check">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <input type="checkbox" name="onSale" value="true" style="display:none;" onchange="this.parentElement.classList.toggle('checked', this.checked)">
+                        <span class="form-label" style="margin:0; text-transform: none; letter-spacing: normal; font-size: 13px;">Enable Promotional Sale Price</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
                 
                 <!-- SUB-CATEGORY (Men, Women, Kids) -->
                 <div class="form-group" id="group-subcat">
@@ -4054,6 +4100,10 @@
         const placementBadge = placements.length > 0 ?
           `<div style="font-size:10px;color:var(--c3);font-weight:700;margin-top:4px;">📍 ${placements.join(' · ')}</div>` :
           `<div style="font-size:10px;color:var(--muted);margin-top:4px;">Click to set display sections</div>`;
+        const priceDisplay = (p.onSale && p.salePrice) ? 
+          `<span style="color:#c0392b;font-weight:700;">${p.salePrice}</span> <span style="text-decoration:line-through;color:var(--muted);font-size:0.85em;">${p.price}</span>` : 
+          `<span style="font-weight:700;">${p.price}</span>`;
+
         return `<div class="prod-card" onclick="openPlacement(${realIdx})" title="Click to set display placement">
       <div class="prod-thumb" style="background:var(--bg);overflow:hidden;">
         ${p.imageUrl
@@ -4068,7 +4118,7 @@
         <div class="prod-cat">${p.cat} &bull; ${subcatBadge}<span style="color:${stockColor};font-weight:700;">${stock} in stock</span></div>
         ${placementBadge}
         <div class="prod-foot" style="margin-top:8px;">
-          <div class="prod-price">${p.price}</div>
+          <div class="prod-price">${priceDisplay}</div>
           <div class="prod-actions" onclick="event.stopPropagation()">
             <button class="icon-btn" title="Edit" onclick="editProduct(${realIdx})">
               <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -4179,10 +4229,15 @@
       document.getElementById('ep-name').value = p.name;
       document.getElementById('ep-cat').value = p.cat;
       document.getElementById('ep-price').value = p.price.replace('$', '');
-      
+      document.getElementById('ep-saleprice').value = p.salePrice ? p.salePrice.replace('$', '') : '';
+      const onSaleCb = document.getElementById('ep-onsale');
+      onSaleCb.checked = !!p.onSale;
+      onSaleCb.parentElement.classList.toggle('checked', !!p.onSale);
+
       handleEditCategoryChange(p.cat);
+      document.getElementById('ep-subcategory').value = p.subcat || '';
+      
       if (p.cat !== 'Accessories') {
-        document.getElementById('ep-subcategory').value = p.subcat || '';
         document.getElementById('ep-fit').value = p.fit || '';
         
         // Populate sizes
@@ -4194,6 +4249,9 @@
         });
         renderEditSizeTable();
       } else {
+        if (document.getElementById('ep-smell')) {
+          document.getElementById('ep-smell').value = p.smell || '';
+        }
         document.getElementById('ep-simple-stock').value = p.totalStock || 0;
       }
       
@@ -4203,24 +4261,28 @@
     function saveEditProduct() {
       const idx = parseInt(document.getElementById('ep-idx').value);
       const price = document.getElementById('ep-price').value;
+      const salePrice = document.getElementById('ep-saleprice').value;
       const cat = document.getElementById('ep-cat').value;
       
       const updatedProduct = {
         ...PRODUCTS[idx],
         name: document.getElementById('ep-name').value,
         cat: cat,
-        subcat: cat !== 'Accessories' ? document.getElementById('ep-subcategory').value : '',
+        subcat: document.getElementById('ep-subcategory').value || '',
         price: '$' + parseFloat(price || 0).toFixed(2),
-        priceValue: parseFloat(price || 0)
+        priceValue: parseFloat(price || 0),
+        salePrice: salePrice ? '$' + parseFloat(salePrice).toFixed(2) : null,
+        onSale: document.getElementById('ep-onsale').checked
       };
 
       if (cat === 'Accessories') {
         delete updatedProduct.fit;
-        delete updatedProduct.subcat;
         delete updatedProduct.sizes;
         delete updatedProduct.colors;
+        updatedProduct.smell = document.getElementById('ep-smell') ? document.getElementById('ep-smell').value : '';
         updatedProduct.totalStock = parseInt(document.getElementById('ep-simple-stock').value) || 0;
       } else {
+        delete updatedProduct.smell;
         updatedProduct.fit = document.getElementById('ep-fit').value;
         updatedProduct.sizes = { ...editActiveSizes };
         updatedProduct.totalStock = Object.values(editActiveSizes).reduce((a, b) => a + b, 0);
@@ -4241,8 +4303,14 @@
       {
         id: 'new',
         icon: '✨',
-        label: 'New Arrivals',
-        desc: 'Show in the homepage New Arrivals'
+        label: 'Best Sellers',
+        desc: 'Show in the homepage Best Sellers'
+      },
+      {
+        id: 'sale',
+        icon: '🏷️',
+        label: 'On Sale',
+        desc: 'Add to the Sale section'
       },
       {
         id: 'winter',
@@ -4976,6 +5044,8 @@
         subcat: data.subcategory || '',
         price: '$' + price.toFixed(2),
         priceValue: price,
+        salePrice: data.salePrice ? '$' + parseFloat(data.salePrice).toFixed(2) : null,
+        onSale: data.onSale === 'true',
         sizes,
         colors,
         imageUrl,
