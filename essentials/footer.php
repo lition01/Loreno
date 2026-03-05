@@ -146,6 +146,7 @@
             letter-spacing: 1px;
             position: relative;
             display: inline-block;
+            text-transform: uppercase;
         }
 
         .footer-logo::after {
@@ -715,8 +716,13 @@
             <div class="footer-main">
                 <!-- Brand Section -->
                 <div class="footer-section" id="brandSection">
-                    <h3 class="footer-logo">MONTE CARLO</h3>
-                    <p class="footer-tagline">Crafting timeless luxury since 1928. Experience unparalleled quality and sophistication in every detail.</p>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                        <div style="width: 32px; height: 32px; border-radius: 6px; overflow: hidden;">
+                            <img src="logoMoreno.jpeg" alt="Moreno" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <h3 class="footer-logo" style="margin-bottom: 0;">MORENO</h3>
+                    </div>
+                    <p class="footer-tagline">Experience the pinnacle of Mediterranean luxury. Moreno brings you timeless elegance and contemporary sophistication.</p>
                     
                     <!-- Social Links -->
                     <div class="social-links">
@@ -737,54 +743,36 @@
 
                 <!-- Quick Links -->
                 <div class="footer-section" id="linksSection">
-                    <h4 class="footer-heading">Quick Links</h4>
+                    <h4 class="footer-heading">Collections</h4>
                     <ul class="footer-links">
                         <li class="footer-link-item">
-                            <a href="#" class="footer-link">Collections</a>
+                            <a href="men-products.php" class="footer-link">Men's Collection</a>
                         </li>
                         <li class="footer-link-item">
-                            <a href="#" class="footer-link">Bespoke Services</a>
+                            <a href="women-products.php" class="footer-link">Women's Collection</a>
                         </li>
                         <li class="footer-link-item">
-                            <a href="#" class="footer-link">Showrooms</a>
+                            <a href="kids-products.php" class="footer-link">Kids' Wear</a>
                         </li>
                         <li class="footer-link-item">
-                            <a href="#" class="footer-link">Client Stories</a>
+                            <a href="accessories-products.php" class="footer-link">Accessories</a>
                         </li>
                         <li class="footer-link-item">
-                            <a href="#" class="footer-link">Press & Media</a>
+                            <a href="sale-products.php" class="footer-link">Exclusive Sale</a>
                         </li>
                     </ul>
                 </div>
 
-                <!-- Newsletter & Contact -->
-                <div class="footer-section" id="newsletterSection">
-                    <h4 class="footer-heading">Stay Informed</h4>
-                    <p class="newsletter-text">Subscribe to our newsletter for exclusive previews and private events.</p>
-                    
-                    <!-- Newsletter Form -->
-                    <form class="newsletter-form" id="newsletterForm">
-                        <div class="newsletter-input-group">
-                            <input type="email" 
-                                   class="newsletter-input" 
-                                   placeholder="Your email address" 
-                                   required
-                                   aria-label="Email address for newsletter">
-                            <button type="submit" class="newsletter-btn" aria-label="Subscribe to newsletter">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                        <div class="newsletter-message" id="newsletterMessage"></div>
-                    </form>
-
-                    <!-- Contact Info -->
+                <!-- Contact Info -->
+                <div class="footer-section" id="contactSection">
+                    <h4 class="footer-heading">Contact Us</h4>
                     <ul class="contact-info">
                         <li class="contact-item">
                             <div class="contact-icon">
                                 <i class="fas fa-phone"></i>
                             </div>
                             <div class="contact-details">
-                                <div class="contact-label">By Appointment</div>
+                                <div class="contact-label">Customer Support</div>
                                 <div class="contact-value">+1 (212) 555-0189</div>
                             </div>
                         </li>
@@ -793,9 +781,9 @@
                                 <i class="fas fa-envelope"></i>
                             </div>
                             <div class="contact-details">
-                                <div class="contact-label">Correspondence</div>
+                                <div class="contact-label">General Inquiries</div>
                                 <div class="contact-value">
-                                    <a href="mailto:atelier@montecarlo.com">atelier@montecarlo.com</a>
+                                    <a href="mailto:info@moreno.com">info@moreno.com</a>
                                 </div>
                             </div>
                         </li>
@@ -806,7 +794,7 @@
             <!-- Footer Bottom -->
             <div class="footer-bottom">
                 <div class="copyright">
-                    &copy; 2024 MONTE CARLO. All rights reserved.
+                    &copy; 2026 MORENO. All rights reserved.
                 </div>
                 
                 <div class="footer-legal">
@@ -822,9 +810,6 @@
         </div>
 
         <!-- Toast Notification -->
-        <div class="footer-toast" id="footerToast">
-            <span id="footerToastMessage">Successfully subscribed to newsletter</span>
-        </div>
     </footer>
 
     <script>
@@ -834,119 +819,31 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Elements
             const backToTopBtn = document.getElementById('backToTop');
-            const newsletterForm = document.getElementById('newsletterForm');
-            const newsletterMessage = document.getElementById('newsletterMessage');
-            const footerToast = document.getElementById('footerToast');
-            const footerToastMessage = document.getElementById('footerToastMessage');
             const footerSections = document.querySelectorAll('.footer-section');
             const socialLinks = document.querySelectorAll('.social-link');
-            const footerLinks = document.querySelectorAll('.footer-link');
-            const contactItems = document.querySelectorAll('.contact-item');
 
             // ========================================
             // BACK TO TOP FUNCTIONALITY
             // ========================================
-            backToTopBtn.addEventListener('click', function() {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
+            if (backToTopBtn) {
+                backToTopBtn.addEventListener('click', function() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
                 });
-                
-                // Add click animation
-                this.style.transform = 'translateY(-5px) scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 300);
-            });
 
-            // Show/hide back to top button
-            window.addEventListener('scroll', function() {
-                if (window.pageYOffset > 300) {
-                    backToTopBtn.style.opacity = '1';
-                    backToTopBtn.style.visibility = 'visible';
-                    backToTopBtn.style.transform = 'translateY(0)';
-                } else {
-                    backToTopBtn.style.opacity = '0';
-                    backToTopBtn.style.visibility = 'hidden';
-                    backToTopBtn.style.transform = 'translateY(10px)';
-                }
-            });
-
-            // ========================================
-            // NEWSLETTER FORM
-            // ========================================
-            newsletterForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const emailInput = this.querySelector('.newsletter-input');
-                const email = emailInput.value.trim();
-                
-                // Reset message
-                newsletterMessage.className = 'newsletter-message';
-                newsletterMessage.textContent = '';
-                
-                // Validation
-                if (!email) {
-                    showMessage('Please enter your email address.', 'error');
-                    return;
-                }
-                
-                if (!isValidEmail(email)) {
-                    showMessage('Please enter a valid email address.', 'error');
-                    return;
-                }
-                
-                // Simulate API call
-                showMessage('Subscribing...', '');
-                
-                setTimeout(() => {
-                    // Success simulation
-                    emailInput.value = '';
-                    showMessage('Thank you for subscribing to our newsletter.', 'success');
-                    
-                    // Show toast
-                    showToast('Successfully subscribed to our exclusive newsletter.');
-                    
-                    // Form animation
-                    newsletterForm.style.transform = 'translateY(-5px)';
-                    setTimeout(() => {
-                        newsletterForm.style.transform = '';
-                    }, 300);
-                }, 1500);
-            });
-
-            function isValidEmail(email) {
-                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return re.test(email);
-            }
-
-            function showMessage(text, type) {
-                newsletterMessage.textContent = text;
-                newsletterMessage.className = 'newsletter-message';
-                
-                if (type) {
-                    setTimeout(() => {
-                        newsletterMessage.classList.add(type);
-                    }, 10);
-                }
-            }
-
-            // ========================================
-            // TOAST NOTIFICATION
-            // ========================================
-            function showToast(message, type = 'success') {
-                footerToastMessage.textContent = message;
-                footerToast.className = 'footer-toast';
-                footerToast.classList.add(type);
-                
-                setTimeout(() => {
-                    footerToast.classList.add('show');
-                }, 10);
-                
-                // Auto hide
-                setTimeout(() => {
-                    footerToast.classList.remove('show');
-                }, 5000);
+                window.addEventListener('scroll', function() {
+                    if (window.pageYOffset > 300) {
+                        backToTopBtn.style.opacity = '1';
+                        backToTopBtn.style.visibility = 'visible';
+                        backToTopBtn.style.transform = 'translateY(0)';
+                    } else {
+                        backToTopBtn.style.opacity = '0';
+                        backToTopBtn.style.visibility = 'hidden';
+                        backToTopBtn.style.transform = 'translateY(10px)';
+                    }
+                });
             }
 
             // ========================================
@@ -965,7 +862,6 @@
                 });
             }
 
-            // Initial animation
             animateFooterSections();
             window.addEventListener('scroll', animateFooterSections);
 
@@ -974,88 +870,7 @@
             // ========================================
             socialLinks.forEach((link, index) => {
                 link.style.transitionDelay = `${index * 0.05}s`;
-                
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // Animation
-                    this.style.transform = 'translateY(-3px) scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = 'translateY(-3px) scale(1)';
-                    }, 150);
-                    
-                    // Toast notification
-                    const platform = this.getAttribute('data-platform') || 'social media';
-                    showToast(`Opening ${platform}...`, 'success');
-                });
             });
-
-            // ========================================
-            // FOOTER LINKS ENHANCEMENT
-            // ========================================
-            footerLinks.forEach(link => {
-                link.addEventListener('mouseenter', function() {
-                    this.style.transitionDelay = '0s';
-                });
-                
-                link.addEventListener('mouseleave', function() {
-                    this.style.transitionDelay = '0.1s';
-                });
-                
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showToast(`Navigating to ${this.textContent}...`, 'success');
-                });
-            });
-
-            // ========================================
-            // CONTACT ITEMS INTERACTION
-            // ========================================
-            contactItems.forEach(item => {
-                item.addEventListener('mouseenter', function() {
-                    const icon = this.querySelector('.contact-icon');
-                    icon.style.transform = 'scale(1.2) rotate(5deg)';
-                });
-                
-                item.addEventListener('mouseleave', function() {
-                    const icon = this.querySelector('.contact-icon');
-                    icon.style.transform = '';
-                });
-            });
-
-            // ========================================
-            // LEGAL LINKS
-            // ========================================
-            const legalLinks = document.querySelectorAll('.legal-link');
-            legalLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showToast(`Opening ${this.textContent}...`, 'success');
-                });
-            });
-
-            // ========================================
-            // INITIALIZATION
-            // ========================================
-            setTimeout(() => {
-                footerSections.forEach((section, index) => {
-                    setTimeout(() => {
-                        section.classList.add('visible');
-                    }, index * 200);
-                });
-            }, 500);
-
-            // Keyboard navigation
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && footerToast.classList.contains('show')) {
-                    footerToast.classList.remove('show');
-                }
-            });
-
-            // Expose showToast globally
-            window.showFooterToast = function(message, type = 'success') {
-                showToast(message, type);
-            };
         });
     </script>
 </body>

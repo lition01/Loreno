@@ -141,6 +141,21 @@
             transform: scale(1.05);
         }
 
+        .brand-name {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--color-dark);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 480px) {
+            .brand-name {
+                font-size: 1.2rem;
+            }
+        }
+
         .logo-icon svg {
             width: 20px;
             height: 20px;
@@ -474,6 +489,78 @@
 
         .user-dropdown-item.logout:hover {
             background: #fff5f5;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            position: relative;
+        }
+
+        .language-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 0.8rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-primary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-dark);
+            transition: all var(--transition);
+        }
+
+        .language-btn:hover {
+            color: var(--color-accent);
+        }
+
+        .language-btn .arrow {
+            width: 12px;
+            height: 12px;
+            transition: transform var(--transition);
+        }
+
+        .language-selector.active .language-btn .arrow {
+            transform: rotate(180deg);
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            width: 120px;
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all var(--transition);
+            z-index: 1002;
+        }
+
+        .language-selector.active .language-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .language-option {
+            display: block;
+            padding: 0.6rem 1rem;
+            color: var(--color-dark);
+            text-decoration: none;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            transition: all var(--transition);
+        }
+
+        .language-option:hover {
+            background: var(--color-light-bg);
+            color: var(--color-accent);
         }
 
         .action-btn {
@@ -1581,6 +1668,49 @@
             color: var(--color-accent);
         }
 
+        .mobile-nav-separator {
+            height: 1px;
+            background-color: rgba(232, 228, 222, 0.5);
+            margin: 1rem 1.75rem;
+        }
+
+        .mobile-nav-link.logout {
+            color: #d93025;
+        }
+
+        .mobile-nav-item.has-dropdown .mobile-nav-link {
+            justify-content: space-between;
+        }
+
+        .mobile-nav-item.has-dropdown .arrow {
+            width: 14px;
+            height: 14px;
+            transition: transform var(--transition);
+        }
+
+        .mobile-nav-item.has-dropdown.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .mobile-dropdown {
+            display: none;
+            padding-left: 2.5rem;
+            background: rgba(240, 238, 235, 0.5);
+        }
+
+        .mobile-dropdown-link {
+            display: block;
+            padding: 0.8rem 1.75rem;
+            color: var(--color-dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-dropdown-link:hover {
+            color: var(--color-accent);
+        }
+
         /* Responsive */
         @media (max-width: 900px) {
             .menu-toggle {
@@ -1620,6 +1750,18 @@
             }
 
             .user-profile-btn {
+                display: flex;
+            }
+
+            .user-profile-wrapper {
+                display: none;
+            }
+
+            .user-dropdown-menu {
+                display: none;
+            }
+
+            .language-selector {
                 display: none;
             }
 
@@ -1635,6 +1777,15 @@
         @media (max-width: 480px) {
             .navbar-inner {
                 padding: 0 0.75rem;
+            }
+
+            .user-profile-btn .user-name {
+                display: none;
+            }
+
+            .user-profile-btn {
+                padding: 0.4rem;
+                gap: 0;
             }
 
             .logo-icon {
@@ -1694,12 +1845,11 @@
         <div class="navbar-inner">
             <div class="navbar-top-row">
                 <!-- Logo -->
-                <a href="/" class="logo">
+                <a href="index.php" class="logo">
                     <div class="logo-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                        </svg>
+                        <img src="logoMoreno.jpeg" alt="Moreno" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
                     </div>
+                    <span class="brand-name">Moreno</span>
                 </a>
 
                 <!-- Actions Group (Auth, Wishlist, Cart, Burger) -->
@@ -1717,16 +1867,77 @@
                         document.addEventListener('DOMContentLoaded', () => {
                             const userAuthSection = document.getElementById('userAuthSection');
                             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                            const userEmail = localStorage.getItem('userEmail');
                             
                             if (isLoggedIn) {
+                                const initials = userEmail ? userEmail.charAt(0).toUpperCase() : 'U';
                                 userAuthSection.innerHTML = `
-                                    <a href="profile.php" class="action-btn" title="My Profile" aria-label="Profile">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
-                                        </svg>
-                                    </a>
+                                    <div class="user-profile-wrapper">
+                                        <button class="user-profile-btn" id="userProfileBtn">
+                                            <div class="user-avatar-circle">${initials}</div>
+                                            <span class="user-name">Account</span>
+                                        </button>
+                                        <div class="user-dropdown-menu">
+                                            <div class="user-dropdown-header">
+                                                <span>Welcome</span>
+                                                <strong>${userEmail || 'User'}</strong>
+                                            </div>
+                                            <a href="profile.php" class="user-dropdown-item">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                                My Profile
+                                            </a>
+                                            <a href="orders.php" class="user-dropdown-item">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                                                Orders
+                                            </a>
+                                            <button class="user-dropdown-item logout" id="logoutBtn">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                                                Logout
+                                            </button>
+                                        </div>
+                                    </div>
                                 `;
+
+                                // Dropdown toggle
+                                const profileBtn = document.getElementById('userProfileBtn');
+                                const wrapper = profileBtn.closest('.user-profile-wrapper');
+                                profileBtn.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    wrapper.classList.toggle('active');
+                                });
+
+                                document.addEventListener('click', () => {
+                                    wrapper.classList.remove('active');
+                                });
+
+                                // Logout functionality
+                                document.getElementById('logoutBtn').addEventListener('click', () => {
+                                    localStorage.removeItem('isLoggedIn');
+                                    localStorage.removeItem('userEmail');
+                                    window.location.reload();
+                                });
+
+                                // Mobile-specific logic
+                                if (window.innerWidth <= 900) {
+                                    const mobileUserLinks = document.getElementById('mobileUserLinks');
+                                    mobileUserLinks.innerHTML = `
+                                        <div class="mobile-nav-separator"></div>
+                                        <div class="mobile-nav-item">
+                                            <a href="profile.php" class="mobile-nav-link">My Profile</a>
+                                        </div>
+                                        <div class="mobile-nav-item">
+                                            <a href="orders.php" class="mobile-nav-link">Orders</a>
+                                        </div>
+                                        <div class="mobile-nav-item">
+                                            <button class="mobile-nav-link logout" id="mobileLogoutBtn">Logout</button>
+                                        </div>
+                                    `;
+                                    document.getElementById('mobileLogoutBtn').addEventListener('click', () => {
+                                        localStorage.removeItem('isLoggedIn');
+                                        localStorage.removeItem('userEmail');
+                                        window.location.reload();
+                                    });
+                                }
                             }
                         });
                     </script>
@@ -1747,6 +1958,18 @@
                         <span class="cart-count">0</span>
                     </button>
 
+                    <!-- Language Selector -->
+                    <div class="language-selector">
+                        <button class="language-btn" id="languageBtn">
+                            <span id="currentLang">EN</span>
+                            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div class="language-dropdown" id="languageDropdown">
+                            <a href="#" class="language-option" data-lang="EN">English</a>
+                            <a href="#" class="language-option" data-lang="AL">Albanian</a>
+                        </div>
+                    </div>
+
                     <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" role="button" tabindex="0">
                         <div class="burger-container">
                             <span></span>
@@ -1763,6 +1986,8 @@
                 <li><a href="women-products.php">Women</a></li>
                 <li><a href="kids-products.php">Kids</a></li>
                 <li><a href="accessories-products.php">Accessories</a></li>
+                <li><a href="winter-collection.php">Winter</a></li>
+                <li><a href="summer-collection.php">Summer</a></li>
                 <li><a href="sale-products.php">Sale</a></li>
             </ul>
         </div>
@@ -1783,7 +2008,28 @@
             <a href="accessories-products.php" class="mobile-nav-link">Accessories</a>
         </div>
         <div class="mobile-nav-item">
+            <a href="winter-collection.php" class="mobile-nav-link">Winter Collection</a>
+        </div>
+        <div class="mobile-nav-item">
+            <a href="summer-collection.php" class="mobile-nav-link">Summer Collection</a>
+        </div>
+        <div class="mobile-nav-item">
             <a href="sale-products.php" class="mobile-nav-link">Sale</a>
+        </div>
+
+        <!-- User-specific links for mobile -->
+        <div id="mobileUserLinks"></div>
+
+        <!-- Language selector for mobile -->
+        <div class="mobile-nav-item has-dropdown">
+            <button class="mobile-nav-link" id="mobileLangBtn">
+                <span>Language: <span id="mobileCurrentLang">EN</span></span>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="mobile-dropdown" id="mobileLangDropdown">
+                <a href="#" class="mobile-dropdown-link" data-lang="EN">English</a>
+                <a href="#" class="mobile-dropdown-link" data-lang="AL">Albanian</a>
+            </div>
         </div>
     </div>
 
@@ -1941,6 +2187,53 @@
         if (wishlistClose) wishlistClose.addEventListener('click', () => { if (typeof closeWishlistSidebar === 'function') closeWishlistSidebar(); });
         if (cartOverlay) cartOverlay.addEventListener('click', () => { if (typeof closeCart === 'function') closeCart(); });
         if (wishlistOverlay) wishlistOverlay.addEventListener('click', () => { if (typeof closeWishlistSidebar === 'function') closeWishlistSidebar(); });
+
+        // LANGUAGE SELECTOR
+        const languageBtn = document.getElementById('languageBtn');
+        const languageDropdown = document.getElementById('languageDropdown');
+        const currentLang = document.getElementById('currentLang');
+        const languageOptions = document.querySelectorAll('.language-option');
+
+        if (languageBtn && languageDropdown) {
+            languageBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                languageBtn.parentElement.classList.toggle('active');
+            });
+
+            document.addEventListener('click', () => {
+                languageBtn.parentElement.classList.remove('active');
+            });
+
+            languageOptions.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentLang.textContent = e.target.dataset.lang;
+                    languageBtn.parentElement.classList.remove('active');
+                });
+            });
+        }
+
+        // MOBILE LANGUAGE SELECTOR
+        const mobileLangBtn = document.getElementById('mobileLangBtn');
+        const mobileLangDropdown = document.getElementById('mobileLangDropdown');
+        const mobileCurrentLang = document.getElementById('mobileCurrentLang');
+        const mobileLanguageOptions = document.querySelectorAll('.mobile-dropdown-link');
+
+        if (mobileLangBtn && mobileLangDropdown) {
+            mobileLangBtn.addEventListener('click', () => {
+                mobileLangBtn.parentElement.classList.toggle('active');
+                mobileLangDropdown.style.display = mobileLangDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            mobileLanguageOptions.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    mobileCurrentLang.textContent = e.target.dataset.lang;
+                    mobileLangBtn.parentElement.classList.remove('active');
+                    mobileLangDropdown.style.display = 'none';
+                });
+            });
+        }
     });
    </script>
     

@@ -1,11 +1,11 @@
-<!-- Loreno Loading Screen Component -->
+<!-- Moreno Loading Screen Component -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
 
 <style>
     /* Scope all loading styles to prevent leakage */
-    #loreno-loading-wrapper {
+    #moreno-loading-wrapper {
         position: fixed;
         inset: 0;
         z-index: 99999;
@@ -14,7 +14,7 @@
         height: 100%;
     }
 
-    #loreno-loading-wrapper .loading-screen {
+    #moreno-loading-wrapper .loading-screen {
         position: absolute;
         inset: 0;
         display: flex;
@@ -26,75 +26,75 @@
         transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    #loreno-loading-wrapper .loading-screen.fade-out {
+    #moreno-loading-wrapper .loading-screen.fade-out {
         opacity: 0;
         pointer-events: none;
     }
 
-    #loreno-loading-wrapper .loading-screen.hidden {
+    #moreno-loading-wrapper .loading-screen.hidden {
         display: none;
     }
 
     /* Background layers */
-    #loreno-loading-wrapper .loading-bg-warm {
+    #moreno-loading-wrapper .loading-bg-warm {
         position: absolute;
         inset: 0;
         background: radial-gradient(ellipse at 50% 40%, rgba(168, 132, 94, 0.04) 0%, transparent 60%);
     }
 
-    #loreno-loading-wrapper .loading-bg-vignette {
+    #moreno-loading-wrapper .loading-bg-vignette {
         position: absolute;
         inset: 0;
         background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
     }
 
     /* Corner accents */
-    #loreno-loading-wrapper .corner-accent {
+    #moreno-loading-wrapper .corner-accent {
         position: absolute;
         background-color: rgba(168, 132, 94, 0.2);
         transition: all 1.8s cubic-bezier(0.25, 0.1, 0.25, 1) 0.8s;
     }
 
-    #loreno-loading-wrapper .corner-tl-h {
+    #moreno-loading-wrapper .corner-tl-h {
         top: 8%;
         left: 8%;
         height: 1px;
         width: 0;
     }
 
-    #loreno-loading-wrapper .corner-tl-v {
+    #moreno-loading-wrapper .corner-tl-v {
         top: 8%;
         left: 8%;
         width: 1px;
         height: 0;
     }
 
-    #loreno-loading-wrapper .corner-br-h {
+    #moreno-loading-wrapper .corner-br-h {
         bottom: 8%;
         right: 8%;
         height: 1px;
         width: 0;
     }
 
-    #loreno-loading-wrapper .corner-br-v {
+    #moreno-loading-wrapper .corner-br-v {
         bottom: 8%;
         right: 8%;
         width: 1px;
         height: 0;
     }
 
-    #loreno-loading-wrapper .loading-screen.visible .corner-tl-h,
-    #loreno-loading-wrapper .loading-screen.visible .corner-br-h {
+    #moreno-loading-wrapper .loading-screen.visible .corner-tl-h,
+    #moreno-loading-wrapper .loading-screen.visible .corner-br-h {
         width: 40px;
     }
 
-    #loreno-loading-wrapper .loading-screen.visible .corner-tl-v,
-    #loreno-loading-wrapper .loading-screen.visible .corner-br-v {
+    #moreno-loading-wrapper .loading-screen.visible .corner-tl-v,
+    #moreno-loading-wrapper .loading-screen.visible .corner-br-v {
         height: 40px;
     }
 
     /* Main content wrapper */
-    #loreno-loading-wrapper .loading-content {
+    #moreno-loading-wrapper .loading-content {
         position: relative;
         display: flex;
         flex-direction: column;
@@ -102,7 +102,7 @@
     }
 
     /* Ornament row */
-    #loreno-loading-wrapper .ornament-row {
+    #moreno-loading-wrapper .ornament-row {
         display: flex;
         align-items: center;
         gap: 16px;
@@ -111,22 +111,22 @@
         transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
     }
 
-    #loreno-loading-wrapper .loading-screen.visible .ornament-row {
+    #moreno-loading-wrapper .loading-screen.visible .ornament-row {
         opacity: 1;
     }
 
-    #loreno-loading-wrapper .ornament-line {
+    #moreno-loading-wrapper .ornament-line {
         height: 1px;
         width: 0;
         background-color: #A8845E;
         transition: width 1.6s cubic-bezier(0.25, 0.1, 0.25, 1) 0.6s;
     }
 
-    #loreno-loading-wrapper .loading-screen.visible .ornament-line {
+    #moreno-loading-wrapper .loading-screen.visible .ornament-line {
         width: 50px;
     }
 
-    #loreno-loading-wrapper .ornament-diamond {
+    #moreno-loading-wrapper .ornament-diamond {
         width: 4px;
         height: 4px;
         background-color: #A8845E;
@@ -136,12 +136,12 @@
         transition: opacity 0.8s ease 1.4s;
     }
 
-    #loreno-loading-wrapper .loading-screen.visible .ornament-diamond {
+    #moreno-loading-wrapper .loading-screen.visible .ornament-diamond {
         opacity: 1;
     }
 
     /* Brand name */
-    #loreno-loading-wrapper .loading-brand {
+    #moreno-loading-wrapper .loading-brand {
         font-family: 'Playfair Display', Georgia, serif;
         font-size: clamp(2.8rem, 10vw, 6rem);
         font-weight: 400;
@@ -155,13 +155,13 @@
         transition: opacity 2s cubic-bezier(0.25, 0.1, 0.25, 1) 0.1s, transform 2s cubic-bezier(0.25, 0.1, 0.25, 1) 0.1s;
     }
 
-    #loreno-loading-wrapper .loading-screen.visible .loading-brand {
+    #moreno-loading-wrapper .loading-screen.visible .loading-brand {
         opacity: 1;
         transform: translateY(0);
     }
 
     /* Separator */
-    #loreno-loading-wrapper .loading-separator {
+    #moreno-loading-wrapper .loading-separator {
         margin-top: 24px;
         margin-bottom: 20px;
         width: 0%;
@@ -171,12 +171,12 @@
         transition: width 1.8s cubic-bezier(0.25, 0.1, 0.25, 1) 0.8s;
     }
 
-    #loreno-loading-wrapper .loading-screen.visible .loading-separator {
+    #moreno-loading-wrapper .loading-screen.visible .loading-separator {
         width: 100%;
     }
 
     /* Tagline */
-    #loreno-loading-wrapper .loading-tagline {
+    #moreno-loading-wrapper .loading-tagline {
         font-family: 'Cormorant Garamond', Georgia, serif;
         font-size: clamp(0.65rem, 1.5vw, 0.8rem);
         font-weight: 400;
@@ -189,12 +189,12 @@
         transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1) 1.2s;
     }
 
-    #loreno-loading-wrapper .loading-screen.visible .loading-tagline {
+    #moreno-loading-wrapper .loading-screen.visible .loading-tagline {
         opacity: 1;
     }
 
     /* Est. year */
-    #loreno-loading-wrapper .loading-est {
+    #moreno-loading-wrapper .loading-est {
         font-family: 'Cormorant Garamond', Georgia, serif;
         font-size: clamp(0.55rem, 1.2vw, 0.65rem);
         font-weight: 300;
@@ -208,12 +208,12 @@
         transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1) 1.5s;
     }
 
-    #loreno-loading-wrapper .loading-screen.visible .loading-est {
+    #moreno-loading-wrapper .loading-screen.visible .loading-est {
         opacity: 1;
     }
 
     /* Progress bar */
-    #loreno-loading-wrapper .loading-progress-wrap {
+    #moreno-loading-wrapper .loading-progress-wrap {
         margin-top: 56px;
         display: flex;
         flex-direction: column;
@@ -222,11 +222,11 @@
         transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1) 1.6s;
     }
 
-    #loreno-loading-wrapper .loading-screen.visible .loading-progress-wrap {
+    #moreno-loading-wrapper .loading-screen.visible .loading-progress-wrap {
         opacity: 1;
     }
 
-    #loreno-loading-wrapper .loading-progress-track {
+    #moreno-loading-wrapper .loading-progress-track {
         width: 140px;
         height: 1px;
         background-color: rgba(168, 132, 94, 0.12);
@@ -234,7 +234,7 @@
         position: relative;
     }
 
-    #loreno-loading-wrapper .loading-progress-bar {
+    #moreno-loading-wrapper .loading-progress-bar {
         width: 0%;
         height: 100%;
         background-color: #A8845E;
@@ -242,7 +242,7 @@
         box-shadow: 0 0 8px rgba(168, 132, 94, 0.3);
     }
 
-    #loreno-loading-wrapper .loading-progress-number {
+    #moreno-loading-wrapper .loading-progress-number {
         font-family: 'Cormorant Garamond', Georgia, serif;
         font-size: 0.6rem;
         font-weight: 300;
@@ -253,7 +253,7 @@
     }
 </style>
 
-<div id="loreno-loading-wrapper">
+<div id="moreno-loading-wrapper">
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-bg-warm"></div>
         <div class="loading-bg-vignette"></div>
@@ -274,7 +274,7 @@
             </div>
 
             <!-- Brand -->
-            <h1 class="loading-brand">LORENO</h1>
+            <h1 class="loading-brand">MORENO</h1>
 
             <!-- Separator -->
             <div class="loading-separator"></div>
@@ -300,7 +300,7 @@
     (function() {
         'use strict';
 
-        var wrapper = document.getElementById('loreno-loading-wrapper');
+        var wrapper = document.getElementById('moreno-loading-wrapper');
         var screen = document.getElementById('loadingScreen');
         var bar = document.getElementById('progressBar');
         var num = document.getElementById('progressNumber');
